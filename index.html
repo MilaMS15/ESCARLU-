@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ESCARLÚ - Iniciar Sesión</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Sans+3:ital,wght@0,200..900;1,200..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config from Brand Anchors -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#4c444b",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f6f3f2",
+                    "tertiary-fixed": "#ffe088",
+                    "inverse-on-surface": "#f3f0ef",
+                    "surface-bright": "#fcf9f8",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#fcf9f8",
+                    "on-surface": "#1c1b1b",
+                    "on-primary": "#ffffff",
+                    "secondary": "#7b5455",
+                    "primary-container": "#c8a2c8",
+                    "on-primary-fixed": "#2b112f",
+                    "surface-container-highest": "#e5e2e1",
+                    "tertiary": "#735c00",
+                    "secondary-container": "#fecbcb",
+                    "secondary-fixed-dim": "#ecbaba",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#513f00",
+                    "background": "#fcf9f8",
+                    "on-secondary-fixed-variant": "#613d3e",
+                    "primary-fixed": "#ffd6fe",
+                    "on-secondary-fixed": "#2f1314",
+                    "surface-variant": "#e5e2e1",
+                    "tertiary-container": "#cfaa32",
+                    "inverse-primary": "#e2bae1",
+                    "error-container": "#ffdad6",
+                    "primary": "#745475",
+                    "outline": "#7e747c",
+                    "inverse-surface": "#313030",
+                    "surface-container": "#f0eded",
+                    "secondary-fixed": "#ffdad9",
+                    "outline-variant": "#cfc3cc",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-primary-container": "#553757",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#e2bae1",
+                    "on-secondary-container": "#7a5354",
+                    "on-error-container": "#93000a",
+                    "on-background": "#1c1b1b",
+                    "surface-container-high": "#eae7e7",
+                    "surface-dim": "#dcd9d9",
+                    "on-primary-fixed-variant": "#5a3c5d",
+                    "on-tertiary-fixed": "#241a00",
+                    "surface-tint": "#745475"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "48px",
+                    "container-padding": "40px",
+                    "stack-md": "24px",
+                    "stack-sm": "12px",
+                    "unit": "8px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["\"Source Sans 3\""],
+                    "label-md": ["\"Source Sans 3\""],
+                    "body-lg": ["\"Source Sans 3\""],
+                    "headline-md": ["Libre Caslon Text"],
+                    "label-lg": ["\"Source Sans 3\""],
+                    "headline-lg": ["Libre Caslon Text"],
+                    "display-lg": ["Libre Caslon Text"],
+                    "body-sm": ["\"Source Sans 3\""]
+            },
+            "fontSize": {
+                    "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            },
+            "boxShadow": {
+                'lilac-soft': '0px 4px 20px rgba(200, 162, 200, 0.15)',
+            }
+          },
+        }
+      }
+    </script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center p-container-padding antialiased">
+<!-- Main Container -->
+<main class="w-full max-w-[600px] mx-auto bg-surface-container-lowest rounded-xl shadow-lilac-soft border-t-2 border-primary-container p-stack-lg md:p-[64px] flex flex-col gap-stack-lg">
+<!-- Header / Logo -->
+<header class="text-center flex flex-col items-center gap-stack-sm">
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">ESCARLÚ</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Acceso al Sistema de Gestión</p>
+</header>
+<!-- Login Form -->
+<form action="#" class="flex flex-col gap-stack-md" method="POST">
+<!-- Email Field -->
+<div class="flex flex-col gap-unit">
+<label class="font-label-lg text-label-lg text-on-surface flex items-center gap-2" for="email">
+<span aria-hidden="true" class="material-symbols-outlined text-outline">mail</span>
+                    Correo electrónico
+                </label>
+<input aria-required="true" class="h-[56px] w-full px-4 rounded-lg border-2 border-outline-variant bg-surface-bright font-body-lg text-body-lg text-on-surface placeholder-outline focus:border-primary-container focus:ring-4 focus:ring-primary-container/30 transition-shadow outline-none" id="email" name="email" placeholder="ejemplo@correo.com" required="" type="email"/>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-unit">
+<label class="font-label-lg text-label-lg text-on-surface flex items-center gap-2" for="password">
+<span aria-hidden="true" class="material-symbols-outlined text-outline">lock</span>
+                    Contraseña
+                </label>
+<input aria-required="true" class="h-[56px] w-full px-4 rounded-lg border-2 border-outline-variant bg-surface-bright font-body-lg text-body-lg text-on-surface placeholder-outline focus:border-primary-container focus:ring-4 focus:ring-primary-container/30 transition-shadow outline-none" id="password" name="password" placeholder="Ingrese su contraseña" required="" type="password"/>
+</div>
+<!-- Forgot Password Link -->
+<div class="flex justify-end pt-unit">
+<a class="font-body-lg text-body-lg text-primary font-semibold hover:text-on-primary-container hover:underline underline-offset-4 decoration-2 transition-colors focus:outline-none focus:ring-4 focus:ring-primary-container/30 rounded" href="#">
+                    ¿Olvidó su contraseña?
+                </a>
+</div>
+<!-- Primary Action -->
+<button class="mt-stack-sm h-[56px] w-full bg-primary-container text-on-primary font-label-lg text-label-lg font-bold rounded-lg hover:bg-on-primary-container transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-primary-container/50 shadow-sm flex items-center justify-center gap-2" type="submit">
+                Iniciar Sesión
+                <span aria-hidden="true" class="material-symbols-outlined">login</span>
+</button>
+</form>
+<!-- Divider -->
+<div class="relative flex items-center py-stack-sm">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="flex-shrink-0 mx-4 font-body-md text-body-md text-on-surface-variant">o si es un nuevo usuario</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<!-- Secondary Action -->
+<div class="flex flex-col">
+<a class="h-[56px] w-full border-2 border-primary-container text-on-surface font-label-lg text-label-lg rounded-lg hover:bg-surface-container-low transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-primary-container/30 flex items-center justify-center gap-2" href="#">
+                Registrarse
+                <span aria-hidden="true" class="material-symbols-outlined">person_add</span>
+</a>
+</div>
+</main>
+</body></html>
