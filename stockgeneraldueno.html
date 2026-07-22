@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stock General Consolidado | ESCARLÚ</title>
+<script src="shared.js"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-background": "#1c1b1b",
+                "on-secondary": "#ffffff",
+                "surface": "#fcf9f8",
+                "on-surface-variant": "#4c444b",
+                "on-error": "#ffffff",
+                "background": "#fcf9f8",
+                "primary-container": "#c8a2c8",
+                "surface-bright": "#fcf9f8",
+                "on-primary-fixed-variant": "#5a3c5d",
+                "primary-fixed": "#ffd6fe",
+                "secondary-container": "#fecbcb",
+                "on-tertiary-fixed": "#241a00",
+                "on-surface": "#1c1b1b",
+                "inverse-primary": "#e2bae1",
+                "primary-fixed-dim": "#e2bae1",
+                "surface-variant": "#e5e2e1",
+                "on-secondary-container": "#7a5354",
+                "tertiary-container": "#cfaa32",
+                "surface-container-highest": "#e5e2e1",
+                "tertiary-fixed": "#ffe088",
+                "on-primary": "#ffffff",
+                "secondary-fixed": "#ffdad9",
+                "surface-container": "#f0eded",
+                "primary": "#745475",
+                "surface-container-high": "#eae7e7",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#745475",
+                "secondary": "#7b5455",
+                "outline": "#7e747c",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed-dim": "#ecbaba",
+                "tertiary-fixed-dim": "#e9c349",
+                "surface-container-low": "#f6f3f2",
+                "outline-variant": "#cfc3cc",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "on-secondary-fixed-variant": "#613d3e",
+                "tertiary": "#735c00",
+                "on-tertiary-fixed-variant": "#574500",
+                "on-primary-fixed": "#2b112f",
+                "on-primary-container": "#553757",
+                "error": "#ba1a1a",
+                "inverse-surface": "#313030",
+                "surface-dim": "#dcd9d9",
+                "inverse-on-surface": "#f3f0ef",
+                "on-tertiary-container": "#513f00",
+                "on-secondary-fixed": "#2f1314"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "stack-sm": "12px",
+                "stack-md": "24px",
+                "gutter": "24px",
+                "stack-lg": "48px",
+                "unit": "8px",
+                "container-padding": "40px"
+            },
+            "fontFamily": {
+                "body-sm": ["Source Sans 3"],
+                "label-lg": ["Source Sans 3"],
+                "headline-md": ["Libre Caslon Text"],
+                "body-lg": ["Source Sans 3"],
+                "display-lg": ["Libre Caslon Text"],
+                "body-md": ["Source Sans 3"],
+                "headline-lg": ["Libre Caslon Text"],
+                "label-md": ["Source Sans 3"]
+            },
+            "fontSize": {
+                "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(200, 162, 200, 0.25);
+        }
+        .gold-accent {
+            border-top: 4px solid #cfaa32;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen">
+<!-- SideNavBar (Cargado por shared.js) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
+
+<!-- Main Content Area -->
+<main class="md:ml-72 min-h-screen bg-background">
+<!-- Top Navigation Header -->
+<header class="flex justify-between items-center w-full px-container-padding h-16 bg-surface border-b-2 border-primary shadow-sm sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-[24px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-64 md:w-80 font-body-md text-on-surface outline-none" id="inventory-search-input" placeholder="Buscar por modelo, color o SKU..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<div class="text-right">
+<p class="font-label-lg text-sm text-primary font-bold leading-tight">Administrador / Dueño</p>
+<p class="text-xs text-on-surface-variant font-medium">Control Multisede</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden bg-white flex items-center justify-center shadow-sm">
+<img alt="Logo ESCARLÚ" class="w-full h-full object-contain p-0.5" src="logo.jpeg"/>
+</div>
+</div>
+</div>
+</header>
+
+<!-- Dashboard Content -->
+<div class="p-container-padding max-w-[1440px] mx-auto space-y-stack-lg">
+<!-- Welcome & Filter Header -->
+<section class="space-y-stack-sm">
+<div class="flex flex-col md:flex-row justify-between md:items-end gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary font-bold">Stock General Consolidado</h2>
+<p class="text-body-lg text-on-surface-variant">Visión global de inventario en Almacén Central y las 4 Tiendas.</p>
+</div>
+<div class="flex flex-wrap gap-4 items-center">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-xs text-on-surface font-semibold ml-1" for="store-filter-select">Filtrar por Sede:</label>
+<select class="h-12 min-w-[220px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg text-sm px-4 bg-surface cursor-pointer outline-none" id="store-filter-select">
+<option value="all">Consolidado Total (Todas las Sedes)</option>
+<option value="central">Almacén Central</option>
+<option value="tienda_1">Tienda Santa Lucía</option>
+<option value="tienda_2">Tienda Generales Suplex</option>
+<option value="tienda_3">Tienda Generales pasadizo</option>
+<option value="tienda_4">Tienda Aviación</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+
+<!-- KPI Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="glass-card gold-accent p-6 rounded-2xl shadow-sm flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-[28px]">inventory_2</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Total Prendas en Stock</p>
+<p class="text-headline-md font-bold text-primary" id="kpi-total-stock">1,248 unids</p>
+</div>
+</div>
+
+<div class="glass-card p-6 rounded-2xl shadow-sm flex items-center gap-5 border-t-4 border-primary">
+<div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[28px]">warehouse</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Almacén Central</p>
+<p class="text-headline-md font-bold text-on-surface" id="kpi-central-stock">580 unids</p>
+</div>
+</div>
+
+<div class="glass-card p-6 rounded-2xl shadow-sm flex items-center gap-5 border-t-4 border-secondary-container">
+<div class="w-14 h-14 rounded-2xl bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-[28px]">storefront</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Stock en 4 Tiendas</p>
+<p class="text-headline-md font-bold text-on-surface" id="kpi-tiendas-stock">668 unids</p>
+</div>
+</div>
+
+<div class="glass-card p-6 rounded-2xl shadow-sm flex items-center gap-5 border-t-4 border-error">
+<div class="w-14 h-14 rounded-2xl bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-error-container text-[28px]">warning</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Alertas de Stock Bajo</p>
+<p class="text-headline-md font-bold text-error" id="kpi-alerts-count">4 Variantes</p>
+</div>
+</div>
+</div>
+
+<!-- Main Inventory Section -->
+<section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
+<div class="p-6 bg-surface-container-low border-b border-outline-variant flex flex-wrap justify-between items-center gap-4">
+<h3 class="font-headline-md text-primary font-bold flex items-center gap-3">
+<span class="material-symbols-outlined">checkroom</span>
+                    Existencias por Modelo y Talla
+                </h3>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span>Filtrar</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-on-primary font-semibold text-sm shadow-sm hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Exportar Reporte</span>
+</button>
+</div>
+</div>
+
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse" id="inventory-table">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-md text-xs uppercase tracking-wider">
+<th class="px-6 py-4 border-b border-outline-variant">Modelo / Tipo</th>
+<th class="px-4 py-4 border-b border-outline-variant">Color</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">S</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">M</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">L</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">XL</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">Total Stock</th>
+<th class="px-4 py-4 border-b border-outline-variant">Estado</th>
+<th class="px-6 py-4 border-b border-outline-variant text-right">Detalle por Sede</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-sm font-body-md" id="inventory-tbody">
+<!-- Rows rendered by script -->
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- Solicitudes de Reposición entre Tiendas y Almacén -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Resumen por Sede Cards -->
+<div class="lg:col-span-2 glass-card rounded-2xl p-6 shadow-sm border border-outline-variant">
+<h3 class="font-headline-md text-primary font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined">store</span>
+                    Resumen de Existencias por Tienda
+                </h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60">
+<div class="flex justify-between items-center mb-2">
+<span class="font-bold text-on-surface">Tienda Santa Lucía</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-container text-on-primary-container">Tienda 1</span>
+</div>
+<p class="text-2xl font-bold text-primary">164 unids</p>
+<p class="text-xs text-on-surface-variant mt-1">4 modelos disponibles en S, M, L, XL</p>
+</div>
+
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60">
+<div class="flex justify-between items-center mb-2">
+<span class="font-bold text-on-surface">Tienda Generales Suplex</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary-container text-on-secondary-container">Tienda 2</span>
+</div>
+<p class="text-2xl font-bold text-primary">152 unids</p>
+<p class="text-xs text-on-surface-variant mt-1">4 modelos disponibles en S, M, L, XL</p>
+</div>
+
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60">
+<div class="flex justify-between items-center mb-2">
+<span class="font-bold text-on-surface">Tienda Generales pasadizo</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary-container text-on-tertiary-container">Tienda 3</span>
+</div>
+<p class="text-2xl font-bold text-primary">170 unids</p>
+<p class="text-xs text-on-surface-variant mt-1">4 modelos disponibles en S, M, L, XL</p>
+</div>
+
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60">
+<div class="flex justify-between items-center mb-2">
+<span class="font-bold text-on-surface">Tienda Aviación</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed">Tienda 4</span>
+</div>
+<p class="text-2xl font-bold text-primary">182 unids</p>
+<p class="text-xs text-on-surface-variant mt-1">4 modelos disponibles en S, M, L, XL</p>
+</div>
+</div>
+</div>
+
+<!-- Quick Help Info -->
+<div class="glass-card rounded-2xl p-6 shadow-sm border border-outline-variant flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 text-secondary mb-3">
+<span class="material-symbols-outlined text-[28px]">shield</span>
+<h4 class="font-headline-md text-headline-md m-0 font-bold">Control del Dueño</h4>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                    Como administrador general, este panel consolidado le permite inspeccionar el stock en tiempo real de todas las sucursales, prevenir quiebres de inventario y supervisar los movimientos entre Almacén Central y Tiendas.
+                </p>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant">
+<a class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-on-primary font-bold rounded-xl text-sm shadow-sm hover:bg-primary/90 transition-colors" href="cajadueno.html">
+<span class="material-symbols-outlined">payments</span>
+                    Ir a Flujo de Caja
+                </a>
+</div>
+</div>
+</section>
+</div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Cargar inventario desde localStorage o DEFAULT_INVENTORY
+    const rawInv = localStorage.getItem("escarlu_inventory");
+    const invData = rawInv ? JSON.parse(rawInv) : (typeof DEFAULT_INVENTORY !== 'undefined' ? DEFAULT_INVENTORY : {});
+
+    const tbody = document.getElementById("inventory-tbody");
+    const storeSelect = document.getElementById("store-filter-select");
+    const searchInput = document.getElementById("inventory-search-input");
+
+    function renderTable() {
+        if (!invData || Object.keys(invData).length === 0) return;
+
+        const selectedStore = storeSelect ? storeSelect.value : "all";
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+
+        let rowsHtml = "";
+        let totalItems = 0;
+        let centralItems = 0;
+        let tiendasItems = 0;
+        let lowAlerts = 0;
+
+        // Modelos y Colores
+        const models = [
+            { key: "classic", name: "Polo Clásico Piqué", sku: "ESC-PL-CLASSIC" },
+            { key: "slim", name: "Polo Slim Fit Mercerizado", sku: "ESC-PL-SLIM" },
+            { key: "sport", name: "Polo Técnico Deportivo", sku: "ESC-PL-SPORT" },
+            { key: "premium", name: "Polo Premium Seda/Algodón", sku: "ESC-PL-PREMIUM" }
+        ];
+
+        const colors = [
+            { key: "blanco", name: "Blanco", badge: "bg-white border border-outline-variant text-on-surface" },
+            { key: "marino", name: "Azul Marino", badge: "bg-primary text-on-primary" },
+            { key: "rosa", name: "Rosa Pastel", badge: "bg-secondary-container text-on-secondary-container" },
+            { key: "lila", name: "Lila Pastel", badge: "bg-primary-container text-on-primary-container" }
+        ];
+
+        models.forEach(m => {
+            colors.forEach(c => {
+                let sSum = 0, mSum = 0, lSum = 0, xlSum = 0;
+
+                // Sumar según filtro de sede
+                Object.keys(invData).forEach(sKey => {
+                    const storeInv = invData[sKey];
+                    if (storeInv && storeInv[m.key] && storeInv[m.key][c.key]) {
+                        const sizes = storeInv[m.key][c.key];
+                        const sVal = sizes.S || 0;
+                        const mVal = sizes.M || 0;
+                        const lVal = sizes.L || 0;
+                        const xlVal = sizes.XL || 0;
+
+                        const rowTotal = sVal + mVal + lVal + xlVal;
+                        if (sKey === "central") centralItems += rowTotal;
+                        else tiendasItems += rowTotal;
+
+                        if (selectedStore === "all" || selectedStore === sKey) {
+                            sSum += sVal;
+                            mSum += mVal;
+                            lSum += lVal;
+                            xlSum += xlVal;
+                        }
+                    }
+                });
+
+                const totalRow = sSum + mSum + lSum + xlSum;
+                totalItems += totalRow;
+
+                if (totalRow < 20) lowAlerts++;
+
+                // Filtro de búsqueda
+                const matchSearch = m.name.toLowerCase().includes(query) || c.name.toLowerCase().includes(query) || m.sku.toLowerCase().includes(query);
+                if (!matchSearch) return;
+
+                // Estado de Stock
+                let statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">Disponible</span>`;
+                if (totalRow === 0) {
+                    statusBadge = `<span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-xs font-bold">Agotado</span>`;
+                } else if (totalRow < 20) {
+                    statusBadge = `<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-xs font-bold">Bajo Stock</span>`;
+                }
+
+                rowsHtml += `
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-on-surface">${m.name}</div>
+                            <div class="text-xs text-on-surface-variant">SKU: ${m.sku}</div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${c.badge}">${c.name}</span>
+                        </td>
+                        <td class="px-4 py-4 text-center font-bold ${sSum < 5 ? 'text-error font-extrabold' : ''}">${sSum}</td>
+                        <td class="px-4 py-4 text-center font-bold ${mSum < 5 ? 'text-error font-extrabold' : ''}">${mSum}</td>
+                        <td class="px-4 py-4 text-center font-bold ${lSum < 5 ? 'text-error font-extrabold' : ''}">${lSum}</td>
+                        <td class="px-4 py-4 text-center font-bold ${xlSum < 5 ? 'text-error font-extrabold' : ''}">${xlSum}</td>
+                        <td class="px-4 py-4 text-center font-extrabold text-primary text-base">${totalRow}</td>
+                        <td class="px-4 py-4">${statusBadge}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="alert('${m.name} (${c.name}): S:${sSum}, M:${mSum}, L:${lSum}, XL:${xlSum}')" class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary-container/20 text-xs font-bold transition-colors">
+                                Ver Sedes
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+
+        tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="p-8 text-center text-on-surface-variant font-semibold">No se encontraron productos que coincidan.</td></tr>`;
+
+        // Actualizar KPIs
+        document.getElementById("kpi-total-stock").textContent = `${totalItems} unids`;
+        document.getElementById("kpi-central-stock").textContent = `${centralItems} unids`;
+        document.getElementById("kpi-tiendas-stock").textContent = `${tiendasItems} unids`;
+        document.getElementById("kpi-alerts-count").textContent = `${lowAlerts} Variantes`;
+    }
+
+    renderTable();
+
+    if (storeSelect) storeSelect.addEventListener("change", renderTable);
+    if (searchInput) searchInput.addEventListener("input", renderTable);
+});
+</script>
+</body></html>

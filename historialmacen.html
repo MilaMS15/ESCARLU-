@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ESCARLÚ - Historial de Movimientos de Almacén</title>
+<script src="shared.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Sans+3:ital,wght@0,200..900;1,200..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#ecbaba",
+                    "surface-container": "#f0eded",
+                    "inverse-on-surface": "#f3f0ef",
+                    "secondary": "#7b5455",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "inverse-surface": "#313030",
+                    "surface-dim": "#dcd9d9",
+                    "outline-variant": "#cfc3cc",
+                    "surface-variant": "#e5e2e1",
+                    "tertiary-fixed": "#ffe088",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#553757",
+                    "on-secondary-fixed-variant": "#613d3e",
+                    "on-secondary-fixed": "#2f1314",
+                    "on-primary-fixed-variant": "#5a3c5d",
+                    "background": "#fcf9f8",
+                    "outline": "#7e747c",
+                    "inverse-primary": "#e2bae1",
+                    "on-tertiary-container": "#513f00",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-container": "#7a5354",
+                    "surface-bright": "#fcf9f8",
+                    "surface-container-low": "#f6f3f2",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-surface-variant": "#4c444b",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#735c00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface": "#fcf9f8",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#e2bae1",
+                    "primary-fixed": "#ffd6fe",
+                    "error": "#ba1a1a",
+                    "primary-container": "#c8a2c8",
+                    "surface-container-highest": "#e5e2e1",
+                    "on-primary-fixed": "#2b112f",
+                    "surface-tint": "#745475",
+                    "surface-container-high": "#eae7e7",
+                    "secondary-fixed": "#ffdad9",
+                    "primary": "#745475",
+                    "on-surface": "#1c1b1b",
+                    "on-background": "#1c1b1b",
+                    "secondary-container": "#fecbcb",
+                    "tertiary-container": "#cfaa32"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "40px",
+                    "gutter": "24px",
+                    "stack-md": "24px",
+                    "stack-lg": "48px",
+                    "stack-sm": "12px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "label-md": ["Source Sans 3"],
+                    "headline-md": ["Libre Caslon Text"],
+                    "body-sm": ["Source Sans 3"],
+                    "body-md": ["Source Sans 3"],
+                    "body-lg": ["Source Sans 3"],
+                    "label-lg": ["Source Sans 3"],
+                    "headline-lg": ["Libre Caslon Text"],
+                    "display-lg": ["Libre Caslon Text"]
+            },
+            "fontSize": {
+                    "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+            font-family: 'Source Sans 3', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(200, 162, 200, 0.2);
+            box-shadow: 0 4px 20px rgba(85, 55, 87, 0.05);
+        }
+        .gold-accent {
+            border-top: 2px solid #cfaa32;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+<!-- Sidebar Navigation -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md z-50 w-64 md:w-72">
+<div class="mb-10 px-4">
+<h1 class="font-headline-md text-headline-md text-primary">ESCARLÚ</h1>
+<p class="font-label-lg text-label-lg text-on-surface-variant opacity-70">Management Dashboard</p>
+</div>
+<nav class="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-hide px-2">
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 rounded-lg cursor-pointer" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-lg p-4 font-bold transition-all duration-200 cursor-pointer" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-lg text-label-lg">Central Fabric Stock</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 rounded-lg cursor-pointer" href="#">
+<span class="material-symbols-outlined">reorder</span>
+<span class="font-label-lg text-label-lg">Department Requests</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 rounded-lg cursor-pointer" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-label-lg text-label-lg">Simulation of Trace &amp; Cut</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 rounded-lg cursor-pointer" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-lg text-label-lg">Reports</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/30 pt-4 px-2">
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-error-container hover:text-on-error-container transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-lg text-label-lg">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 md:ml-72 min-h-screen bg-background">
+<!-- Top Bar with Role Simulator -->
+<header class="flex justify-between items-center w-full px-container-padding h-14 md:h-16 border-b-2 border-primary sticky top-0 bg-surface z-40 shadow-sm">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 bg-surface-container-high px-4 py-2 rounded-full border border-primary/20">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">warehouse</span>
+<span class="font-label-md text-label-md text-primary">Simulador de Rol:</span>
+<select class="bg-transparent border-none font-bold text-primary focus:ring-0 cursor-pointer">
+<option selected="">Almacén Central</option>
+<option>Tienda Santa Lucía</option>
+<option>Tienda Aviación</option>
+<option>Administrador General</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+</div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container group-hover:border-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A sophisticated professional portrait of a senior textile administrator in a brightly lit, modern office environment. She has a warm smile, wearing an elegant neutral-toned blazer. The background is slightly blurred showing rolls of high-quality fabrics and a clean design studio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGWD6xK5vb8NZc5g9ADvQTdt4cs1gEe114evk9R65-086cCeFOZBkYxxm6OrsnYYYT3DBrHfsqyNCvkK15CUSvTDXbCCapLJQVA2nzFj8QQHckE5xEfT7SFuNHeHcLbEIuh7GbbtjrmCrkzKtEyULAo0nzM0txvbDFjR8JtjtHSqlAQl7zSNwVbdll4PTWi3KvEfbpxJiMEvKSQWUeBbYxguOwGHvBM70qPPl6Pb8AXfJ57nwqxiA"/>
+</div>
+<span class="font-label-lg text-label-lg hidden lg:inline">Admin_Escarlu</span>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-container-padding max-w-[1440px] mx-auto">
+<!-- Page Header -->
+<div class="mb-8">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2">Historial de Movimientos de Almacén</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Seguimiento detallado de ingresos y egresos de productos textiles.</p>
+</div>
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-10">
+<div class="glass-card rounded-2xl p-8 gold-accent">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-primary-container/20 rounded-xl">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded text-sm">+12.5%</span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Total Ingresos (Mes)</h3>
+<p class="font-display-lg text-display-lg text-primary">2,480 <span class="text-xl font-normal text-on-surface-variant">Uds</span></p>
+</div>
+<div class="glass-card rounded-2xl p-8 gold-accent">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-secondary-container/20 rounded-xl">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">trending_down</span>
+</div>
+<span class="text-secondary font-bold bg-secondary-container/30 px-2 py-1 rounded text-sm">-4.2%</span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Total Egresos (Mes)</h3>
+<p class="font-display-lg text-display-lg text-secondary">1,854 <span class="text-xl font-normal text-on-surface-variant">Uds</span></p>
+</div>
+<div class="glass-card rounded-2xl p-8 gold-accent">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-tertiary-container/20 rounded-xl">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Movimiento más frecuente</h3>
+<p class="font-headline-md text-headline-md text-on-surface">Tienda Santa Lucía</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Modelo "Seda Imperial" - 450 Uds</span>
+</div>
+</div>
+<!-- Filters -->
+<div class="glass-card rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-6 items-end">
+<div class="flex-1 w-full space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Rango de Fecha</label>
+<div class="flex gap-2">
+<input class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary" type="date"/>
+</div>
+</div>
+<div class="flex-1 w-full space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Tipo de Movimiento</label>
+<select class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary">
+<option>Todos los movimientos</option>
+<option>Ingreso (Entradas)</option>
+<option>Egreso (Salidas)</option>
+</select>
+</div>
+<div class="flex-1 w-full space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Tienda / Destino</label>
+<select class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary">
+<option>Todas las sedes</option>
+<option>Almacén Central</option>
+<option>Tienda Santa Lucía</option>
+<option>Tienda Aviación</option>
+</select>
+</div>
+<button class="h-14 px-8 bg-primary text-on-primary font-label-lg text-label-lg rounded-xl hover:bg-on-primary-container transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined">filter_list</span>
+                    Filtrar
+                </button>
+</div>
+<!-- Main Movement Table -->
+<div class="glass-card rounded-2xl overflow-hidden mb-12">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high border-b border-outline-variant">
+<th class="p-6 font-label-lg text-label-lg text-primary">Movimiento</th>
+<th class="p-6 font-label-lg text-label-lg text-primary">Fecha y Hora</th>
+<th class="p-6 font-label-lg text-label-lg text-primary">Producto</th>
+<th class="p-6 font-label-lg text-label-lg text-primary text-center">Cantidad</th>
+<th class="p-6 font-label-lg text-label-lg text-primary">Origen / Destino</th>
+<th class="p-6 font-label-lg text-label-lg text-primary">Responsable</th>
+<th class="p-6 font-label-lg text-label-lg text-primary"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-primary-container/5 transition-colors group">
+<td class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Ingreso</span>
+</div>
+</td>
+<td class="p-6">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">24 May 2024</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">09:15 AM</span>
+</div>
+</td>
+<td class="p-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
+<img class="w-full h-full object-cover" data-alt="A close-up high-resolution photograph of premium silk fabric in a deep lilac color, showing its rich texture and subtle sheen. The background is a clean, neutral textile workshop environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVuoSa14jfjUi7aCrKYUHE0AjxBlnB2YdDtFdFvfgh1HC2h7VUKK8ntKyoBCx7hyq9Ri_S-te99nOGAx-0SMlqrfFwoQXlXiOuW-IJmcUg3Ti6Os5oCvmCAaohfAcGgL3e-FHmHM314z1HfNdmxR35oj_0QbydKIgRiQh_WW7y8iAQl23yzTiUVFkyNwZVRjZ8ypgLjf76MuzaBgqO4J1PiTIf2MR7gr6UepGGs1xW6nn49xNFXvk"/>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Seda Imperial</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Lila / Talla Única</span>
+</div>
+</div>
+</td>
+<td class="p-6 text-center">
+<span class="font-display-lg text-headline-md text-on-surface">120</span>
+</td>
+<td class="p-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">location_on</span>
+<span class="font-body-md text-body-md">Almacén Central</span>
+</div>
+</td>
+<td class="p-6">
+<span class="font-label-md text-label-md text-on-surface-variant">Carlos Rivas</span>
+</td>
+<td class="p-6 text-right">
+<button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-primary-container/5 transition-colors group">
+<td class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">remove_circle</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Egreso</span>
+</div>
+</td>
+<td class="p-6">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">24 May 2024</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">10:45 AM</span>
+</div>
+</td>
+<td class="p-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
+<img class="w-full h-full object-cover" data-alt="A stack of folded high-quality linen shirts in soft rose and pastel pink shades. The photograph captures the elegant weave of the linen fabric in a bright, professionally lit boutique setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_l80sld5J-eGRwUxN5U_Rx926UtS4o4LKlv_G4CKsMyCRjMiajoq7lv4dXDA023Dt20Mu0csdZAaC8ydxEUGwU1Ie43c-28PyJ_Fd1yO2p-PkHo4MZV88Yq0pEBxclilX9ygPQa8S5JeszLmNP7HMmJdADlyqNJpEM04v6SOvRmDVovYHxuF-kDnPoAAM_3647I7kv7rgnVfhYwUwXchL-PZhoNovYkXGTwdSJi4bIx0qQM8dj4E"/>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Lino Premium</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Rosa Pastel / M</span>
+</div>
+</div>
+</td>
+<td class="p-6 text-center">
+<span class="font-display-lg text-headline-md text-on-surface">45</span>
+</td>
+<td class="p-6">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">store</span>
+<span class="font-body-md text-body-md">Tienda Santa Lucía</span>
+</div>
+<span class="text-xs text-on-surface-variant ml-7 italic">Pedido Stock Semanal</span>
+</div>
+</td>
+<td class="p-6">
+<span class="font-label-md text-label-md text-on-surface-variant">Elena Gómez</span>
+</td>
+<td class="p-6 text-right">
+<button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-primary-container/5 transition-colors group">
+<td class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">remove_circle</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Egreso</span>
+</div>
+</td>
+<td class="p-6">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">23 May 2024</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">04:20 PM</span>
+</div>
+</td>
+<td class="p-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
+<img class="w-full h-full object-cover" data-alt="Close-up of a luxurious dark velvet textile with a rich deep purple tone. The light reflects off the soft pile of the fabric, highlighting its premium quality. Suitable for an elegant textile fashion brand dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqlkEG-bYSUvxkF7pS1BfmnDW5XJsO6qJt0mAsQGzzIL6Vdu-6Mbg_SSyqvpdWGmOrt5r-UAbCVW9bkIUs1tN3Z_EiMm2_-aZtnUXBClTC2PBnmDAAmFHNr7yPUoRpP-CZMOqrjgYQPt6L0LrAGM64wSxc2mxnK8KWBjOOMgeQZcignyhYfaed1lupbr5l7a57Pui4-GUyOcC8MwVu5IZvTLk-KdDAEm4AQP-2usM5Lnf-bhQzuoM"/>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Terciopelo Gala</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Vino Tinto / L</span>
+</div>
+</div>
+</td>
+<td class="p-6 text-center">
+<span class="font-display-lg text-headline-md text-on-surface">15</span>
+</td>
+<td class="p-6">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">storefront</span>
+<span class="font-body-md text-body-md">Tienda Aviación</span>
+</div>
+<span class="text-xs text-on-surface-variant ml-7 italic">Reposición Urgente</span>
+</div>
+</td>
+<td class="p-6">
+<span class="font-label-md text-label-md text-on-surface-variant">Elena Gómez</span>
+</td>
+<td class="p-6 text-right">
+<button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-6 border-t border-outline-variant flex justify-between items-center bg-surface-container-low">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mostrando 1-10 de 125 movimientos</span>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-lg border border-primary bg-primary text-on-primary flex items-center justify-center font-bold">1</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all">2</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all">3</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer Decorative Element -->
+<div class="flex items-center justify-center gap-4 py-8 opacity-40">
+<div class="h-[1px] flex-1 bg-gradient-to-r from-transparent to-primary"></div>
+<span class="font-headline-md text-headline-md text-primary italic">Escarlú Heritage</span>
+<div class="h-[1px] flex-1 bg-gradient-to-l from-transparent to-primary"></div>
+</div>
+</div>
+</main>
+<!-- FAB for New Movement (Contextual) -->
+<button class="fixed bottom-10 right-10 w-16 h-16 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group z-50">
+<span class="material-symbols-outlined text-3xl">add</span>
+<span class="absolute right-full mr-4 bg-primary text-on-primary px-4 py-2 rounded-xl font-label-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Nuevo Movimiento</span>
+</button>
+<script>
+        // Micro-interactions and Tab Logic
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if(!this.classList.contains('bg-primary-container')) {
+                    // Simulating navigation
+                    document.querySelectorAll('nav a').forEach(l => {
+                        l.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold');
+                        l.classList.add('text-on-surface-variant');
+                    });
+                    this.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold');
+                    this.classList.remove('text-on-surface-variant');
+                }
+            });
+        });
+
+        // Hover animation for rows
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.querySelector('.material-symbols-outlined:last-child')?.classList.add('translate-x-1');
+            });
+            row.addEventListener('mouseleave', () => {
+                row.querySelector('.material-symbols-outlined:last-child')?.classList.remove('translate-x-1');
+            });
+        });
+    </script>
+</body></html>

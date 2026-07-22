@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ESCARLÚ - Gestión de Almacén</title>
+<script src="shared.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-indicator {
+            position: relative;
+        }
+        .active-nav-indicator::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 25%;
+            height: 50%;
+            width: 4px;
+            background-color: #745475; /* primary */
+            border-radius: 0 4px 4px 0;
+        }
+        body {
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#ecbaba",
+                        "on-primary-container": "#553757",
+                        "on-secondary-fixed": "#2f1314",
+                        "on-primary-fixed": "#2b112f",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "tertiary-fixed": "#ffe088",
+                        "surface-container-low": "#f6f3f2",
+                        "outline": "#7e747c",
+                        "outline-variant": "#cfc3cc",
+                        "on-primary-fixed-variant": "#5a3c5d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#513f00",
+                        "surface-container-high": "#eae7e7",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#c8a2c8",
+                        "on-surface": "#1c1b1b",
+                        "tertiary": "#735c00",
+                        "inverse-primary": "#e2bae1",
+                        "surface-dim": "#dcd9d9",
+                        "surface-tint": "#745475",
+                        "on-surface-variant": "#4c444b",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#e2bae1",
+                        "background": "#fcf9f8",
+                        "primary": "#745475",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-secondary-fixed-variant": "#613d3e",
+                        "inverse-surface": "#313030",
+                        "surface": "#fcf9f8",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "on-background": "#1c1b1b",
+                        "secondary-fixed": "#ffdad9",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fcf9f8",
+                        "on-error-container": "#93000a",
+                        "secondary": "#7b5455",
+                        "primary-fixed": "#ffd6fe",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#7a5354",
+                        "secondary-container": "#fecbcb",
+                        "surface-container": "#f0eded",
+                        "tertiary-container": "#cfaa32",
+                        "inverse-on-surface": "#f3f0ef"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-sm": "12px",
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "stack-lg": "48px",
+                        "container-padding": "40px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Libre Caslon Text"],
+                        "body-lg": ["\"Source Sans 3\""],
+                        "label-md": ["\"Source Sans 3\""],
+                        "label-lg": ["\"Source Sans 3\""],
+                        "body-sm": ["\"Source Sans 3\""],
+                        "body-md": ["\"Source Sans 3\""],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "headline-md": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["20px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["16px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "label-lg": ["18px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-sm": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-md": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body-md text-on-background">
+<!-- Shell Layout Wrapper -->
+<div class="flex min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md w-64 md:w-72 border-r border-outline-variant/20 z-50">
+<div class="flex flex-col mb-stack-lg px-4">
+<span class="font-headline-md text-headline-md text-primary tracking-tight">ESCARLÚ</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant opacity-70">Management Dashboard</span>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg text-label-lg">Panel General</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-lg text-label-lg">Stock Almacén / Tiendas</span>
+</a>
+<!-- Active Item -->
+<a class="flex items-center gap-4 bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-lg p-4 font-bold shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_box</span>
+<span class="font-label-lg text-label-lg">Ingreso de Prendas</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined">reorder</span>
+<span class="font-label-lg text-label-lg">Solicitudes Pendientes</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-lg text-label-lg">Historial de Despachos</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant/30">
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-lg text-label-lg">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-72 bg-surface">
+<!-- TopNavBar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-container-padding h-14 md:h-16 max-w-[1440px] mx-auto border-b-2 border-primary dark:border-primary-fixed-dim bg-surface shadow-sm sticky top-0 z-40">
+<div class="flex items-center gap-6">
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="hidden md:flex relative group w-64 lg:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 h-10 text-body-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Buscar por modelo o SKU..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
+<div class="text-right hidden sm:block">
+<p class="font-label-lg text-label-lg leading-tight">Admin Escarlú</p>
+<p class="text-body-sm text-on-surface-variant/70">Jefe de Almacén</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border-2 border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a senior administrator in a high-end textile studio, soft studio lighting, bright airy background, wearing sophisticated business casual attire in tones of lilac and slate. The composition is a clean, medium close-up shot emphasizing expertise and approachability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA92KfKf4q_X8C0sAkGljB_hwHxhhW_BuGdweYfrPprEnlHhofaQurvC6XJZ-3LvLVjTnozVg4QLfhcAmNxmHJRByxaJu62VlylZELunrErk3IgWXNO7n1bGjkX9Zq3FK8xogYEj47DV2xFQSTZ4tzu2uokQXeCIzES3RYMdJuYfNqe1bm4l5nLXpDp13_CHq18M4bgVpXnwC3QRnDLQbm1-ir3Hhn219PUBaNb5KhpGPE_3xDl1zU"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="max-w-[1440px] mx-auto p-gutter lg:p-container-padding space-y-stack-lg">
+<!-- Welcome Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div class="space-y-1">
+<h1 class="font-headline-lg text-headline-lg text-primary">Ingreso de Prendas</h1>
+<p class="text-body-lg text-on-surface-variant max-w-2xl">Registre los nuevos lotes que ingresan al Almacén Central para actualizar el inventario global.</p>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+<span class="font-label-lg">24 Octubre, 2023</span>
+</div>
+</section>
+<!-- Main Grid Layout (Bento Style) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Entry Form -->
+<div class="lg:col-span-7 space-y-stack-md">
+<div class="bg-surface-container-lowest p-stack-lg rounded-xl shadow-[0px_4px_20px_rgba(116,84,117,0.08)] border-t-2 border-tertiary relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[80px]">app_registration</span>
+</div>
+<form class="space-y-6 relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Detalles del Lote</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block font-label-lg text-on-surface">Modelo / SKU</label>
+<input class="w-full h-14 border-2 border-outline-variant rounded-lg px-4 text-body-md focus:border-primary focus:ring-0 transition-colors bg-surface" placeholder="Ej: VEST-SILK-002" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block font-label-lg text-on-surface">Color</label>
+<select class="w-full h-14 border-2 border-outline-variant rounded-lg px-4 text-body-md focus:border-primary focus:ring-0 transition-colors bg-surface">
+<option>Rosa Seda (E-01)</option>
+<option>Lila Escarlú (E-02)</option>
+<option>Dorado Elegance (E-03)</option>
+<option>Pizarra Suave (E-04)</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="space-y-2">
+<label class="block font-label-lg text-on-surface">Talla</label>
+<div class="flex gap-2">
+<button class="flex-1 h-14 border-2 border-primary bg-primary/5 text-primary font-bold rounded-lg transition-all" type="button">S</button>
+<button class="flex-1 h-14 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all" type="button">M</button>
+<button class="flex-1 h-14 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all" type="button">L</button>
+<button class="flex-1 h-14 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all" type="button">XL</button>
+</div>
+</div>
+<div class="md:col-span-2 space-y-2">
+<label class="block font-label-lg text-on-surface">Cantidad de Unidades</label>
+<div class="flex items-center">
+<button class="h-14 w-14 border-2 border-outline-variant border-r-0 rounded-l-lg flex items-center justify-center hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="w-full h-14 border-2 border-outline-variant text-center text-body-md focus:ring-0 focus:border-outline-variant bg-surface" type="number" value="100"/>
+<button class="h-14 w-14 border-2 border-outline-variant border-l-0 rounded-r-lg flex items-center justify-center hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</div>
+<div class="pt-4 flex gap-4">
+<button class="flex-1 h-14 bg-primary text-on-primary font-bold rounded-lg shadow-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">save</span>
+                                        Registrar Ingreso
+                                    </button>
+<button class="px-8 h-14 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary/5 transition-all">
+                                        Limpiar
+                                    </button>
+</div>
+</form>
+</div>
+<!-- Secondary visual element -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-gutter">
+<div class="bg-primary-container/20 p-6 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div>
+<p class="text-body-sm opacity-70">Último Ingreso</p>
+<p class="font-bold">VEST-SILK-001 (150 u.)</p>
+</div>
+</div>
+<div class="bg-secondary-container/20 p-6 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary text-on-secondary flex items-center justify-center">
+<span class="material-symbols-outlined">inventory</span>
+</div>
+<div>
+<p class="text-body-sm opacity-70">Stock Actual Central</p>
+<p class="font-bold">12,450 Unidades</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Pending Requests -->
+<div class="lg:col-span-5 flex flex-col h-full">
+<div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0px_4px_20px_rgba(116,84,117,0.08)] flex-1 flex flex-col border border-outline-variant/10">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Solicitudes Pendientes</h3>
+<span class="bg-tertiary text-on-tertiary text-label-md px-3 py-1 rounded-full">3 Alertas</span>
+</div>
+<div class="space-y-4 overflow-y-auto max-h-[600px] pr-2">
+<!-- Request Item 1 -->
+<div class="p-4 border-2 border-outline-variant/30 rounded-xl hover:border-primary/30 transition-all bg-surface/50 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-label-lg">Tienda: CC Real Plaza</p>
+<p class="text-body-sm text-on-surface-variant">Solicitado hace 20 min</p>
+</div>
+<span class="bg-secondary-container text-on-secondary-container text-[12px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Urgente</span>
+</div>
+<div class="bg-surface p-3 rounded-lg flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">styler</span>
+</div>
+<div>
+<p class="text-body-sm font-bold">Blusa Encaje Premium</p>
+<p class="text-[14px] text-on-surface-variant">Talla M - Color Marfil</p>
+</div>
+</div>
+<p class="font-headline-md text-primary">45 <span class="text-body-sm font-normal text-on-surface-variant">u.</span></p>
+</div>
+<div class="flex flex-wrap gap-2 pt-2 border-t border-outline-variant/20">
+<button class="flex-1 h-10 bg-primary text-on-primary text-label-md rounded flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span> Aprobar Despacho
+                                        </button>
+<button class="h-10 px-3 border border-primary text-primary rounded hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined">edit_note</span>
+</button>
+<button class="h-10 px-3 border border-error text-error rounded hover:bg-error/5 transition-all">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<!-- Request Item 2 -->
+<div class="p-4 border-2 border-outline-variant/30 rounded-xl hover:border-primary/30 transition-all bg-surface/50 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-label-lg">Tienda: San Isidro Boutique</p>
+<p class="text-body-sm text-on-surface-variant">Solicitado hace 2 horas</p>
+</div>
+<span class="bg-surface-container-high text-on-surface-variant text-[12px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Normal</span>
+</div>
+<div class="bg-surface p-3 rounded-lg flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">styler</span>
+</div>
+<div>
+<p class="text-body-sm font-bold">Pantalón Satín Gold</p>
+<p class="text-[14px] text-on-surface-variant">Talla S - Color Champagne</p>
+</div>
+</div>
+<p class="font-headline-md text-primary">12 <span class="text-body-sm font-normal text-on-surface-variant">u.</span></p>
+</div>
+<div class="flex flex-wrap gap-2 pt-2 border-t border-outline-variant/20">
+<button class="flex-1 h-10 bg-primary text-on-primary text-label-md rounded flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span> Aprobar Despacho
+                                        </button>
+<button class="h-10 px-3 border border-primary text-primary rounded hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined">edit_note</span>
+</button>
+<button class="h-10 px-3 border border-error text-error rounded hover:bg-error/5 transition-all">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<!-- Request Item 3 -->
+<div class="p-4 border-2 border-outline-variant/30 rounded-xl hover:border-primary/30 transition-all bg-surface/50 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-label-lg">Tienda: Outlet Sur</p>
+<p class="text-body-sm text-on-surface-variant">Solicitado hace 4 horas</p>
+</div>
+<span class="bg-tertiary-container text-on-tertiary-container text-[12px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Stock Bajo</span>
+</div>
+<div class="bg-surface p-3 rounded-lg flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">styler</span>
+</div>
+<div>
+<p class="text-body-sm font-bold">Vestido Noche Escarlú</p>
+<p class="text-[14px] text-on-surface-variant">Talla L - Color Rubí</p>
+</div>
+</div>
+<p class="font-headline-md text-primary">20 <span class="text-body-sm font-normal text-on-surface-variant">u.</span></p>
+</div>
+<div class="flex flex-wrap gap-2 pt-2 border-t border-outline-variant/20">
+<button class="flex-1 h-10 bg-primary text-on-primary text-label-md rounded flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span> Aprobar Despacho
+                                        </button>
+<button class="h-10 px-3 border border-primary text-primary rounded hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined">edit_note</span>
+</button>
+<button class="h-10 px-3 border border-error text-error rounded hover:bg-error/5 transition-all">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-4 text-primary font-bold hover:bg-surface-container transition-all flex items-center justify-center gap-2 border-t border-outline-variant/20">
+                                Ver todas las solicitudes
+                                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Visualization / Stats Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10 flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+<span class="font-bold text-label-lg">En tránsito hoy</span>
+</div>
+<div class="flex items-end justify-between">
+<span class="font-display-lg text-primary">08</span>
+<span class="text-body-sm text-on-surface-variant mb-2">Despachos realizados</span>
+</div>
+<div class="w-full bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10 flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">assignment_late</span>
+<span class="font-bold text-label-lg">Control de Calidad</span>
+</div>
+<div class="flex items-end justify-between">
+<span class="font-display-lg text-secondary">02</span>
+<span class="text-body-sm text-on-surface-variant mb-2">Lotes observados</span>
+</div>
+<div class="w-full bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[15%]"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10 flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">history_toggle_off</span>
+<span class="font-bold text-label-lg">Tiempo Promedio</span>
+</div>
+<div class="flex items-end justify-between">
+<span class="font-display-lg text-tertiary">45<span class="text-headline-md">m</span></span>
+<span class="text-body-sm text-on-surface-variant mb-2">Atención de pedidos</span>
+</div>
+<div class="w-full bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[45%]"></div>
+</div>
+</div>
+</section>
+</div>
+<!-- Contextual FAB (Shared Component logic) -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-primary text-on-primary rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center z-50 group">
+<span class="material-symbols-outlined text-[32px]">qr_code_scanner</span>
+<span class="absolute right-full mr-4 bg-inverse-surface text-inverse-on-surface px-4 py-2 rounded-lg text-label-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Escanear Lote</span>
+</button>
+</main>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Talla Selection logic
+            const sizeButtons = document.querySelectorAll('button[type="button"].border-outline-variant, button[type="button"].border-primary');
+            sizeButtons.forEach(btn => {
+                if (btn.innerText.length <= 2) { // Filtering size buttons specifically
+                    btn.addEventListener('click', () => {
+                        sizeButtons.forEach(b => {
+                            if (b.innerText.length <= 2) {
+                                b.classList.remove('border-primary', 'bg-primary/5', 'text-primary', 'font-bold');
+                                b.classList.add('border-outline-variant');
+                            }
+                        });
+                        btn.classList.add('border-primary', 'bg-primary/5', 'text-primary', 'font-bold');
+                        btn.classList.remove('border-outline-variant');
+                    });
+                }
+            });
+
+            // Notification alert simulation
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.addEventListener('mousedown', () => {
+                    btn.classList.add('scale-95');
+                });
+                btn.addEventListener('mouseup', () => {
+                    btn.classList.remove('scale-95');
+                });
+            });
+        });
+    </script>
+</body></html>

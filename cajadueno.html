@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ESCARLÚ - Dashboard de Administración</title>
+<script src="shared.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(200, 162, 200, 0.2);
+        }
+        body {
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#ecbaba",
+                        "on-primary-container": "#553757",
+                        "on-secondary-fixed": "#2f1314",
+                        "on-primary-fixed": "#2b112f",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "tertiary-fixed": "#ffe088",
+                        "surface-container-low": "#f6f3f2",
+                        "outline": "#7e747c",
+                        "outline-variant": "#cfc3cc",
+                        "on-primary-fixed-variant": "#5a3c5d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#513f00",
+                        "surface-container-high": "#eae7e7",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#c8a2c8",
+                        "on-surface": "#1c1b1b",
+                        "tertiary": "#735c00",
+                        "inverse-primary": "#e2bae1",
+                        "surface-dim": "#dcd9d9",
+                        "surface-tint": "#745475",
+                        "on-surface-variant": "#4c444b",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#e2bae1",
+                        "background": "#fcf9f8",
+                        "primary": "#745475",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-secondary-fixed-variant": "#613d3e",
+                        "inverse-surface": "#313030",
+                        "surface": "#fcf9f8",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "on-background": "#1c1b1b",
+                        "secondary-fixed": "#ffdad9",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fcf9f8",
+                        "on-error-container": "#93000a",
+                        "secondary": "#7b5455",
+                        "primary-fixed": "#ffd6fe",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#7a5354",
+                        "secondary-container": "#fecbcb",
+                        "surface-container": "#f0eded",
+                        "tertiary-container": "#cfaa32",
+                        "inverse-on-surface": "#f3f0ef"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-sm": "12px",
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "stack-lg": "48px",
+                        "container-padding": "40px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Libre Caslon Text"],
+                        "body-lg": ["\"Source Sans 3\""],
+                        "label-md": ["\"Source Sans 3\""],
+                        "label-lg": ["\"Source Sans 3\""],
+                        "body-sm": ["\"Source Sans 3\""],
+                        "body-md": ["\"Source Sans 3\""],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "headline-md": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen">
+<!-- Sidebar Section (Inyectado por shared.js) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-72 bg-background min-h-screen">
+<!-- Top Navigation Bar / Role Selector -->
+<header class="flex justify-between items-center w-full px-container-padding h-16 md:h-20 max-w-[1440px] mx-auto border-b border-primary/20 sticky top-0 bg-surface/90 backdrop-blur-md z-40">
+<div class="flex items-center gap-4">
+<div class="bg-primary-container/20 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">store</span>
+</div>
+<span class="font-label-lg text-label-lg text-primary font-bold">Administrador / Dueño</span>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="hidden md:flex bg-surface-container-high rounded-full px-6 py-2 items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 font-body-md text-body-md w-64" placeholder="Buscar transacción..." type="text"/>
+</div>
+<div class="flex gap-4">
+<button class="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
+<img class="w-full h-full object-cover" data-alt="Professional studio portrait of an elderly female administrator with a kind expression, wearing a stylish lilac blazer in a bright, modern office setting. The lighting is soft and professional, reflecting the functional elegance and premium textile theme of the brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLrMJVg1dpp40hiD_OYTvuKWKSGl_2qYmkxbQ8cqKO0wU7Zc0TDA9veedoq-o66nD13VrVuY8KzHNo45DLkvUbAYwokTgURIZIP-9K2CJepBQk5i1ziDNddWVkT21-GnFmLXlncmGCQhxPYOR3yRm3ppAYGzw2ideEGoiSMHlgvKo-ZZa_16MoI0zADEd9cpHnunZO-B7vY5dsrbVIcNFCZAJCUiNSkiKAjib1bMRY9YLV6aMVOow"/>
+</div>
+</div>
+</div>
+</header>
+<section class="p-container-padding max-w-[1440px] mx-auto">
+<!-- Dashboard Title & Date -->
+<div class="mb-stack-lg flex justify-between items-end">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary mb-2">Flujo de Caja</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant opacity-80">Resumen consolidado al 24 de Mayo, 2024</p>
+</div>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 px-6 py-3 border-2 border-primary text-primary font-label-lg text-label-lg rounded-xl hover:bg-primary-container/10 transition-colors">
+<span class="material-symbols-outlined">download</span>
+                        Exportar Reporte
+                    </button>
+</div>
+</div>
+<!-- Bento Grid - Financial Overview -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-stack-lg">
+<!-- Cash Card -->
+<div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-primary shadow-lg flex flex-col justify-between min-h-[220px]">
+<div class="flex justify-between items-start">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Efectivo Total</span>
+<div class="bg-primary/10 p-3 rounded-full">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+</div>
+<div>
+<h3 class="text-[40px] font-bold text-primary">S/ 12,450.00</h3>
+<p class="text-green-600 font-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+                            +12% vs ayer
+                        </p>
+</div>
+</div>
+<!-- Digital Card -->
+<div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-secondary-fixed shadow-lg flex flex-col justify-between min-h-[220px]">
+<div class="flex justify-between items-start">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Transferencias / Yape</span>
+<div class="bg-secondary-container/30 p-3 rounded-full">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">qr_code_2</span>
+</div>
+</div>
+<div>
+<h3 class="text-[40px] font-bold text-secondary">S/ 8,120.50</h3>
+<p class="text-green-600 font-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+                            +5.4% vs ayer
+                        </p>
+</div>
+</div>
+<!-- Total Consolidation -->
+<div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-tertiary-container shadow-lg flex flex-col justify-between min-h-[220px]">
+<div class="flex justify-between items-start">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Balance Total</span>
+<div class="bg-tertiary-container/20 p-3 rounded-full">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+</div>
+<div>
+<h3 class="text-[40px] font-bold text-tertiary">S/ 20,570.50</h3>
+<p class="text-on-surface-variant opacity-60 font-label-md">Consolidado de 5 sedes</p>
+</div>
+</div>
+</div>
+<!-- Verification Section & Transactions -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Yape Verification Panel -->
+<div class="lg:col-span-2 space-y-gutter">
+<div class="bg-white rounded-[2rem] p-stack-lg shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-center mb-stack-md">
+<h3 class="font-headline-md text-headline-md text-on-surface">Verificación de Yapes Pendientes</h3>
+<span class="bg-error-container text-on-error-container px-4 py-1 rounded-full font-label-md">4 Pendientes</span>
+</div>
+<!-- Verification List -->
+<div class="space-y-4">
+<!-- Verification Row -->
+<div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-surface-container transition-colors border border-transparent hover:border-primary/20">
+<div class="w-16 h-16 bg-primary-container rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl">image</span>
+</div>
+<div class="flex-1">
+<p class="font-label-lg text-label-lg">S/ 145.00 - Tienda Aviación</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ref: 29384 • Hace 5 min • Cliente: M. Salazar</p>
+</div>
+<div class="flex gap-2">
+<button class="px-6 py-3 bg-primary text-white rounded-xl font-label-lg text-label-lg hover:shadow-lg active:scale-95 transition-all min-h-[56px]">
+                                        Aprobar Yape
+                                    </button>
+<button class="w-14 h-14 flex items-center justify-center border-2 border-error text-error rounded-xl hover:bg-error/5 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<!-- Verification Row -->
+<div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-surface-container transition-colors border border-transparent hover:border-primary/20">
+<div class="w-16 h-16 bg-primary-container rounded-xl flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Macro close-up shot of a smartphone screen displaying a digital payment confirmation 'Yape' receipt for 85.50 Soles. The image is clean, sharp, and modern, using the soft lilac brand colors and high-end professional lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1AOAhO5b2yrsjL0Q9KKRC5wgStGuxmRHI1aFWd0AcpE3bDwwmWIjS4DGMmDEbpIBwVk7BBTg60Yh4OFTT_wXMsKEMW3ZAvBH-EGGLZhl77LYnGh6ycQLyj3ZdJW-gjc7Tufd1cCG07y5LCsbilceonpmOkEzAe5bJQITwFsLyajFDjcsWUTqADGHvvFXq4NJ0KH1WUG9LGXvUT6WY8Li69kbinZPU-r3iB4qkBa4ddZThXoinhyw"/>
+</div>
+<div class="flex-1">
+<p class="font-label-lg text-label-lg">S/ 85.50 - Almacén Central</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ref: 29382 • Hace 12 min • Cliente: J. Rivas</p>
+</div>
+<div class="flex gap-2">
+<button class="px-6 py-3 bg-primary text-white rounded-xl font-label-lg text-label-lg hover:shadow-lg active:scale-95 transition-all min-h-[56px]">
+                                        Aprobar Yape
+                                    </button>
+<button class="w-14 h-14 flex items-center justify-center border-2 border-error text-error rounded-xl hover:bg-error/5 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+</div>
+<button class="w-full mt-stack-md py-4 text-primary font-bold font-label-lg border-2 border-dashed border-primary/30 rounded-2xl hover:bg-primary/5 transition-colors">
+                            Ver historial de verificaciones
+                        </button>
+</div>
+<!-- Flow Visualization -->
+<div class="bg-white rounded-[2rem] p-stack-lg shadow-sm border border-outline-variant/30">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-md">Tendencia de Ingresos Diarios</h3>
+<div class="h-64 flex items-end gap-4 px-4">
+<!-- Simple Visual Chart Columns -->
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 60%;"></div>
+<div class="w-full bg-secondary-container rounded-b-lg" style="height: 20%;"></div>
+<span class="text-center font-label-md text-[12px] mt-2">Lun</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 45%;"></div>
+<div class="w-full bg-secondary-container rounded-b-lg" style="height: 35%;"></div>
+<span class="text-center font-label-md text-[12px] mt-2">Mar</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 80%;"></div>
+<div class="w-full bg-secondary-container rounded-b-lg" style="height: 15%;"></div>
+<span class="text-center font-label-md text-[12px] mt-2">Mie</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 70%;"></div>
+<div class="w-full bg-secondary-container rounded-b-lg" style="height: 20%;"></div>
+<span class="text-center font-label-md text-[12px] mt-2">Jue</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 90%;"></div>
+<div class="w-full bg-secondary-container rounded-b-lg" style="height: 10%;"></div>
+<span class="text-center font-label-md text-[12px] mt-2">Vie</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side Information Column -->
+<div class="lg:col-span-1 space-y-gutter">
+<!-- Stores Summary -->
+<div class="bg-white rounded-[2rem] p-stack-lg shadow-sm border border-outline-variant/30">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-md">Cierres de Tienda</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-green-50 rounded-2xl">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="font-label-lg">Santa Lucía</span>
+</div>
+<span class="font-bold">Cerrado</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-tertiary-container/10 rounded-2xl">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="font-label-lg">Gen. Suplex</span>
+</div>
+<span class="font-bold text-tertiary">En Proceso</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-2xl">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-label-lg">Aviación</span>
+</div>
+<span class="font-bold opacity-40">Abierto</span>
+</div>
+</div>
+</div>
+<!-- Visual Accent Card -->
+<div class="relative overflow-hidden rounded-[2rem] aspect-square shadow-xl group">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent z-10"></div>
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A beautiful, high-resolution aesthetic shot of folded premium textile fabrics in shades of lilac, soft pink, and white. The fabrics are stacked neatly in a sunlit boutique studio, creating a sense of luxury and professionalism that matches the ESCARLÚ brand identity. The lighting is ethereal and bright." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgL7yHxcetOra3qDnOQBbtE9NJT_U2xv8aWnd5kMwdrm0SRmDrDRjQDXFHzy6KnkzzgS6qNZQvEqCtI-3qf4FtgaWQjErjeT8tfQTgmPoJXPT2m0HyrfsNeZBwy3OgG9ttR4OGzbsqCW02JNZeIwV1clIrhwgMQx2Kya82T6GEHx0MVOPDCNF9YrZ4cAJljC3QWzM0iZNcyUM5xhVWilYr338F7c6sJH_XtMolaantbCyyF3dg4qs"/>
+<div class="absolute bottom-8 left-8 z-20 text-white">
+<p class="font-label-md opacity-80 uppercase tracking-widest mb-1">Stock de Temporada</p>
+<h4 class="font-headline-md text-white">Seda &amp; Lino Premium</h4>
+<button class="mt-4 px-6 py-2 bg-white/20 backdrop-blur-md rounded-full font-label-md border border-white/30 hover:bg-white/40 transition-colors">
+                                Gestionar Inventario
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button - Only for Primary Actions -->
+<button class="fixed bottom-10 right-10 w-20 h-20 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined text-4xl group-hover:rotate-90 transition-transform duration-300">add</span>
+<span class="absolute right-full mr-4 bg-white text-primary px-4 py-2 rounded-xl shadow-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Nuevo Egreso / Gasto</span>
+</button>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const text = this.innerText;
+                if(text.includes('Aprobar')) {
+                    this.closest('.flex.items-center.gap-4').style.opacity = '0.5';
+                    this.closest('.flex.items-center.gap-4').style.pointerEvents = 'none';
+                    this.innerHTML = '<span class="material-symbols-outlined">check</span> Aprobado';
+                    this.classList.remove('bg-primary');
+                    this.classList.add('bg-green-600');
+                }
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        if(searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('ring-2', 'ring-primary/30');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('ring-2', 'ring-primary/30');
+            });
+        }
+    </script>
+</body></html>

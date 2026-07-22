@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ESCARLÚ - Simulación de Trazo y Corte</title>
+<script src="shared.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Sans+3:ital,wght@0,200..900;1,200..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#fcf9f8",
+                        "on-primary-fixed": "#2b112f",
+                        "secondary-fixed-dim": "#ecbaba",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "on-tertiary-container": "#513f00",
+                        "primary": "#745475",
+                        "tertiary-fixed": "#ffe088",
+                        "secondary-container": "#fecbcb",
+                        "background": "#fcf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "surface-bright": "#fcf9f8",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#f0eded",
+                        "on-secondary-container": "#7a5354",
+                        "outline-variant": "#cfc3cc",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1c1b1b",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "outline": "#7e747c",
+                        "on-surface": "#1c1b1b",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffdad9",
+                        "on-primary-fixed-variant": "#5a3c5d",
+                        "tertiary": "#735c00",
+                        "secondary": "#7b5455",
+                        "primary-container": "#c8a2c8",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary-container": "#cfaa32",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#613d3e",
+                        "primary-fixed-dim": "#e2bae1",
+                        "on-secondary-fixed": "#2f1314",
+                        "on-primary-container": "#553757",
+                        "on-surface-variant": "#4c444b",
+                        "inverse-primary": "#e2bae1",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-surface": "#313030",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#745475",
+                        "primary-fixed": "#ffd6fe",
+                        "surface-container-high": "#eae7e7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "40px",
+                        "stack-lg": "48px",
+                        "unit": "8px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["\"Source Sans 3\""],
+                        "label-lg": ["\"Source Sans 3\""],
+                        "headline-md": ["Libre Caslon Text"],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "display-lg": ["Libre Caslon Text"],
+                        "body-sm": ["\"Source Sans 3\""],
+                        "label-md": ["\"Source Sans 3\""],
+                        "body-lg": ["\"Source Sans 3\""]
+                    },
+                    "fontSize": {
+                        "body-md": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-lg": ["18px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-sm": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-md": ["16px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-lg": ["20px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles to handle specific visual requirements not covered by utilities */
+        .fabric-canvas-shadow {
+            box-shadow: 0px 4px 20px rgba(200, 162, 200, 0.15); /* Soft Lilac shadow */
+        }
+        .active-top-border {
+            border-top: 2px solid #cfaa32; /* Tertiary Container / Gold accent */
+        }
+        .focus-ring-lilac:focus {
+            box-shadow: 0 0 0 4px rgba(200, 162, 200, 0.4);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- SideNavBar (Inyectado por shared.js) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
+<!-- Main Content Area -->
+<main class="md:ml-72 min-h-screen bg-background">
+<!-- TopNavBar (Visible on all screens, adjusting layout) -->
+<header class="bg-surface sticky top-0 z-10 shadow-sm border-b-2 border-primary flex justify-between items-center w-full px-container-padding h-14 md:h-16 max-w-[1440px] mx-auto">
+<!-- Mobile Menu Toggle & Brand (Visible on Mobile) -->
+<div class="flex items-center md:hidden gap-4">
+<button class="text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors duration-200 rounded-full cursor-pointer active:scale-95 focus-ring-lilac">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-headline-lg text-headline-lg font-bold text-primary">ESCARLÚ</span>
+</div>
+<!-- Empty div to push trailing actions to the right on desktop, or search bar placeholder -->
+<div class="hidden md:flex items-center text-primary gap-2">
+<span class="font-label-lg text-label-lg font-bold">Simulación de Trazo y Corte</span>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-2">
+<button aria-label="Notifications" class="text-primary p-2 rounded-full hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac flex items-center justify-center min-h-[48px] min-w-[48px]">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button aria-label="Settings" class="text-primary p-2 rounded-full hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac flex items-center justify-center min-h-[48px] min-w-[48px]">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 ml-2 rounded-full overflow-hidden border border-outline-variant bg-surface-container">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a senior female administrator in a brightly lit modern studio setting. The lighting is soft and flattering, emphasizing a dignified and experienced persona. She wears a clean, tailored dark blazer over a light blouse. The background is a very subtle, out-of-focus pristine white studio wall, aligning with a high-end corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+</div>
+</div>
+</header>
+<!-- Canvas Area -->
+<main class="flex-1 p-container-padding max-w-[1440px] mx-auto w-full flex flex-col gap-stack-md">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface mb-2">Simulación de Trazo y Corte</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Visualice la distribución óptima de piezas de polo sobre el rollo de tela seleccionado. Ajuste parámetros para maximizar el aprovechamiento del material.</p>
+</div>
+<button class="bg-primary text-on-primary font-label-lg text-label-lg px-8 py-4 rounded-lg min-h-[56px] flex items-center justify-center gap-2 shadow-sm hover:bg-on-primary-fixed-variant transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac w-full md:w-auto">
+<span class="material-symbols-outlined" data-weight="fill">play_circle</span>
+                    Ejecutar Optimización
+                </button>
+</div>
+<!-- Bento Grid Layout for Dashboard Elements -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter flex-1">
+<!-- Main Canvas (Visual Interactive Workspace) -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-6 flex flex-col active-top-border min-h-[500px]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-label-lg text-label-lg text-on-surface">Lienzo de Trazo (Rollo: Algodón Pima 30/1)</h3>
+<div class="flex gap-2">
+<button class="text-on-surface-variant p-2 rounded hover:bg-surface-container transition-colors focus-ring-lilac" title="Zoom In"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="text-on-surface-variant p-2 rounded hover:bg-surface-container transition-colors focus-ring-lilac" title="Zoom Out"><span class="material-symbols-outlined">zoom_out</span></button>
+</div>
+</div>
+<!-- Decorative Representation of Fabric Roll and Cut Pieces -->
+<div class="flex-1 border-2 border-dashed border-outline-variant rounded bg-surface-container-low relative overflow-hidden flex items-center justify-center">
+<!-- Simulated Fabric Texture Background -->
+<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#745475_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<!-- Simulated Pieces -->
+<div class="relative w-full max-w-2xl h-full py-8 flex flex-wrap gap-2 content-start justify-center p-4">
+<!-- Placeholder SVG shapes for pattern pieces, using primary-container for visibility -->
+<div class="w-32 h-48 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Delantero</div>
+<div class="w-32 h-48 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Espalda</div>
+<div class="w-20 h-32 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Manga D.</div>
+<div class="w-20 h-32 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Manga I.</div>
+<div class="w-40 h-16 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Cuello</div>
+<div class="w-32 h-48 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Delantero 2</div>
+</div>
+</div>
+</div>
+<!-- Metrics & Controls Sidebar -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Giant Numerical Indicators -->
+<div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-8 flex flex-col gap-6 active-top-border">
+<div>
+<p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider mb-2">% Tela Aprovechada</p>
+<div class="flex items-baseline gap-2 text-tertiary-container">
+<span class="font-display-lg text-display-lg font-bold">85.4</span>
+<span class="font-headline-md text-headline-md">%</span>
+</div>
+<!-- Simple Progress Bar -->
+<div class="w-full bg-surface-container h-3 rounded-full mt-4 overflow-hidden">
+<div class="bg-tertiary-container h-full rounded-full" style="width: 85.4%;"></div>
+</div>
+</div>
+<div class="border-t border-outline-variant pt-6">
+<p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider mb-2">% Merma / Desperdicio</p>
+<div class="flex items-baseline gap-2 text-error">
+<span class="font-display-lg text-display-lg font-bold">14.6</span>
+<span class="font-headline-md text-headline-md">%</span>
+</div>
+</div>
+</div>
+<!-- Configuration Parameters -->
+<div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-6 flex flex-col gap-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Parámetros de Trazo</h3>
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface">Ancho de Tela (Metros)</label>
+<input aria-label="Ancho de Tela" class="border border-outline-variant rounded bg-surface p-3 font-body-lg text-body-lg text-on-surface focus-ring-lilac h-[56px]" type="text" value="1.60"/>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<label class="font-label-lg text-label-lg text-on-surface">Tallas a Trazar</label>
+<div class="flex flex-wrap gap-2">
+<span class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-md text-label-md flex items-center gap-1 cursor-pointer">S <span class="material-symbols-outlined text-sm">close</span></span>
+<span class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-md text-label-md flex items-center gap-1 cursor-pointer">M <span class="material-symbols-outlined text-sm">close</span></span>
+<span class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-md text-label-md flex items-center gap-1 cursor-pointer">L <span class="material-symbols-outlined text-sm">close</span></span>
+<button class="border border-dashed border-primary text-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors focus-ring-lilac">+ Añadir</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

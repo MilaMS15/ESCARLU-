@@ -109,57 +109,85 @@
         }
       }
     </script>
+    <!-- Script de lógica común -->
+    <script src="shared.js"></script>
 </head>
-<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center p-container-padding antialiased">
+<body class="bg-surface text-on-surface h-screen overflow-hidden flex items-center justify-center p-4 antialiased">
 <!-- Main Container -->
-<main class="w-full max-w-[600px] mx-auto bg-surface-container-lowest rounded-xl shadow-lilac-soft border-t-2 border-primary-container p-stack-lg md:p-[64px] flex flex-col gap-stack-lg">
-<!-- Header / Logo -->
-<header class="text-center flex flex-col items-center gap-stack-sm">
-<h1 class="font-display-lg text-display-lg text-primary tracking-tight">ESCARLÚ</h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant">Acceso al Sistema de Gestión</p>
-</header>
-<!-- Login Form -->
-<form action="#" class="flex flex-col gap-stack-md" method="POST">
-<!-- Email Field -->
-<div class="flex flex-col gap-unit">
-<label class="font-label-lg text-label-lg text-on-surface flex items-center gap-2" for="email">
-<span aria-hidden="true" class="material-symbols-outlined text-outline">mail</span>
-                    Correo electrónico
-                </label>
-<input aria-required="true" class="h-[56px] w-full px-4 rounded-lg border-2 border-outline-variant bg-surface-bright font-body-lg text-body-lg text-on-surface placeholder-outline focus:border-primary-container focus:ring-4 focus:ring-primary-container/30 transition-shadow outline-none" id="email" name="email" placeholder="ejemplo@correo.com" required="" type="email"/>
-</div>
-<!-- Password Field -->
-<div class="flex flex-col gap-unit">
-<label class="font-label-lg text-label-lg text-on-surface flex items-center gap-2" for="password">
-<span aria-hidden="true" class="material-symbols-outlined text-outline">lock</span>
-                    Contraseña
-                </label>
-<input aria-required="true" class="h-[56px] w-full px-4 rounded-lg border-2 border-outline-variant bg-surface-bright font-body-lg text-body-lg text-on-surface placeholder-outline focus:border-primary-container focus:ring-4 focus:ring-primary-container/30 transition-shadow outline-none" id="password" name="password" placeholder="Ingrese su contraseña" required="" type="password"/>
-</div>
-<!-- Forgot Password Link -->
-<div class="flex justify-end pt-unit">
-<a class="font-body-lg text-body-lg text-primary font-semibold hover:text-on-primary-container hover:underline underline-offset-4 decoration-2 transition-colors focus:outline-none focus:ring-4 focus:ring-primary-container/30 rounded" href="#">
-                    ¿Olvidó su contraseña?
-                </a>
-</div>
-<!-- Primary Action -->
-<button class="mt-stack-sm h-[56px] w-full bg-primary-container text-on-primary font-label-lg text-label-lg font-bold rounded-lg hover:bg-on-primary-container transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-primary-container/50 shadow-sm flex items-center justify-center gap-2" type="submit">
-                Iniciar Sesión
-                <span aria-hidden="true" class="material-symbols-outlined">login</span>
-</button>
-</form>
-<!-- Divider -->
-<div class="relative flex items-center py-stack-sm">
-<div class="flex-grow border-t border-outline-variant"></div>
-<span class="flex-shrink-0 mx-4 font-body-md text-body-md text-on-surface-variant">o si es un nuevo usuario</span>
-<div class="flex-grow border-t border-outline-variant"></div>
-</div>
-<!-- Secondary Action -->
-<div class="flex flex-col">
-<a class="h-[56px] w-full border-2 border-primary-container text-on-surface font-label-lg text-label-lg rounded-lg hover:bg-surface-container-low transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-primary-container/30 flex items-center justify-center gap-2" href="#">
-                Registrarse
-                <span aria-hidden="true" class="material-symbols-outlined">person_add</span>
-</a>
-</div>
+<main class="w-full max-w-[460px] bg-surface-container-lowest rounded-2xl shadow-lilac-soft border-t-4 border-primary-container p-6 md:p-8 flex flex-col gap-4">
+    <!-- Header / Logo -->
+    <header class="text-center flex flex-col items-center gap-2">
+        <div class="w-20 h-20 rounded-2xl bg-white overflow-hidden shadow-sm border border-outline-variant flex items-center justify-center p-1">
+            <img src="logo.jpeg" alt="Escarlú Logo" class="object-contain w-full h-full" onerror="this.src='https://placehold.co/100x100?text=ESCARL%C3%9A'"/>
+        </div>
+        <h1 class="font-display-lg text-2xl md:text-3xl text-primary tracking-tight font-bold leading-none mt-1">ESCARLÚ</h1>
+        <p class="font-body-md text-sm text-on-surface-variant font-medium">Sistema de Gestión Centralizada</p>
+    </header>
+
+    <!-- Error Message Banner -->
+    <div id="login-error" class="hidden text-error text-xs font-body-sm text-center bg-error-container text-on-error-container p-2.5 rounded-lg border border-error"></div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="flex flex-col gap-3.5">
+        <!-- Email Field -->
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-xs md:text-sm font-bold text-on-surface flex items-center gap-1.5" for="email">
+                <span aria-hidden="true" class="material-symbols-outlined text-[18px] text-outline">mail</span>
+                Correo electrónico
+            </label>
+            <input aria-required="true" class="h-[46px] w-full px-4 rounded-xl border border-outline-variant bg-surface-bright font-body-md text-sm text-on-surface placeholder-outline focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none" id="email" name="email" placeholder="ejemplo@correo.com" required="" type="email"/>
+        </div>
+        <!-- Password Field -->
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-xs md:text-sm font-bold text-on-surface flex items-center gap-1.5" for="password">
+                <span aria-hidden="true" class="material-symbols-outlined text-[18px] text-outline">lock</span>
+                Contraseña
+            </label>
+            <input aria-required="true" class="h-[46px] w-full px-4 rounded-xl border border-outline-variant bg-surface-bright font-body-md text-sm text-on-surface placeholder-outline focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none" id="password" name="password" placeholder="Ingrese su contraseña" required="" type="password"/>
+        </div>
+        <!-- Forgot Password Link -->
+        <div class="flex justify-end">
+            <a class="font-body-sm text-xs text-primary font-semibold hover:text-on-primary-fixed-variant hover:underline transition-colors focus:outline-none" href="#" onclick="alert('Por favor solicite el restablecimiento de su contraseña al Administrador del sistema.'); return false;">
+                ¿Olvidó su contraseña?
+            </a>
+        </div>
+        <!-- Primary Action -->
+        <button class="mt-1 h-[48px] w-full bg-primary-container text-on-primary-container font-label-md text-sm font-bold rounded-xl hover:bg-primary hover:text-on-primary transition-all duration-200 focus:outline-none shadow-sm flex items-center justify-center gap-2" type="submit">
+            Iniciar Sesión
+            <span aria-hidden="true" class="material-symbols-outlined text-[20px]">login</span>
+        </button>
+    </form>
+
+    <!-- Info Note (No public registration) -->
+    <div class="border-t border-outline-variant pt-3 text-center">
+        <p class="font-body-sm text-xs text-on-surface-variant font-medium bg-surface-container-low p-2.5 rounded-xl border border-outline-variant leading-tight">
+            ¿No tienes cuenta? <br>
+            <span class="text-primary font-bold">Solicita tus accesos al Administrador.</span>
+        </p>
+    </div>
 </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("login-form");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const errorDiv = document.getElementById("login-error");
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            const result = login(email, password);
+            if (result.success) {
+                // Reconoce automáticamente el rol y redirige a la vista correspondiente
+                redirectToDefaultPage(result.user);
+            } else {
+                errorDiv.textContent = result.message;
+                errorDiv.classList.remove("hidden");
+            }
+        });
+    });
+</script>
 </body></html>
