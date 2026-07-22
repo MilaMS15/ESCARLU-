@@ -1,83 +1,306 @@
 // Base de datos simulada y utilidades compartidas - ESCARLÚ
 
-// Datos iniciales si no existen en localStorage
+let supabaseClient = null;
+
+// Cargar dinámicamente dependencias de Supabase y config.js
+(function() {
+    // 1. Cargar Supabase CDN
+    if (!window.supabase) {
+        const scriptSupa = document.createElement('script');
+        scriptSupa.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+        scriptSupa.async = false;
+        document.head.appendChild(scriptSupa);
+    }
+    
+    // 2. Cargar config.js
+    const scriptConfig = document.createElement('script');
+    scriptConfig.src = "config.js";
+    scriptConfig.async = false;
+    document.head.appendChild(scriptConfig);
+})();
+
+function getSupabaseClient() {
+    if (!supabaseClient && window.supabase && typeof SUPABASE_URL !== 'undefined') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+    return supabaseClient;
+}
+
+// Interceptar setItem para sincronizar LocalStorage -> Supabase
+const originalSetItem = localStorage.setItem;
+localStorage.setItem = function(key, value) {
+    originalSetItem.apply(this, arguments);
+    const client = getSupabaseClient();
+    if (!client) return;
+
+    if (key === 'escarlu_inventory') {
+        syncInventoryToSupabase(JSON.parse(value));
+    } else if (key === 'escarlu_sales') {
+        syncSalesToSupabase(JSON.parse(value));
+    } else if (key === 'escarlu_requests') {
+        syncRequestsToSupabase(JSON.parse(value));
+    } else if (key === 'escarlu_expenses') {
+        syncExpensesToSupabase(JSON.parse(value));
+    }
+};
+
+async function syncInventoryToSupabase(localInv) {
+    const client = getSupabaseClient();
+    if (!client) return;
+    for (const [storeId, models] of Object.entries(localInv)) {
+        for (const [modelId, colors] of Object.entries(models)) {
+            for (const [colorId, sizes] of Object.entries(colors)) {
+                for (const [sizeName, qty] of Object.entries(sizes)) {
+                    const tallaId = TALLA_KEYS[sizeName];
+                    if (!tallaId) continue;
+                    const stockId = `STK-${storeId}-${modelId}-${colorId}-${tallaId}`.slice(0, 15);
+                    await client.from('stock').upsert({
+                        id_stock: stockId,
+                        id_sede: storeId,
+                        id_modelo: modelId,
+                        id_color: colorId,
+                        id_talla: tallaId,
+                        cantidad: qty,
+                        ultima_actualizacion: new Date().toISOString()
+                    });
+                }
+            }
+        }
+    }
+}
+
+async function syncRequestsToSupabase(localReqs) {
+    const client = getSupabaseClient();
+    if (!client) return;
+    for (const req of localReqs) {
+        const tallaId = TALLA_KEYS[req.size] || 'TAL-03';
+        await client.from('solicitudes_traspaso').upsert({
+            id_solicitud: req.id,
+            tipo: req.type === 'reposicion' ? 'reposición' : 'traspaso',
+            id_sede_origen: req.origin === 'central' ? 'ALM-01' : req.origin,
+            id_sede_destino: req.destination,
+            id_modelo: req.model,
+            id_color: req.color,
+            id_talla: tallaId,
+            cantidad: req.qty,
+            estado: req.status,
+            fecha_solicitud: req.date
+        });
+    }
+}
+
+async function syncSalesToSupabase(localSales) {
+    const client = getSupabaseClient();
+    if (!client) return;
+    const user = getCurrentUser();
+    for (const sale of localSales) {
+        const userId = user ? user.id_usuario : 'USR-03';
+        await client.from('ventas').upsert({
+            id_venta: sale.id,
+            id_sede: sale.storeId,
+            id_usuario: userId,
+            fecha_hora: sale.date,
+            monto_total: sale.amount,
+            metodo_pago: sale.method,
+            estado: sale.status,
+            referencia: sale.reference
+        });
+    }
+}
+
+async function syncExpensesToSupabase(localExpenses) {
+    const client = getSupabaseClient();
+    if (!client) return;
+    for (const exp of localExpenses) {
+        await client.from('gastos').upsert({
+            id_gasto: exp.id,
+            descripcion: exp.description,
+            categoria: exp.category === 'fabricacion' ? 'fabricación' : exp.category,
+            monto: exp.amount,
+            fecha: exp.date,
+            id_sede: exp.storeId || 'CTR-01'
+        });
+    }
+}
+
+async function downloadFromSupabase() {
+    const client = getSupabaseClient();
+    if (!client) return;
+
+    // 1. Download Stock
+    const { data: stockData } = await client.from('stock').select('*');
+    if (stockData) {
+        const inventory = {};
+        stockData.forEach(row => {
+            const storeId = row.id_sede;
+            const modelId = row.id_modelo;
+            const colorId = row.id_color;
+            const sizeName = TALLA_NAMES[row.id_talla];
+            if (!sizeName) return;
+
+            if (!inventory[storeId]) inventory[storeId] = {};
+            if (!inventory[storeId][modelId]) inventory[storeId][modelId] = {};
+            if (!inventory[storeId][modelId][colorId]) inventory[storeId][modelId][colorId] = {};
+            inventory[storeId][modelId][colorId][sizeName] = row.cantidad;
+        });
+        originalSetItem.call(localStorage, 'escarlu_inventory', JSON.stringify(inventory));
+    }
+
+    // 2. Download Sales
+    const { data: salesData } = await client.from('ventas').select('*');
+    if (salesData) {
+        const sales = salesData.map(row => ({
+            id: row.id_venta,
+            storeId: row.id_sede,
+            amount: parseFloat(row.monto_total),
+            method: row.metodo_pago,
+            status: row.estado,
+            reference: row.referencia || "",
+            client: row.client || "Cliente General",
+            date: row.fecha_hora
+        }));
+        originalSetItem.call(localStorage, 'escarlu_sales', JSON.stringify(sales));
+    }
+
+    // 3. Download Requests
+    const { data: reqsData } = await client.from('solicitudes_traspaso').select('*');
+    if (reqsData) {
+        const reqs = reqsData.map(row => ({
+            id: row.id_solicitud,
+            type: row.tipo === 'reposición' ? 'reposicion' : 'traspaso',
+            origin: row.id_sede_origen,
+            destination: row.id_sede_destino,
+            model: row.id_modelo,
+            color: row.id_color,
+            size: TALLA_NAMES[row.id_talla] || 'M',
+            qty: row.cantidad,
+            status: row.estado,
+            date: row.fecha_solicitud
+        }));
+        originalSetItem.call(localStorage, 'escarlu_requests', JSON.stringify(reqs));
+    }
+
+    // 4. Download Expenses
+    const { data: expData } = await client.from('gastos').select('*');
+    if (expData) {
+        const expenses = expData.map(row => ({
+            id: row.id_gasto,
+            description: row.descripcion,
+            category: row.categoria === 'fabricación' ? 'fabricacion' : row.categoria,
+            amount: parseFloat(row.monto),
+            date: row.fecha,
+            storeId: row.id_sede
+        }));
+        originalSetItem.call(localStorage, 'escarlu_expenses', JSON.stringify(expenses));
+    }
+
+    // Dispatch StorageEvent to trigger window refresh listeners across pages
+    window.dispatchEvent(new Event('storage'));
+}
+
 const DEFAULT_INVENTORY = {
     // Almacén Central
-    "central": {
-        "classic": { "blanco": { "S": 5, "M": 15, "L": 8, "XL": 5 }, "marino": { "S": 20, "M": 30, "L": 25, "XL": 15 }, "rosa": { "S": 12, "M": 18, "L": 14, "XL": 8 }, "lila": { "S": 25, "M": 12, "L": 18, "XL": 10 } },
-        "slim": { "blanco": { "S": 15, "M": 20, "L": 18, "XL": 12 }, "marino": { "S": 10, "M": 15, "L": 8, "XL": 4 }, "rosa": { "S": 22, "M": 25, "L": 20, "XL": 10 }, "lila": { "S": 15, "M": 18, "L": 12, "XL": 8 } },
-        "sport": { "blanco": { "S": 30, "M": 35, "L": 25, "XL": 20 }, "marino": { "S": 25, "M": 30, "L": 20, "XL": 15 }, "rosa": { "S": 8, "M": 12, "L": 10, "XL": 5 }, "lila": { "S": 14, "M": 16, "L": 12, "XL": 8 } },
-        "premium": { "blanco": { "S": 8, "M": 10, "L": 6, "XL": 4 }, "marino": { "S": 12, "M": 14, "L": 10, "XL": 6 }, "rosa": { "S": 5, "M": 8, "L": 4, "XL": 2 }, "lila": { "S": 10, "M": 12, "L": 8, "XL": 4 } }
+    "ALM-01": {
+        "MOD-001": { "COL-01": { "S": 35, "M": 0, "L": 0, "XL": 0 } }
     },
-    // Tienda 1: San Isidro
-    "tienda_1": {
-        "classic": { "blanco": { "S": 8, "M": 10, "L": 5, "XL": 3 }, "marino": { "S": 12, "M": 15, "L": 10, "XL": 6 }, "rosa": { "S": 5, "M": 8, "L": 4, "XL": 2 }, "lila": { "S": 10, "M": 8, "L": 6, "XL": 4 } },
-        "slim": { "blanco": { "S": 6, "M": 8, "L": 5, "XL": 3 }, "marino": { "S": 8, "M": 10, "L": 6, "XL": 4 }, "rosa": { "S": 10, "M": 12, "L": 8, "XL": 5 }, "lila": { "S": 8, "M": 10, "L": 6, "XL": 4 } },
-        "sport": { "blanco": { "S": 15, "M": 20, "L": 15, "XL": 10 }, "marino": { "S": 12, "M": 15, "L": 10, "XL": 8 }, "rosa": { "S": 4, "M": 6, "L": 4, "XL": 2 }, "lila": { "S": 6, "M": 8, "L": 5, "XL": 3 } },
-        "premium": { "blanco": { "S": 4, "M": 5, "L": 3, "XL": 2 }, "marino": { "S": 6, "M": 8, "L": 5, "XL": 3 }, "rosa": { "S": 2, "M": 4, "L": 2, "XL": 1 }, "lila": { "S": 5, "M": 6, "L": 4, "XL": 2 } }
+    // Tienda Santa Lucía
+    "TDA-01": {
+        "MOD-002": { "COL-02": { "S": 0, "M": 0, "L": 0, "XL": 0 } }
     },
-    // Tienda 2: Miraflores
-    "tienda_2": {
-        "classic": { "blanco": { "S": 6, "M": 8, "L": 4, "XL": 2 }, "marino": { "S": 10, "M": 12, "L": 8, "XL": 5 }, "rosa": { "S": 4, "M": 6, "L": 3, "XL": 1 }, "lila": { "S": 8, "M": 6, "L": 4, "XL": 2 } },
-        "slim": { "blanco": { "S": 5, "M": 6, "L": 4, "XL": 2 }, "marino": { "S": 6, "M": 8, "L": 4, "XL": 2 }, "rosa": { "S": 8, "M": 10, "L": 6, "XL": 3 }, "lila": { "S": 6, "M": 8, "L": 5, "XL": 3 } },
-        "sport": { "blanco": { "S": 10, "M": 12, "L": 8, "XL": 6 }, "marino": { "S": 8, "M": 10, "L": 6, "XL": 4 }, "rosa": { "S": 3, "M": 4, "L": 3, "XL": 1 }, "lila": { "S": 4, "M": 6, "L": 4, "XL": 2 } },
-        "premium": { "blanco": { "S": 3, "M": 4, "L": 2, "XL": 1 }, "marino": { "S": 4, "M": 6, "L": 3, "XL": 2 }, "rosa": { "S": 1, "M": 2, "L": 1, "XL": 0 }, "lila": { "S": 3, "M": 4, "L": 3, "XL": 1 } }
+    // Tienda Generales Suplex
+    "TDA-02": {
+        "MOD-003": { "COL-03": { "S": 0, "M": 50, "L": 0, "XL": 0 } }
     },
-    // Tienda 3: Surco
-    "tienda_3": {
-        "classic": { "blanco": { "S": 5, "M": 6, "L": 3, "XL": 2 }, "marino": { "S": 8, "M": 10, "L": 6, "XL": 4 }, "rosa": { "S": 3, "M": 4, "L": 2, "XL": 1 }, "lila": { "S": 6, "M": 5, "L": 3, "XL": 2 } },
-        "slim": { "blanco": { "S": 4, "M": 5, "L": 3, "XL": 1 }, "marino": { "S": 5, "M": 6, "L": 3, "XL": 2 }, "rosa": { "S": 6, "M": 8, "L": 5, "XL": 2 }, "lila": { "S": 5, "M": 6, "L": 4, "XL": 2 } },
-        "sport": { "blanco": { "S": 8, "M": 10, "L": 6, "XL": 4 }, "marino": { "S": 6, "M": 8, "L": 5, "XL": 3 }, "rosa": { "S": 2, "M": 3, "L": 2, "XL": 1 }, "lila": { "S": 3, "M": 4, "L": 3, "XL": 1 } },
-        "premium": { "blanco": { "S": 2, "M": 3, "L": 1, "XL": 0 }, "marino": { "S": 3, "M": 4, "L": 2, "XL": 1 }, "rosa": { "S": 1, "M": 1, "L": 1, "XL": 0 }, "lila": { "S": 2, "M": 3, "L": 2, "XL": 1 } }
+    // Tienda Generales Pasadizo
+    "TDA-03": {
+        "MOD-004": { "COL-04": { "S": 0, "M": 0, "L": 40, "XL": 0 } }
     },
-    // Tienda 4: La Molina
-    "tienda_4": {
-        "classic": { "blanco": { "S": 7, "M": 8, "L": 4, "XL": 3 }, "marino": { "S": 10, "M": 12, "L": 8, "XL": 5 }, "rosa": { "S": 4, "M": 5, "L": 3, "XL": 2 }, "lila": { "S": 8, "M": 7, "L": 5, "XL": 3 } },
-        "slim": { "blanco": { "S": 5, "M": 7, "L": 4, "XL": 2 }, "marino": { "S": 6, "M": 8, "L": 5, "XL": 3 }, "rosa": { "S": 8, "M": 9, "L": 6, "XL": 3 }, "lila": { "S": 6, "M": 7, "L": 5, "XL": 3 } },
-        "sport": { "blanco": { "S": 10, "M": 12, "L": 8, "XL": 5 }, "marino": { "S": 8, "M": 10, "L": 6, "XL": 4 }, "rosa": { "S": 3, "M": 4, "L": 3, "XL": 1 }, "lila": { "S": 5, "M": 6, "L": 4, "XL": 2 } },
-        "premium": { "blanco": { "S": 3, "M": 4, "L": 2, "XL": 1 }, "marino": { "S": 4, "M": 5, "L": 3, "XL": 2 }, "rosa": { "S": 1, "M": 2, "L": 1, "XL": 0 }, "lila": { "S": 3, "M": 4, "L": 2, "XL": 1 } }
+    // Tienda Aviación
+    "TDA-04": {
+        "MOD-005": { "COL-05": { "S": 0, "M": 0, "L": 0, "XL": 45 } }
     }
 };
 
 const DEFAULT_SALES = [
-    { id: "TX-1001", storeId: "tienda_1", amount: 150.00, method: "efectivo", status: "aprobado", reference: "", client: "Carlos Fuentes", date: "2026-07-21T10:15:00" },
-    { id: "TX-1002", storeId: "tienda_1", amount: 350.00, method: "yape", status: "pendiente", reference: "001-9482", client: "Maria Fernández", date: "2026-07-21T14:40:00" },
-    { id: "TX-1003", storeId: "tienda_2", amount: 120.00, method: "yape", status: "pendiente", reference: "001-9483", client: "Juan Pérez", date: "2026-07-21T14:45:00" },
-    { id: "TX-1004", storeId: "tienda_1", amount: 850.00, method: "plin", status: "pendiente", reference: "002-1102", client: "Andrea Gómez", date: "2026-07-21T14:35:00" },
-    { id: "TX-1005", storeId: "tienda_3", amount: 600.00, method: "efectivo", status: "aprobado", reference: "", client: "Luis Torres", date: "2026-07-21T11:20:00" }
+    { id: "TX-1001", storeId: "TDA-01", amount: 150.00, method: "efectivo", status: "aprobado", reference: "", client: "Carlos Fuentes", date: "2026-07-21T10:15:00" },
+    { id: "TX-1002", storeId: "TDA-01", amount: 350.00, method: "yape", status: "pendiente", reference: "001-9482", client: "Maria Fernández", date: "2026-07-21T14:40:00" }
 ];
 
 const DEFAULT_REQUESTS = [
-    { id: "REQ-1001", type: "reposicion", origin: "central", destination: "tienda_1", model: "classic", color: "lila", size: "M", qty: 5, status: "pendiente", date: "2026-07-21T09:30:00" },
-    { id: "REQ-1002", type: "traspaso", origin: "tienda_2", destination: "tienda_1", model: "slim", color: "blanco", size: "L", qty: 2, status: "pendiente", date: "2026-07-21T11:05:00" },
-    { id: "REQ-1003", type: "reposicion", origin: "central", destination: "tienda_3", model: "premium", color: "marino", size: "S", qty: 3, status: "aprobado", date: "2026-07-21T08:15:00" }
+    { id: "REQ-1001", type: "reposicion", origin: "ALM-01", destination: "TDA-01", model: "MOD-002", color: "COL-02", size: "M", qty: 5, status: "pendiente", date: "2026-07-21T09:30:00" }
 ];
 
 const DEFAULT_EXPENSES = [
-    { id: "EXP-1001", description: "Compra a Proveedor Hilandería S.A.", category: "proveedores", amount: 1200.00, date: "2026-07-20" },
-    { id: "EXP-1002", description: "Costos de Fabricación - Lote Polos Piqué", category: "fabricacion", amount: 850.00, date: "2026-07-21" },
-    { id: "EXP-1003", description: "Pago de Servicio de Luz (Almacén)", category: "servicios", amount: 350.00, date: "2026-07-21" }
+    { id: "EXP-1001", description: "Compra a Proveedor Hilandería S.A.", category: "proveedores", amount: 1200.00, date: "2026-07-20" }
 ];
 
 const STORE_NAMES = {
-    "tienda_1": "Tienda Santa Lucía",
-    "tienda_2": "Tienda Generales Suplex",
-    "tienda_3": "Tienda Generales Pasadizo",
-    "tienda_4": "Tienda Aviación"
+    "ALM-01": "Almacén",
+    "TDA-01": "Tienda Santa Lucía",
+    "TDA-02": "Tienda Generales Suplex",
+    "TDA-03": "Tienda Generales Pasadizo",
+    "TDA-04": "Tienda Aviación",
+    "CTR-01": "Administración"
 };
 
 const MODEL_NAMES = {
-    "classic": "Polo Clásico Piqué",
-    "slim": "Polo Slim Fit Mercerizado",
-    "sport": "Polo Técnico Deportivo",
-    "premium": "Polo Premium Seda/Algodón"
+    "MOD-001": "Camisero MC",
+    "MOD-002": "Camisero ML",
+    "MOD-003": "Girasol MC",
+    "MOD-004": "Girasol ML",
+    "MOD-005": "Redondo MC",
+    "MOD-006": "Redondo ML",
+    "MOD-007": "Cuadrado MC",
+    "MOD-008": "Cuadrado ML",
+    "MOD-009": "Tania MC",
+    "MOD-010": "Tania ML",
+    "MOD-011": "Noemi MC",
+    "MOD-012": "Noemi ML",
+    "MOD-013": "Boton MC",
+    "MOD-014": "Boton ML",
+    "MOD-015": "Short Pinza",
+    "MOD-016": "Short Boton",
+    "MOD-017": "Chompa Redondo",
+    "MOD-018": "Chompa V",
+    "MOD-019": "Buzo Normal"
 };
 
 const COLOR_NAMES = {
-    "blanco": "Blanco",
-    "marino": "Azul Marino",
-    "rosa": "Rosa Pastel",
-    "lila": "Lila Pastel"
+    "COL-01": "Negro",
+    "COL-02": "Perla",
+    "COL-03": "Beige",
+    "COL-04": "Botella",
+    "COL-05": "Marron",
+    "COL-06": "Acero",
+    "COL-07": "Camello",
+    "COL-08": "Rojo",
+    "COL-09": "Fucsia",
+    "COL-10": "Lacre",
+    "COL-11": "Azul noche",
+    "COL-12": "Amarillo",
+    "COL-13": "Naranja",
+    "COL-14": "Palo rosa",
+    "COL-15": "Topo",
+    "COL-16": "Italiano",
+    "COL-17": "Celeste",
+    "COL-18": "Lila",
+    "COL-19": "Melange"
+};
+
+const TALLA_NAMES = {
+    "TAL-01": "St",
+    "TAL-02": "S",
+    "TAL-03": "M",
+    "TAL-04": "L",
+    "TAL-05": "XL"
+};
+
+const TALLA_KEYS = {
+    "St": "TAL-01",
+    "S": "TAL-02",
+    "M": "TAL-03",
+    "L": "TAL-04",
+    "XL": "TAL-05"
 };
 
 // Inicialización de datos en localStorage
@@ -98,12 +321,12 @@ function initDB() {
 
 // Iniciar sesión y seguridad de rutas
 const USER_ROLES = {
-    "admin@escarlu.com": { email: "admin@escarlu.com", role: "admin", label: "Administrador / Dueño", storeId: "" },
-    "almacen@escarlu.com": { email: "almacen@escarlu.com", role: "almacen", label: "Almacén Central", storeId: "" },
-    "tienda1@escarlu.com": { email: "tienda1@escarlu.com", role: "tienda", label: "Tienda Santa Lucía", storeId: "tienda_1" },
-    "tienda2@escarlu.com": { email: "tienda2@escarlu.com", role: "tienda", label: "Tienda Generales Suplex", storeId: "tienda_2" },
-    "tienda3@escarlu.com": { email: "tienda3@escarlu.com", role: "tienda", label: "Tienda Generales Pasadizo", storeId: "tienda_3" },
-    "tienda4@escarlu.com": { email: "tienda4@escarlu.com", role: "tienda", label: "Tienda Aviación", storeId: "tienda_4" }
+    "admin@escarlu.com": { email: "admin@escarlu.com", role: "admin", label: "Administrador / Dueño", storeId: "CTR-01", id_usuario: "USR-01" },
+    "almacen@escarlu.com": { email: "almacen@escarlu.com", role: "almacen", label: "Almacén Central", storeId: "ALM-01", id_usuario: "USR-02" },
+    "tienda1@escarlu.com": { email: "tienda1@escarlu.com", role: "tienda", label: "Tienda Santa Lucía", storeId: "TDA-01", id_usuario: "USR-03" },
+    "tienda2@escarlu.com": { email: "tienda2@escarlu.com", role: "tienda", label: "Tienda Generales Suplex", storeId: "TDA-02", id_usuario: "USR-04" },
+    "tienda3@escarlu.com": { email: "tienda3@escarlu.com", role: "tienda", label: "Tienda Generales Pasadizo", storeId: "TDA-03", id_usuario: "USR-05" },
+    "tienda4@escarlu.com": { email: "tienda4@escarlu.com", role: "tienda", label: "Tienda Aviación", storeId: "TDA-04", id_usuario: "USR-06" }
 };
 
 function getCurrentUser() {
@@ -442,6 +665,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initDB();
     checkAuth();
     
+    // Descarga inicial de Supabase con reintentos para asegurar carga del script
+    downloadFromSupabase();
+    setTimeout(downloadFromSupabase, 500);
+    setTimeout(downloadFromSupabase, 1500);
+
     const path = window.location.pathname.toLowerCase();
     let pageName = "";
     if (path.includes("cajadueno.html")) pageName = "cajadueno";
