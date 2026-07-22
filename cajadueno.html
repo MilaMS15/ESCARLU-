@@ -146,63 +146,62 @@
 </header>
 <section class="p-container-padding max-w-[1440px] mx-auto">
 <!-- Dashboard Title & Date -->
-<div class="mb-stack-lg flex justify-between items-end">
+<div class="mb-stack-lg flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
 <div>
 <h2 class="font-display-lg text-display-lg text-primary mb-2">Flujo de Caja</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant opacity-80">Resumen consolidado al 24 de Mayo, 2024</p>
+<p class="font-body-lg text-body-lg text-on-surface-variant opacity-80">Control consolidado de Ingresos y Egresos</p>
 </div>
-<div class="flex gap-4">
-<button class="flex items-center gap-2 px-6 py-3 border-2 border-primary text-primary font-label-lg text-label-lg rounded-xl hover:bg-primary-container/10 transition-colors">
-<span class="material-symbols-outlined">download</span>
-                        Exportar Reporte
-                    </button>
+<div class="flex items-center gap-4 flex-wrap">
+    <input type="month" id="filter-period" class="h-12 border border-outline-variant bg-surface rounded-xl px-4 font-bold text-primary focus:border-primary focus:ring-0 outline-none" />
+    <button onclick="openEgresoModal()" class="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold font-label-lg text-label-lg rounded-xl hover:brightness-95 transition-all shadow-sm">
+        <span class="material-symbols-outlined">add</span>
+        + Registrar Nuevo Egreso
+    </button>
+    <button class="flex items-center gap-2 px-6 py-3 border-2 border-primary text-primary font-label-lg text-label-lg rounded-xl hover:bg-primary-container/10 transition-colors">
+        <span class="material-symbols-outlined">download</span>
+        Exportar Reporte
+    </button>
 </div>
 </div>
 <!-- Bento Grid - Financial Overview -->
 <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-stack-lg">
 <!-- Cash Card -->
-<div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-primary shadow-lg flex flex-col justify-between min-h-[220px]">
+<div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-green-500 shadow-lg flex flex-col justify-between min-h-[220px]">
 <div class="flex justify-between items-start">
-<span class="font-label-lg text-label-lg text-on-surface-variant">Efectivo Total</span>
-<div class="bg-primary/10 p-3 rounded-full">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">Total Ingresos (S/)</span>
+<div class="bg-green-100 p-3 rounded-full">
+<span class="material-symbols-outlined text-green-600" style="font-variation-settings: 'FILL' 1;">trending_up</span>
 </div>
 </div>
 <div>
-<h3 class="text-[40px] font-bold text-primary">S/ 12,450.00</h3>
-<p class="text-green-600 font-label-md flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]">trending_up</span>
-                            +12% vs ayer
-                        </p>
+<h3 id="kpi-ingresos" class="text-[40px] font-bold text-green-600">S/ 0.00</h3>
+<p class="text-on-surface-variant opacity-60 font-label-md">Ventas consolidadas aprobadas</p>
 </div>
 </div>
 <!-- Digital Card -->
 <div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-secondary-fixed shadow-lg flex flex-col justify-between min-h-[220px]">
 <div class="flex justify-between items-start">
-<span class="font-label-lg text-label-lg text-on-surface-variant">Transferencias / Yape</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">Total Egresos (S/)</span>
 <div class="bg-secondary-container/30 p-3 rounded-full">
-<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">qr_code_2</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">trending_down</span>
 </div>
 </div>
 <div>
-<h3 class="text-[40px] font-bold text-secondary">S/ 8,120.50</h3>
-<p class="text-green-600 font-label-md flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]">trending_up</span>
-                            +5.4% vs ayer
-                        </p>
+<h3 id="kpi-egresos" class="text-[40px] font-bold text-secondary">S/ 0.00</h3>
+<p class="text-on-surface-variant opacity-60 font-label-md">Gastos y egresos del mes</p>
 </div>
 </div>
 <!-- Total Consolidation -->
 <div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-tertiary-container shadow-lg flex flex-col justify-between min-h-[220px]">
 <div class="flex justify-between items-start">
-<span class="font-label-lg text-label-lg text-on-surface-variant">Balance Total</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">Utilidad Neta / Balance (S/)</span>
 <div class="bg-tertiary-container/20 p-3 rounded-full">
 <span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
 </div>
 </div>
 <div>
-<h3 class="text-[40px] font-bold text-tertiary">S/ 20,570.50</h3>
-<p class="text-on-surface-variant opacity-60 font-label-md">Consolidado de 5 sedes</p>
+<h3 id="kpi-utilidad" class="text-[40px] font-bold text-primary">S/ 0.00</h3>
+<p class="text-on-surface-variant opacity-60 font-label-md">Ingresos - Egresos del período</p>
 </div>
 </div>
 </div>
@@ -213,82 +212,38 @@
 <div class="bg-white rounded-[2rem] p-stack-lg shadow-sm border border-outline-variant/30">
 <div class="flex justify-between items-center mb-stack-md">
 <h3 class="font-headline-md text-headline-md text-on-surface">Verificación de Yapes Pendientes</h3>
-<span class="bg-error-container text-on-error-container px-4 py-1 rounded-full font-label-md">4 Pendientes</span>
+<span class="bg-error-container text-on-error-container px-4 py-1 rounded-full font-label-md">Cargando...</span>
 </div>
 <!-- Verification List -->
 <div class="space-y-4">
-<!-- Verification Row -->
-<div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-surface-container transition-colors border border-transparent hover:border-primary/20">
-<div class="w-16 h-16 bg-primary-container rounded-xl flex items-center justify-center">
-<span class="material-symbols-outlined text-white text-3xl">image</span>
-</div>
-<div class="flex-1">
-<p class="font-label-lg text-label-lg">S/ 145.00 - Tienda Aviación</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Ref: 29384 • Hace 5 min • Cliente: M. Salazar</p>
-</div>
-<div class="flex gap-2">
-<button class="px-6 py-3 bg-primary text-white rounded-xl font-label-lg text-label-lg hover:shadow-lg active:scale-95 transition-all min-h-[56px]">
-                                        Aprobar Yape
-                                    </button>
-<button class="w-14 h-14 flex items-center justify-center border-2 border-error text-error rounded-xl hover:bg-error/5 transition-colors">
-<span class="material-symbols-outlined">close</span>
-</button>
+    <!-- Inyectado dinámicamente -->
 </div>
 </div>
-<!-- Verification Row -->
-<div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-surface-container transition-colors border border-transparent hover:border-primary/20">
-<div class="w-16 h-16 bg-primary-container rounded-xl flex items-center justify-center overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="Macro close-up shot of a smartphone screen displaying a digital payment confirmation 'Yape' receipt for 85.50 Soles. The image is clean, sharp, and modern, using the soft lilac brand colors and high-end professional lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1AOAhO5b2yrsjL0Q9KKRC5wgStGuxmRHI1aFWd0AcpE3bDwwmWIjS4DGMmDEbpIBwVk7BBTg60Yh4OFTT_wXMsKEMW3ZAvBH-EGGLZhl77LYnGh6ycQLyj3ZdJW-gjc7Tufd1cCG07y5LCsbilceonpmOkEzAe5bJQITwFsLyajFDjcsWUTqADGHvvFXq4NJ0KH1WUG9LGXvUT6WY8Li69kbinZPU-r3iB4qkBa4ddZThXoinhyw"/>
-</div>
-<div class="flex-1">
-<p class="font-label-lg text-label-lg">S/ 85.50 - Almacén Central</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Ref: 29382 • Hace 12 min • Cliente: J. Rivas</p>
-</div>
-<div class="flex gap-2">
-<button class="px-6 py-3 bg-primary text-white rounded-xl font-label-lg text-label-lg hover:shadow-lg active:scale-95 transition-all min-h-[56px]">
-                                        Aprobar Yape
-                                    </button>
-<button class="w-14 h-14 flex items-center justify-center border-2 border-error text-error rounded-xl hover:bg-error/5 transition-colors">
-<span class="material-symbols-outlined">close</span>
-</button>
-</div>
-</div>
-</div>
-<button class="w-full mt-stack-md py-4 text-primary font-bold font-label-lg border-2 border-dashed border-primary/30 rounded-2xl hover:bg-primary/5 transition-colors">
-                            Ver historial de verificaciones
-                        </button>
-</div>
-<!-- Flow Visualization -->
+<!-- Flow Visualization / Movimientos Recientes -->
 <div class="bg-white rounded-[2rem] p-stack-lg shadow-sm border border-outline-variant/30">
-<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-md">Tendencia de Ingresos Diarios</h3>
-<div class="h-64 flex items-end gap-4 px-4">
-<!-- Simple Visual Chart Columns -->
-<div class="flex-1 flex flex-col justify-end gap-1">
-<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 60%;"></div>
-<div class="w-full bg-secondary-container rounded-b-lg" style="height: 20%;"></div>
-<span class="text-center font-label-md text-[12px] mt-2">Lun</span>
-</div>
-<div class="flex-1 flex flex-col justify-end gap-1">
-<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 45%;"></div>
-<div class="w-full bg-secondary-container rounded-b-lg" style="height: 35%;"></div>
-<span class="text-center font-label-md text-[12px] mt-2">Mar</span>
-</div>
-<div class="flex-1 flex flex-col justify-end gap-1">
-<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 80%;"></div>
-<div class="w-full bg-secondary-container rounded-b-lg" style="height: 15%;"></div>
-<span class="text-center font-label-md text-[12px] mt-2">Mie</span>
-</div>
-<div class="flex-1 flex flex-col justify-end gap-1">
-<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 70%;"></div>
-<div class="w-full bg-secondary-container rounded-b-lg" style="height: 20%;"></div>
-<span class="text-center font-label-md text-[12px] mt-2">Jue</span>
-</div>
-<div class="flex-1 flex flex-col justify-end gap-1">
-<div class="w-full bg-primary-container rounded-t-lg transition-all hover:brightness-90" style="height: 90%;"></div>
-<div class="w-full bg-secondary-container rounded-b-lg" style="height: 10%;"></div>
-<span class="text-center font-label-md text-[12px] mt-2">Vie</span>
-</div>
-</div>
+    <div class="flex justify-between items-center mb-stack-md">
+        <h3 class="font-headline-md text-headline-md text-on-surface">Movimientos Recientes (Ingresos vs Egresos)</h3>
+        <span class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">Historial del Período</span>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-outline-variant/50 text-xs font-bold text-on-surface-variant uppercase">
+                    <th class="py-3 px-4">Fecha/Hora</th>
+                    <th class="py-3 px-4">Categoría</th>
+                    <th class="py-3 px-4">Concepto</th>
+                    <th class="py-3 px-4">Sede</th>
+                    <th class="py-3 px-4 text-right">Monto</th>
+                </tr>
+            </thead>
+            <tbody id="movements-table-body" class="divide-y divide-outline-variant/30 text-sm">
+                <!-- Inyectado dinámicamente -->
+            </tbody>
+        </table>
+        <div id="movements-empty" class="hidden text-center py-8 text-on-surface-variant font-medium">
+            No hay movimientos registrados en este período.
+        </div>
+    </div>
 </div>
 </div>
 <!-- Right Side Information Column -->
@@ -336,35 +291,325 @@
 </div>
 </section>
 </main>
-<!-- Floating Action Button - Only for Primary Actions -->
-<button class="fixed bottom-10 right-10 w-20 h-20 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+
+<!-- Floating Action Button -->
+<button onclick="openEgresoModal()" class="fixed bottom-10 right-10 w-20 h-20 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
 <span class="material-symbols-outlined text-4xl group-hover:rotate-90 transition-transform duration-300">add</span>
 <span class="absolute right-full mr-4 bg-white text-primary px-4 py-2 rounded-xl shadow-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Nuevo Egreso / Gasto</span>
 </button>
+
+<!-- Add Egreso Glassmorphism Modal -->
+<div id="egreso-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full border border-outline-variant/50 shadow-2xl space-y-6">
+        <div class="flex justify-between items-center">
+            <h3 class="font-display-lg text-headline-lg text-primary font-bold">Registrar Nuevo Egreso</h3>
+            <button onclick="closeEgresoModal()" class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block font-bold text-sm text-on-surface-variant mb-1">Concepto / Descripción *</label>
+                <input id="egreso-concepto" type="text" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" placeholder="Ej. Compra de telas de piqué" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Categoría</label>
+                    <select id="egreso-categoria" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0">
+                        <option value="proveedores">Proveedores / Telas</option>
+                        <option value="fabricacion">Fabricación</option>
+                        <option value="servicios">Servicios Básicos</option>
+                        <option value="personal">Personal / Sueldos</option>
+                        <option value="caja chica">Reposición Caja Chica</option>
+                        <option value="impuestos">Impuestos</option>
+                        <option value="otros">Otros Gastos</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Monto (S/) *</label>
+                    <input id="egreso-monto" type="number" min="0.01" step="0.01" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" placeholder="0.00" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Sede / Destino</label>
+                    <select id="egreso-sede" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0">
+                        <option value="general">General / Almacén</option>
+                        <option value="tienda_1">Tienda Santa Lucía</option>
+                        <option value="tienda_2">Tienda Generales Suplex</option>
+                        <option value="tienda_3">Tienda Generales Pasadizo</option>
+                        <option value="tienda_4">Tienda Aviación</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Fecha *</label>
+                    <input id="egreso-fecha" type="date" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" />
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="closeEgresoModal()" class="flex-1 h-12 rounded-xl border border-outline bg-transparent font-bold hover:bg-surface-container transition-all">Cancelar</button>
+            <button onclick="saveEgreso()" class="flex-1 h-12 rounded-xl bg-primary text-white font-bold hover:brightness-95 transition-all">Guardar Egreso</button>
+        </div>
+    </div>
+</div>
+
 <script>
-        // Simple Interaction logic
-        document.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const text = this.innerText;
-                if(text.includes('Aprobar')) {
-                    this.closest('.flex.items-center.gap-4').style.opacity = '0.5';
-                    this.closest('.flex.items-center.gap-4').style.pointerEvents = 'none';
-                    this.innerHTML = '<span class="material-symbols-outlined">check</span> Aprobado';
-                    this.classList.remove('bg-primary');
-                    this.classList.add('bg-green-600');
-                }
+    // WhatsApp Owner Config
+    const OWNER_PHONE = "51936197969";
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        renderSideNav("cajadueno");
+
+        // Set default month to current month/year (YYYY-MM)
+        const periodFilter = document.getElementById("filter-period");
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        periodFilter.value = `${yyyy}-${mm}`;
+
+        // Initialize lists and KPIs
+        renderFinanceDashboard();
+
+        // Listen for filter changes
+        periodFilter.addEventListener('change', renderFinanceDashboard);
+
+        // Setup real-time storage sync
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'escarlu_sales' || e.key === 'escarlu_expenses') {
+                renderFinanceDashboard();
+            }
+        });
+    });
+
+    function renderFinanceDashboard() {
+        const selectedPeriod = document.getElementById("filter-period").value; // YYYY-MM
+        if (!selectedPeriod) return;
+
+        const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const allExpenses = JSON.parse(localStorage.getItem("escarlu_expenses")) || [];
+
+        // 1. Filter Sales for the selected month (Approved sales only)
+        const approvedSales = allSales.filter(sale => {
+            if (!sale.date) return false;
+            return sale.date.startsWith(selectedPeriod) && sale.status === 'aprobado';
+        });
+
+        // 2. Filter Expenses for the selected month
+        const monthlyExpenses = allExpenses.filter(exp => {
+            if (!exp.date) return false;
+            return exp.date.startsWith(selectedPeriod);
+        });
+
+        // 3. Calculate KPIs
+        const totalIngresos = approvedSales.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+        const totalEgresos = monthlyExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+        const utilidad = totalIngresos - totalEgresos;
+
+        // Render KPIs
+        document.getElementById("kpi-ingresos").textContent = `S/ ${totalIngresos.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById("kpi-egresos").textContent = `S/ ${totalEgresos.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        
+        const kpiUtilidad = document.getElementById("kpi-utilidad");
+        kpiUtilidad.textContent = `S/ ${utilidad.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (utilidad >= 0) {
+            kpiUtilidad.className = "text-[40px] font-bold text-primary";
+        } else {
+            kpiUtilidad.className = "text-[40px] font-bold text-error";
+        }
+
+        // 4. Render Yape Verification Panel
+        renderPendingYapes();
+
+        // 5. Render Movements Table
+        const movements = [];
+
+        // Add Sales as Ingresos
+        approvedSales.forEach(sale => {
+            movements.push({
+                date: sale.date,
+                category: "Venta Tienda",
+                concept: `Venta a ${sale.client || 'Cliente'} (${sale.method.toUpperCase()})`,
+                store: STORE_NAMES[sale.storeId] || sale.storeId,
+                amount: parseFloat(sale.amount || 0),
+                type: 'ingreso'
             });
         });
 
-        // Search Bar Focus Effect
-        const searchInput = document.querySelector('input[type="text"]');
-        if(searchInput) {
-            searchInput.addEventListener('focus', () => {
-                searchInput.parentElement.classList.add('ring-2', 'ring-primary/30');
+        // Add Expenses as Egresos
+        monthlyExpenses.forEach(exp => {
+            movements.push({
+                date: exp.date.includes('T') ? exp.date : `${exp.date}T00:00:00`,
+                category: exp.category.charAt(0).toUpperCase() + exp.category.slice(1),
+                concept: exp.description,
+                store: exp.storeId ? (STORE_NAMES[exp.storeId] || exp.storeId) : "General / Almacén",
+                amount: parseFloat(exp.amount || 0),
+                type: 'egreso'
             });
-            searchInput.addEventListener('blur', () => {
-                searchInput.parentElement.classList.remove('ring-2', 'ring-primary/30');
+        });
+
+        // Sort movements by date descending
+        movements.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        const tbody = document.getElementById("movements-table-body");
+        const emptyDiv = document.getElementById("movements-empty");
+        tbody.innerHTML = "";
+
+        if (movements.length === 0) {
+            emptyDiv.classList.remove("hidden");
+            tbody.closest("table").classList.add("hidden");
+        } else {
+            emptyDiv.classList.add("hidden");
+            tbody.closest("table").classList.remove("hidden");
+
+            movements.forEach(m => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-surface-container-low transition-colors";
+
+                const dateObj = new Date(m.date);
+                const dateStr = isNaN(dateObj) ? m.date.slice(0,10) : dateObj.toLocaleString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+                const amtClass = m.type === 'ingreso' ? 'text-green-600 font-bold text-right' : 'text-secondary font-bold text-right';
+                const amtSign = m.type === 'ingreso' ? `+S/ ${m.amount.toFixed(2)}` : `-S/ ${m.amount.toFixed(2)}`;
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 text-on-surface-variant font-medium">${dateStr}</td>
+                    <td class="py-3.5 px-4 font-bold text-on-surface">${m.category}</td>
+                    <td class="py-3.5 px-4 text-on-surface-variant font-medium">${m.concept}</td>
+                    <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 bg-primary-container/20 text-primary text-xs font-bold rounded-full">${m.store}</span></td>
+                    <td class="py-3.5 px-4 ${amtClass}">${amtSign}</td>
+                `;
+                tbody.appendChild(tr);
             });
         }
-    </script>
+    }
+
+    function renderPendingYapes() {
+        const pendingContainer = document.querySelector("#movements-empty").closest('.grid').querySelector('.space-y-4');
+        if (!pendingContainer) return;
+
+        const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const pendingSales = allSales.filter(s => s.status === 'pendiente');
+
+        // Update badge count
+        const badge = pendingContainer.closest('.bg-white').querySelector('.bg-error-container') || pendingContainer.closest('.bg-white').querySelector('.bg-green-100');
+        if (badge) {
+            if (pendingSales.length === 0) {
+                badge.className = "bg-green-100 text-green-800 px-4 py-1 rounded-full font-label-md text-xs font-bold";
+                badge.textContent = "0 Pendientes";
+            } else {
+                badge.className = "bg-error-container text-on-error-container px-4 py-1 rounded-full font-label-md text-xs font-bold";
+                badge.textContent = `${pendingSales.length} Pendientes`;
+            }
+        }
+
+        pendingContainer.innerHTML = "";
+
+        if (pendingSales.length === 0) {
+            pendingContainer.innerHTML = `
+                <div class="text-center py-8 text-on-surface-variant font-medium text-sm">
+                    No hay yapes ni transferencias pendientes de verificar.
+                </div>
+            `;
+            return;
+        }
+
+        pendingSales.forEach(sale => {
+            const div = document.createElement("div");
+            div.className = "flex items-center gap-4 p-4 rounded-2xl hover:bg-surface-container transition-colors border border-transparent hover:border-primary/20";
+            
+            const storeName = STORE_NAMES[sale.storeId] || sale.storeId;
+            const timeStr = sale.date ? new Date(sale.date).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }) : "";
+
+            div.innerHTML = `
+                <div class="w-16 h-16 bg-primary-container rounded-xl flex items-center justify-center text-white shrink-0">
+                    <span class="material-symbols-outlined text-3xl">image</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-label-lg text-label-lg truncate">S/ ${parseFloat(sale.amount).toFixed(2)} - ${storeName}</p>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant truncate">Ref: ${sale.reference || 'N/A'} • ${timeStr} • Cliente: ${sale.client || 'General'}</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="approveYape('${sale.id}')" class="px-6 py-3 bg-primary text-white rounded-xl font-label-lg text-label-lg hover:shadow-lg active:scale-95 transition-all min-h-[56px]">
+                        Aprobar
+                    </button>
+                    <button onclick="rejectYape('${sale.id}')" class="w-14 h-14 flex items-center justify-center border-2 border-error text-error rounded-xl hover:bg-error/5 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            `;
+            pendingContainer.appendChild(div);
+        });
+    }
+
+    function approveYape(id) {
+        const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const saleIndex = allSales.findIndex(s => s.id === id);
+        if (saleIndex === -1) return;
+
+        allSales[saleIndex].status = "aprobado";
+        localStorage.setItem("escarlu_sales", JSON.stringify(allSales));
+        
+        alert("Pago verificado y aprobado.");
+        renderFinanceDashboard();
+    }
+
+    function rejectYape(id) {
+        if (!confirm("¿Seguro de rechazar y anular este pago pendiente?")) return;
+
+        const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const saleIndex = allSales.findIndex(s => s.id === id);
+        if (saleIndex === -1) return;
+
+        allSales[saleIndex].status = "rechazado";
+        localStorage.setItem("escarlu_sales", JSON.stringify(allSales));
+
+        alert("Pago rechazado y eliminado del balance.");
+        renderFinanceDashboard();
+    }
+
+    // Modal Control
+    function openEgresoModal() {
+        document.getElementById("egreso-modal").classList.remove("hidden");
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById("egreso-fecha").value = todayStr;
+    }
+
+    function closeEgresoModal() {
+        document.getElementById("egreso-modal").classList.add("hidden");
+        document.getElementById("egreso-concepto").value = "";
+        document.getElementById("egreso-monto").value = "";
+    }
+
+    function saveEgreso() {
+        const concepto = document.getElementById("egreso-concepto").value.trim();
+        const categoria = document.getElementById("egreso-categoria").value;
+        const monto = parseFloat(document.getElementById("egreso-monto").value);
+        const sede = document.getElementById("egreso-sede").value;
+        const fecha = document.getElementById("egreso-fecha").value;
+
+        if (!concepto || isNaN(monto) || monto <= 0 || !fecha) {
+            alert("Por favor complete todos los campos obligatorios correctamente.");
+            return;
+        }
+
+        const allExpenses = JSON.parse(localStorage.getItem("escarlu_expenses")) || [];
+        const newExpense = {
+            id: `EXP-${Math.floor(1000 + Math.random() * 9000)}`,
+            description: concepto,
+            category: categoria,
+            amount: monto,
+            storeId: sede === 'general' ? '' : sede,
+            date: fecha
+        };
+
+        allExpenses.push(newExpense);
+        localStorage.setItem("escarlu_expenses", JSON.stringify(allExpenses));
+
+        closeEgresoModal();
+        alert("Gasto/Egreso registrado correctamente.");
+        renderFinanceDashboard();
+    }
+</script>
 </body></html>
