@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ESCARLÚ - Simulación de Trazo y Corte</title>
+<script src="shared.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Sans+3:ital,wght@0,200..900;1,200..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#fcf9f8",
+                        "on-primary-fixed": "#2b112f",
+                        "secondary-fixed-dim": "#ecbaba",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "on-tertiary-container": "#513f00",
+                        "primary": "#745475",
+                        "tertiary-fixed": "#ffe088",
+                        "secondary-container": "#fecbcb",
+                        "background": "#fcf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "surface-bright": "#fcf9f8",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#f0eded",
+                        "on-secondary-container": "#7a5354",
+                        "outline-variant": "#cfc3cc",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1c1b1b",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "outline": "#7e747c",
+                        "on-surface": "#1c1b1b",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffdad9",
+                        "on-primary-fixed-variant": "#5a3c5d",
+                        "tertiary": "#735c00",
+                        "secondary": "#7b5455",
+                        "primary-container": "#c8a2c8",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary-container": "#cfaa32",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#613d3e",
+                        "primary-fixed-dim": "#e2bae1",
+                        "on-secondary-fixed": "#2f1314",
+                        "on-primary-container": "#553757",
+                        "on-surface-variant": "#4c444b",
+                        "inverse-primary": "#e2bae1",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-surface": "#313030",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#745475",
+                        "primary-fixed": "#ffd6fe",
+                        "surface-container-high": "#eae7e7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "40px",
+                        "stack-lg": "48px",
+                        "unit": "8px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["\"Source Sans 3\""],
+                        "label-lg": ["\"Source Sans 3\""],
+                        "headline-md": ["Libre Caslon Text"],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "display-lg": ["Libre Caslon Text"],
+                        "body-sm": ["\"Source Sans 3\""],
+                        "label-md": ["\"Source Sans 3\""],
+                        "body-lg": ["\"Source Sans 3\""]
+                    },
+                    "fontSize": {
+                        "body-md": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-lg": ["18px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-sm": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-md": ["16px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-lg": ["20px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles to handle specific visual requirements not covered by utilities */
+        .fabric-canvas-shadow {
+            box-shadow: 0px 4px 20px rgba(200, 162, 200, 0.15); /* Soft Lilac shadow */
+        }
+        .active-top-border {
+            border-top: 2px solid #cfaa32; /* Tertiary Container / Gold accent */
+        }
+        .focus-ring-lilac:focus {
+            box-shadow: 0 0 0 4px rgba(200, 162, 200, 0.4);
+            outline: none;
+        }
+        /* Aumentar legibilidad y contraste */
+        .text-xs { font-size: 14.5px !important; }
+        .text-sm { font-size: 16.5px !important; }
+        .text-[10px] { font-size: 12px !important; font-weight: 700 !important; color: #1c1b1b !important; }
+        .text-[9px] { font-size: 11.5px !important; font-weight: 700 !important; color: #1c1b1b !important; }
+        .text-on-surface-variant { color: #1c1b1b !important; }
+        label { font-size: 13.5px !important; font-weight: 700 !important; color: #1c1b1b !important; }
+        input, select { font-size: 13.5px !important; font-weight: 700 !important; color: #1c1b1b !important; }
+        #combinaciones-container span { font-size: 12.5px !important; padding: 4px 8px !important; font-weight: 700 !important; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- SideNavBar (Inyectado por shared.js) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
+<!-- Main Content Area -->
+<main class="md:ml-72 min-h-screen bg-background">
+<!-- Unified Top Bar Header -->
+<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto">
+  <!-- Lado Izquierdo: Tag / Badge de Rol -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">storefront</span>
+      <span class="text-xs font-bold text-primary">Administrador / Dueño</span>
+    </div>
+  </div>
+
+  <!-- Centro: Input de Búsqueda Global Centrado -->
+  <div class="flex-1 max-w-md mx-6">
+    <div class="relative w-full">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">search</span>
+      </span>
+      <input type="text" placeholder="Buscar transacción, modelo, SKU o sede..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+    </div>
+  </div>
+
+  <!-- Lado Derecho: Acciones y Perfil -->
+  <div class="flex items-center gap-4">
+    <button aria-label="Notifications" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">notifications</span>
+    </button>
+    <button aria-label="Settings" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">settings</span>
+    </button>
+    <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+      <span class="text-xs font-bold text-on-surface">Administrador</span>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+        <img alt="Perfil Administrador" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- Canvas Area -->
+<main class="flex-1 p-4 max-w-[1440px] mx-auto w-full flex flex-col gap-3">
+
+  <!-- Main Layout Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+    <!-- SECCIÓN IZQUIERDA: Lienzo y Piezas -->
+    <div class="lg:col-span-8 flex flex-col gap-4">
+      <!-- Lienzo de Trazo -->
+      <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-4 flex flex-col active-top-border flex-1">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-sm text-on-surface">Lienzo de Trazo (Rollo: Algodón Pima 30/1)</h3>
+          <div class="flex gap-1">
+            <button id="zoom-in" class="text-on-surface-variant p-1 rounded hover:bg-surface-container transition-colors focus-ring-lilac" title="Acercar"><span class="material-symbols-outlined text-lg">zoom_in</span></button>
+            <button id="zoom-out" class="text-on-surface-variant p-1 rounded hover:bg-surface-container transition-colors focus-ring-lilac" title="Alejar"><span class="material-symbols-outlined text-lg">zoom_out</span></button>
+          </div>
+        </div>
+
+        <!-- Canvas Wrapper with Ruler/Cota tags -->
+        <div class="grid grid-cols-[auto_1fr] grid-rows-[1fr_auto] gap-2 items-center flex-1">
+          <!-- Eje Vertical (Ancho) -->
+          <div class="flex flex-col items-center justify-center text-[10px] font-bold text-outline uppercase tracking-wider select-none h-full border-r border-dashed border-outline-variant pr-2">
+            <span class="material-symbols-outlined text-xs">arrow_upward</span>
+            <span id="label-ancho" class="[writing-mode:vertical-lr] rotate-180 my-1">ANCHO (1.60m)</span>
+            <span class="material-symbols-outlined text-xs">arrow_downward</span>
+          </div>
+
+          <!-- Lienzo Box -->
+          <div class="flex-1 border-2 border-dashed border-outline-variant rounded bg-surface-container-low relative overflow-hidden flex items-center justify-center min-h-[280px]">
+            <!-- Simulated Fabric Texture Background -->
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#745475_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <!-- Simulated Pieces -->
+            <div id="canvas-pieces-container" class="relative w-full max-w-2xl h-full py-4 flex flex-wrap gap-2 content-start justify-center p-2 transition-transform duration-200 origin-center">
+              <div class="w-24 h-36 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Delantero</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 0°</span>
+              </div>
+              <div class="w-24 h-36 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Espalda</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 0°</span>
+              </div>
+              <div class="w-16 h-24 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Manga D.</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 90°</span>
+              </div>
+              <div class="w-16 h-24 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Manga I.</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 90°</span>
+              </div>
+              <div class="w-28 h-12 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Cuello</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 0°</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Blank Corner -->
+          <div></div>
+
+          <!-- Eje Horizontal (Largo) -->
+          <div class="flex items-center justify-center gap-2 text-[10px] font-bold text-outline uppercase tracking-wider select-none pt-2 border-t border-dashed border-outline-variant">
+            <span class="material-symbols-outlined text-xs">arrow_back</span>
+            <span id="label-largo">LARGO (Eje Horizontal: 10.00m)</span>
+            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Piezas a utilizar -->
+      <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-4 active-top-border flex flex-col gap-2.5">
+        <h3 class="font-bold text-sm text-on-surface">Piezas a utilizar</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <!-- Card 1 -->
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface">Delantero</h4>
+                <p class="text-[9px] text-on-surface-variant">Molde Principal</p>
+              </div>
+              <div class="flex gap-0.5">
+                <button class="p-1 text-primary hover:bg-surface-container-high rounded transition-colors" title="Editar"><span class="material-symbols-outlined text-xs">edit</span></button>
+                <button class="p-1 text-error hover:bg-error-container rounded transition-colors" title="Eliminar"><span class="material-symbols-outlined text-xs">delete</span></button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-semibold text-on-surface-variant">Rotación máx (Grados):</label>
+              <input type="text" class="text-xs p-1 border border-outline-variant rounded bg-surface focus-ring-lilac text-on-surface w-full font-bold" value="360" placeholder="Ej: 0, 90, 180" />
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface">Espalda</h4>
+                <p class="text-[9px] text-on-surface-variant">Molde Principal</p>
+              </div>
+              <div class="flex gap-0.5">
+                <button class="p-1 text-primary hover:bg-surface-container-high rounded transition-colors" title="Editar"><span class="material-symbols-outlined text-xs">edit</span></button>
+                <button class="p-1 text-error hover:bg-error-container rounded transition-colors" title="Eliminar"><span class="material-symbols-outlined text-xs">delete</span></button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-semibold text-on-surface-variant">Rotación máx (Grados):</label>
+              <input type="text" class="text-xs p-1 border border-outline-variant rounded bg-surface focus-ring-lilac text-on-surface w-full font-bold" value="360" placeholder="Ej: 0, 90, 180" />
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface">Manga</h4>
+                <p class="text-[9px] text-on-surface-variant">Lateral x2</p>
+              </div>
+              <div class="flex gap-0.5">
+                <button class="p-1 text-primary hover:bg-surface-container-high rounded transition-colors" title="Editar"><span class="material-symbols-outlined text-xs">edit</span></button>
+                <button class="p-1 text-error hover:bg-error-container rounded transition-colors" title="Eliminar"><span class="material-symbols-outlined text-xs">delete</span></button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-semibold text-on-surface-variant">Rotación máx (Grados):</label>
+              <input type="text" class="text-xs p-1 border border-outline-variant rounded bg-surface focus-ring-lilac text-on-surface w-full font-bold" value="90" placeholder="Ej: 0, 90" />
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface">Cuello</h4>
+                <p class="text-[9px] text-on-surface-variant">Accesorio</p>
+              </div>
+              <div class="flex gap-0.5">
+                <button class="p-1 text-primary hover:bg-surface-container-high rounded transition-colors" title="Editar"><span class="material-symbols-outlined text-xs">edit</span></button>
+                <button class="p-1 text-error hover:bg-error-container rounded transition-colors" title="Eliminar"><span class="material-symbols-outlined text-xs">delete</span></button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-semibold text-on-surface-variant">Rotación máx (Grados):</label>
+              <input type="text" class="text-xs p-1 border border-outline-variant rounded bg-surface focus-ring-lilac text-on-surface w-full font-bold" value="0" placeholder="Ej: 0" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN DERECHA: Métricas y Controles -->
+    <div class="lg:col-span-4 flex flex-col gap-4">
+      <!-- Botón de Optimización Prominente -->
+      <button id="btn-ejecutar-opt" class="bg-primary text-on-primary font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-on-primary-fixed-variant transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac w-full">
+        <span class="material-symbols-outlined text-lg" data-weight="fill">play_circle</span>
+        Ejecutar Optimización
+      </button>
+
+      <!-- Métricas Horizontales Compactas -->
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Aprovechamiento -->
+        <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-3 border-t-2 border-tertiary-container flex flex-col justify-between min-h-[85px]">
+          <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">% Tela Aprovechada</span>
+          <div class="flex items-baseline gap-0.5 mt-1">
+            <span class="text-xl font-bold text-tertiary-container">85.4</span>
+            <span class="text-[10px] font-bold text-tertiary-container">%</span>
+          </div>
+          <div class="w-full bg-surface-container h-1.5 rounded-full mt-1.5 overflow-hidden">
+            <div class="bg-tertiary-container h-full rounded-full" style="width: 85.4%;"></div>
+          </div>
+        </div>
+        <!-- Desperdicio -->
+        <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-3 border-t-2 border-error flex flex-col justify-between min-h-[85px]">
+          <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">% Merma / Desperdicio</span>
+          <div class="flex items-baseline gap-0.5 mt-1">
+            <span class="text-xl font-bold text-error">14.6</span>
+            <span class="text-[10px] font-bold text-error">%</span>
+          </div>
+          <div class="w-full bg-surface-container h-1.5 rounded-full mt-1.5 overflow-hidden">
+            <div class="bg-error h-full rounded-full" style="width: 14.6%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parámetros de Trazo -->
+      <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-4 flex flex-col gap-3 active-top-border">
+        <h3 class="font-bold text-sm text-on-surface">Parámetros de Trazo</h3>
+
+        <!-- Fila de Ancho y Largo -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-semibold text-on-surface">Ancho de Tela (m)</label>
+            <input id="ancho-tela" class="border border-outline-variant rounded bg-surface p-2 text-xs font-bold text-on-surface focus-ring-lilac h-9" type="number" min="0.5" max="3.0" step="0.05" value="1.60" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-semibold text-on-surface">Largo Máx de Tela (m)</label>
+            <input id="largo-tela" class="border border-outline-variant rounded bg-surface p-2 text-xs font-bold text-on-surface focus-ring-lilac h-9" type="number" placeholder="Largo" value="10.00" min="1" step="0.5" />
+          </div>
+        </div>
+
+        <!-- Selector Doblez -->
+        <div class="flex items-center justify-between border-t border-outline-variant pt-2">
+          <span class="text-xs font-bold text-on-surface">¿Utilizar doblez?</span>
+          <div class="inline-flex rounded-lg border border-outline-variant p-0.5 bg-surface-container-low" id="doblez-toggle-container">
+            <button id="btn-doblez-si" class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-primary text-on-primary transition-all">Sí</button>
+            <button id="btn-doblez-no" class="px-2.5 py-0.5 text-xs font-semibold rounded-md text-on-surface-variant hover:text-on-surface transition-all">No</button>
+          </div>
+        </div>
+
+        <!-- Fila/Grid de Combinación de Producción -->
+        <div class="border-t border-outline-variant pt-3 flex flex-col gap-2.5">
+          <span class="text-xs font-bold text-on-surface">Combinación de Producción</span>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[10px] text-on-surface-variant font-medium">Modelo</label>
+              <select id="model-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
+                <option value="MOD-001">Camisero MC</option>
+                <option value="MOD-002">Camisero ML</option>
+                <option value="MOD-003">Girasol MC</option>
+                <option value="MOD-004">Girasol ML</option>
+                <option value="MOD-005">Redondo MC</option>
+                <option value="MOD-006">Redondo ML</option>
+                <option value="MOD-007">Cuadrado MC</option>
+                <option value="MOD-008">Cuadrado ML</option>
+                <option value="MOD-009">Tania MC</option>
+                <option value="MOD-010">Tania ML</option>
+                <option value="MOD-011">Noemi MC</option>
+                <option value="MOD-012">Noemi ML</option>
+                <option value="MOD-013">Boton MC</option>
+                <option value="MOD-014">Boton ML</option>
+                <option value="MOD-015">Short Pinza</option>
+                <option value="MOD-016">Short Boton</option>
+                <option value="MOD-017">Chompa Redondo</option>
+                <option value="MOD-018">Chompa V</option>
+                <option value="MOD-019">Buzo Normal</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[10px] text-on-surface-variant font-medium">Talla</label>
+              <select id="size-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="St">St</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 items-end">
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[10px] text-on-surface-variant font-medium">Cantidad</label>
+              <input id="qty-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8" type="number" value="12" min="1" />
+            </div>
+            <button id="btn-add-combinacion" type="button" class="bg-primary text-on-primary font-bold text-xs h-8 rounded-lg flex items-center justify-center gap-1 hover:bg-on-primary-fixed-variant transition-colors focus-ring-lilac">
+              + Añadir combinación
+            </button>
+          </div>
+        </div>
+
+        <!-- Listado de combinaciones agregadas -->
+        <div id="combinaciones-container" class="flex flex-wrap gap-1.5 mt-1 border-t border-outline-variant pt-2">
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer" data-model="MOD-001" data-size="S" data-qty="12">Camisero MC (S) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer" data-model="MOD-001" data-size="M" data-qty="12">Camisero MC (M) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer" data-model="MOD-001" data-size="L" data-qty="12">Camisero MC (L) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    // Inicializar renderizado del menú lateral
+    if (typeof renderSideNav === 'function') renderSideNav("cortesdueno");
+
+    const client = getSupabaseClient();
+    if (client) {
+        await seedMoldesIfNeeded(client);
+    }
+
+    const anchoInput = document.getElementById('ancho-tela');
+    const largoInput = document.getElementById('largo-tela');
+    const labelAncho = document.getElementById('label-ancho');
+    const labelLargo = document.getElementById('label-largo');
+
+    // 1. Actualizar ancho y largo del lienzo
+    function updateCanvasAxes() {
+        if (anchoInput && labelAncho) {
+            labelAncho.innerText = `ANCHO (${parseFloat(anchoInput.value).toFixed(2)}m)`;
+        }
+        if (largoInput && labelLargo) {
+            labelLargo.innerText = `LARGO (Eje Horizontal: ${parseFloat(largoInput.value).toFixed(2)}m)`;
+        }
+    }
+    if (anchoInput) anchoInput.addEventListener('input', updateCanvasAxes);
+    if (largoInput) largoInput.addEventListener('input', updateCanvasAxes);
+
+    // 2. Doblez Toggle Interactivity
+    const btnSi = document.getElementById('btn-doblez-si');
+    const btnNo = document.getElementById('btn-doblez-no');
+    let utilizarDoblez = false;
+
+    if (btnSi && btnNo) {
+        btnSi.addEventListener('click', () => {
+            utilizarDoblez = true;
+            btnSi.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-primary text-on-primary transition-all";
+            btnNo.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md text-on-surface-variant hover:text-on-surface transition-all";
+        });
+        btnNo.addEventListener('click', () => {
+            utilizarDoblez = false;
+            btnNo.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-primary text-on-primary transition-all";
+            btnSi.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md text-on-surface-variant hover:text-on-surface transition-all";
+        });
+    }
+
+    // 3. Añadir combinación a la lista
+    const btnAddComb = document.getElementById('btn-add-combinacion');
+    const combContainer = document.getElementById('combinaciones-container');
+    const modelSel = document.getElementById('model-comb');
+    const sizeSel = document.getElementById('size-comb');
+    const qtyInput = document.getElementById('qty-comb');
+
+    if (btnAddComb && combContainer) {
+        btnAddComb.addEventListener('click', () => {
+            const modelVal = modelSel.value;
+            const modelText = modelSel.options[modelSel.selectedIndex].text;
+            const size = sizeSel.value;
+            const qty = parseInt(qtyInput.value);
+
+            if (!qty || qty <= 0) return;
+
+            const pill = document.createElement('span');
+            pill.className = "bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer";
+            pill.setAttribute("data-model", modelVal);
+            pill.setAttribute("data-size", size);
+            pill.setAttribute("data-qty", qty);
+            pill.innerHTML = `${modelText} (${size}) x${qty} <span class="material-symbols-outlined text-[10px] remove-comb">close</span>`;
+            
+            // Delete combination listener on pill click
+            pill.addEventListener('click', () => {
+                pill.remove();
+            });
+
+            combContainer.appendChild(pill);
+        });
+
+        // Setup delete listener for initial default pills
+        document.querySelectorAll('.remove-comb').forEach(btn => {
+            btn.parentElement.addEventListener('click', () => {
+                btn.parentElement.remove();
+            });
+        });
+    }
+
+    // 4. Zoom in and zoom out logic
+    let zoomLevel = 1.0;
+    const btnZoomIn = document.getElementById('zoom-in');
+    const btnZoomOut = document.getElementById('zoom-out');
+    const canvasContainer = document.getElementById('canvas-pieces-container');
+    
+    if (btnZoomIn && btnZoomOut && canvasContainer) {
+        btnZoomIn.addEventListener('click', () => {
+            zoomLevel = Math.min(1.5, zoomLevel + 0.1);
+            canvasContainer.style.transform = `scale(${zoomLevel})`;
+        });
+        btnZoomOut.addEventListener('click', () => {
+            zoomLevel = Math.max(0.5, zoomLevel - 0.1);
+            canvasContainer.style.transform = `scale(${zoomLevel})`;
+        });
+    }
+
+    // 5. Ejecutar Optimización y guardar en Supabase
+    const btnEjecutar = document.getElementById('btn-ejecutar-opt');
+    if (btnEjecutar) {
+        btnEjecutar.addEventListener('click', async () => {
+            if (!client) {
+                alert("Supabase no está disponible o cargado.");
+                return;
+            }
+
+            const pilles = combContainer.querySelectorAll('span');
+            if (pilles.length === 0) {
+                alert("Por favor agregue al menos una combinación de producción.");
+                return;
+            }
+
+            btnEjecutar.disabled = true;
+            btnEjecutar.innerText = "Optimizando trazo...";
+
+            try {
+                const combinations = [];
+                pilles.forEach(p => {
+                    combinations.push({
+                        model: p.getAttribute('data-model'),
+                        size: p.getAttribute('data-size'),
+                        qty: parseInt(p.getAttribute('data-qty'))
+                    });
+                });
+
+                const modelIds = [...new Set(combinations.map(c => c.model))];
+                const sizes = [...new Set(combinations.map(c => c.size))];
+
+                // Consultar moldes reales de la BD
+                const { data: dbMoldes, error: moldesErr } = await client.from('moldes')
+                    .select('*')
+                    .in('modelo', modelIds)
+                    .in('talla', sizes);
+
+                if (moldesErr) throw moldesErr;
+
+                // Si no hay moldes en la BD para esa selección, alertar al usuario
+                if (!dbMoldes || dbMoldes.length === 0) {
+                    alert("No se encontraron moldes configurados para los modelos y tallas seleccionados en la base de datos.");
+                    btnEjecutar.disabled = false;
+                    btnEjecutar.innerText = "Ejecutar Optimización";
+                    return;
+                }
+
+                // Simular Algoritmo de Optimización de Trazo
+                const efficiency = parseFloat((82.5 + Math.random() * 8.5).toFixed(2)); // 82.5% a 91%
+                const merma = parseFloat((100 - efficiency).toFixed(2));
+                const largoMax = parseFloat(largoInput.value) || 10.00;
+                const largoUsado = parseFloat((largoMax * (efficiency / 100.0)).toFixed(2));
+                const totalPrendas = combinations.reduce((sum, c) => sum + c.qty, 0);
+                const consumoTela = parseFloat((largoUsado / totalPrendas).toFixed(3));
+
+                // 1. Guardar Configuración de Tendida
+                const { data: configData, error: configErr } = await client.from('tendidas_config').insert({
+                    ancho_util: parseFloat(anchoInput.value) || 1.60,
+                    largo_max: largoMax,
+                    incluir_doblez: utilizarDoblez,
+                    modelo_seleccionado: combinations
+                }).select('*').single();
+
+                if (configErr) throw configErr;
+
+                // 2. Guardar Resultados de Trazo
+                const { error: resultErr } = await client.from('resultados_trazo').insert({
+                    tendida_config_id: configData.id,
+                    porc_aprov: efficiency,
+                    proc_merma: merma,
+                    largo_usado: largoUsado,
+                    consumo_tela_por_prenda: consumoTela,
+                    detalle_piezas_colocadas: { pieces: dbMoldes }
+                });
+
+                if (resultErr) throw resultErr;
+
+                // 3. Actualizar la Interfaz
+                // Aprovechamiento
+                const appCard = document.querySelector('.border-tertiary-container');
+                if (appCard) {
+                    appCard.querySelector('.text-xl').innerText = efficiency.toFixed(1);
+                    appCard.querySelector('.bg-tertiary-container').style.width = `${efficiency}%`;
+                }
+                // Desperdicio
+                const errorCard = document.querySelector('.border-error');
+                if (errorCard) {
+                    errorCard.querySelector('.text-xl').innerText = merma.toFixed(1);
+                    errorCard.querySelector('.bg-error').style.width = `${merma}%`;
+                }
+
+                // 4. Renderizar piezas en lienzo dinámicamente
+                canvasContainer.innerHTML = "";
+                
+                // Generar piezas a colocar según cantidades
+                combinations.forEach(comb => {
+                    const modelMoldes = dbMoldes.filter(m => m.modelo === comb.model && m.talla === comb.size);
+                    if (modelMoldes.length === 0) return;
+
+                    // Colocar visualmente los moldes principales
+                    modelMoldes.forEach(molde => {
+                        const count = Math.min(3, comb.qty); // Limitar cantidad mostrada para no colapsar el lienzo visualmente
+                        for (let i = 0; i < count; i++) {
+                            const div = document.createElement("div");
+                            const rot = Math.random() > 0.5 ? 90 : 0;
+                            const modelLabel = MODEL_NAMES[molde.modelo] || molde.modelo;
+                            
+                            let width = "100px";
+                            let height = "130px";
+                            let color = "bg-primary-container/80 text-on-primary-container border-primary";
+                            
+                            if (molde.nombre_pieza.toLowerCase().includes("manga")) {
+                                width = "70px";
+                                height = "90px";
+                                color = "bg-secondary-container/80 text-on-secondary-container border-secondary";
+                            } else if (molde.nombre_pieza.toLowerCase().includes("cuello")) {
+                                width = "90px";
+                                height = "50px";
+                                color = "bg-tertiary-container/30 text-on-tertiary-container border-tertiary";
+                            }
+
+                            div.className = `m-1 p-1 rounded border flex flex-col items-center justify-center shadow-sm transition-transform hover:scale-105 select-none ${color}`;
+                            div.style.width = width;
+                            div.style.height = height;
+                            div.innerHTML = `
+                                <span class="text-[11px] font-bold truncate w-full text-center">${molde.nombre_pieza}</span>
+                                <span class="text-[9px] truncate w-full text-center">${modelLabel}</span>
+                                <span class="text-[9px] font-semibold">Talla ${molde.talla} | Rot: ${rot}°</span>
+                            `;
+                            canvasContainer.appendChild(div);
+                        }
+                    });
+                });
+
+                alert("¡Optimización ejecutada y guardada en Supabase!");
+
+            } catch (err) {
+                console.error("Error optimizando:", err);
+                alert("Error al guardar la optimización en Supabase: " + err.message);
+            } finally {
+                btnEjecutar.disabled = false;
+                btnEjecutar.innerText = "Ejecutar Optimización";
+            }
+        });
+    }
+
+    async function seedMoldesIfNeeded(client) {
+        try {
+            const { data, error } = await client.from('moldes').select('id').limit(1);
+            if (error) throw error;
+            
+            if (!data || data.length === 0) {
+                console.log("Seeding default moldes to Supabase...");
+                const defaultMoldes = [];
+                const modelKeys = ["MOD-001", "MOD-002", "MOD-003", "MOD-005"];
+                const sizes = ["S", "M", "L", "XL"];
+                const pieces = [
+                    { nombre: "Delantero", url: "pieces/delantero.dxf", rot: 360 },
+                    { nombre: "Espalda", url: "pieces/espalda.dxf", rot: 360 },
+                    { nombre: "Manga", url: "pieces/manga.dxf", rot: 90 },
+                    { nombre: "Cuello", url: "pieces/cuello.dxf", rot: 0 }
+                ];
+
+                modelKeys.forEach(model => {
+                    sizes.forEach(size => {
+                        pieces.forEach(p => {
+                            defaultMoldes.push({
+                                tipo: "polo",
+                                modelo: model,
+                                talla: size,
+                                nombre_pieza: p.nombre,
+                                dxf_url: p.url,
+                                rotacion_maxima: p.rot
+                            });
+                        });
+                    });
+                });
+
+                const { error: seedErr } = await client.from('moldes').insert(defaultMoldes);
+                if (seedErr) throw seedErr;
+                console.log("Default moldes seeded successfully.");
+            }
+        } catch (err) {
+            console.error("Error seeding moldes:", err);
+        }
+    }
+});
+</script>
+</body></html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ESCARLÚ - Caja Chica y Ventas</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Sans+3:ital,wght@0,200..900;1,200..900&amp;display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed": "#ffe088",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "surface-dim": "#dcd9d9",
+                      "outline": "#7e747c",
+                      "primary-container": "#c8a2c8",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed": "#2f1314",
+                      "on-secondary-container": "#7a5354",
+                      "on-surface-variant": "#4c444b",
+                      "surface-container-low": "#f6f3f2",
+                      "inverse-primary": "#e2bae1",
+                      "secondary-container": "#fecbcb",
+                      "surface-container-highest": "#e5e2e1",
+                      "on-surface": "#1c1b1b",
+                      "primary-fixed-dim": "#e2bae1",
+                      "error-container": "#ffdad6",
+                      "surface-container": "#f0eded",
+                      "on-error": "#ffffff",
+                      "on-tertiary-fixed-variant": "#574500",
+                      "background": "#fcf9f8",
+                      "secondary": "#7b5455",
+                      "on-primary-fixed-variant": "#5a3c5d",
+                      "inverse-on-surface": "#f3f0ef",
+                      "on-secondary": "#ffffff",
+                      "outline-variant": "#cfc3cc",
+                      "surface-container-high": "#eae7e7",
+                      "on-background": "#1c1b1b",
+                      "on-tertiary": "#ffffff",
+                      "surface-tint": "#745475",
+                      "secondary-fixed-dim": "#ecbaba",
+                      "secondary-fixed": "#ffdad9",
+                      "primary-fixed": "#ffd6fe",
+                      "on-primary-container": "#553757",
+                      "inverse-surface": "#313030",
+                      "surface-variant": "#e5e2e1",
+                      "on-primary-fixed": "#2b112f",
+                      "tertiary-container": "#cfaa32",
+                      "on-tertiary-fixed": "#241a00",
+                      "on-primary": "#ffffff",
+                      "surface-bright": "#fcf9f8",
+                      "primary": "#745475",
+                      "on-secondary-fixed-variant": "#613d3e",
+                      "surface": "#fcf9f8",
+                      "on-tertiary-container": "#513f00",
+                      "tertiary-fixed-dim": "#e9c349",
+                      "tertiary": "#735c00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "stack-sm": "12px",
+                      "stack-lg": "48px",
+                      "container-padding": "40px",
+                      "stack-md": "24px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-md": ["\"Source Sans 3\""],
+                      "body-lg": ["\"Source Sans 3\""],
+                      "headline-lg": ["Libre Caslon Text"],
+                      "label-lg": ["\"Source Sans 3\""],
+                      "display-lg": ["Libre Caslon Text"],
+                      "label-md": ["\"Source Sans 3\""],
+                      "headline-md": ["Libre Caslon Text"],
+                      "body-sm": ["\"Source Sans 3\""]
+              },
+              "fontSize": {
+                      "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 2px solid #e2bae1;
+            box-shadow: 0 4px 20px rgba(200, 162, 200, 0.12);
+        }
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-whatsapp:hover {
+            background-color: #128c7e;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+        /* POS Layout */
+        body, html { height: 100vh; overflow: hidden; }
+        main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; padding: 12px !important; gap: 12px !important; }
+        header { padding-bottom: 6px !important; margin-bottom: 0 !important; }
+        header h2 { font-size: 20px !important; }
+        header p { font-size: 11.5px !important; }
+        .glass-card { margin-top: 0 !important; padding: 12px !important; }
+        section.glass-card:last-of-type { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+        section.glass-card:last-of-type > div.overflow-x-auto { flex: 1; overflow-y: auto; max-height: calc(100vh - 300px) !important; }
+    </style>
+    <!-- Script de lógica común -->
+    <script src="shared.js"></script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row overflow-hidden">
+
+<!-- SideNav (Cargado dinámicamente por shared.js) -->
+<nav class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container w-72 shadow-md z-20"></nav>
+
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-72 flex flex-col gap-3 w-full max-w-[1280px] overflow-hidden">
+    
+    <!-- Unified Top Bar Header (Tienda) -->
+    <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
+      <!-- Lado Izquierdo: Badge de Sede -->
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+          <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
+          <span class="text-xs font-bold text-primary">Tienda Santa Lucía</span>
+        </div>
+      </div>
+
+      <!-- Centro: Input de Búsqueda Global Centrado -->
+      <div class="flex-1 max-w-md mx-6">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+            <span class="material-symbols-outlined text-sm">search</span>
+          </span>
+          <input type="text" placeholder="Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+        </div>
+      </div>
+
+      <!-- Lado Derecho: Indicador y Usuario -->
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          <span class="text-[11px] font-bold text-green-700">Caja Abierta</span>
+        </div>
+        <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+          <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
+          <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+            <img alt="Vendedora Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Header (Compact) -->
+    <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mt-1">
+        <div class="flex items-center gap-3">
+            <h2 id="store-title-label" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Registro de Ventas</h2>
+            <span class="text-xs text-on-surface-variant font-semibold">| Fecha: <span id="current-date-label">21 de Julio, 2026</span></span>
+        </div>
+        <div id="admin-store-panel" class="hidden flex items-center gap-2">
+            <label class="text-xs font-bold text-on-surface" for="admin-store-select">Sede:</label>
+            <select id="admin-store-select" class="h-9 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary outline-none">
+                <option value="TDA-01">Tienda Santa Lucía</option>
+                <option value="TDA-02">Tienda Generales Suplex</option>
+                <option value="TDA-03">Tienda Generales Pasadizo</option>
+                <option value="TDA-04">Tienda Aviación</option>
+            </select>
+        </div>
+        <div class="hidden">
+            <span id="store-subtitle-label"></span>
+        </div>
+    </div>
+
+    <!-- Main Layout: Estado de la Caja y Registro de Ventas del Día -->
+    <div class="flex flex-col gap-6 w-full">
+            
+            <!-- Cards de Montos -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Efectivo en Caja -->
+                <div class="glass-card rounded-xl p-4 flex items-center justify-between border-t-4 border-green-500 h-24">
+                    <div>
+                        <h4 class="text-xs font-bold text-on-surface-variant flex items-center gap-1 mb-1">
+                            <span class="material-symbols-outlined text-[16px] text-green-500">savings</span>
+                            Efectivo en Caja Física
+                        </h4>
+                        <p id="cash-drawer-total" class="text-2xl font-black text-on-surface">S/ 0.00</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[24px]">payments</span>
+                    </div>
+                </div>
+
+                <!-- Digital Pendiente -->
+                <div class="glass-card rounded-xl p-4 flex items-center justify-between border-t-4 border-amber-400 h-24">
+                    <div>
+                        <h4 class="text-xs font-bold text-on-surface-variant flex items-center gap-1 mb-1">
+                            <span class="material-symbols-outlined text-[16px] text-amber-500 font-bold">pending_actions</span>
+                            Digital Pendiente de Validar
+                        </h4>
+                        <p id="digital-pending-total" class="text-2xl font-black text-on-surface">S/ 0.00</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[24px]">hourglass_empty</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Historial de Ventas -->
+            <section class="glass-card rounded-xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-headline-md text-headline-md text-on-surface font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">receipt_long</span>
+                        Historial de Ventas (Hoy)
+                    </h3>
+                    <span id="sales-count-badge" class="px-3 py-1 bg-primary-container text-on-primary-container font-label-md text-xs rounded-full">0 ventas</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-body-sm">
+                        <thead>
+                            <tr class="border-b border-outline-variant text-on-surface-variant font-label-md">
+                                <th class="py-3 px-2">ID</th>
+                                <th class="py-3 px-2">Cliente</th>
+                                <th class="py-3 px-2 text-right">Monto</th>
+                                <th class="py-3 px-2">Método</th>
+                                <th class="py-3 px-2">Estado</th>
+                                <th class="py-3 px-2 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-history-body">
+                            <!-- Ventas cargadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Placeholder para lista vacía -->
+                <div id="empty-history-placeholder" class="hidden flex-col items-center justify-center py-10 text-on-surface-variant gap-2 text-center">
+                    <span class="material-symbols-outlined text-[48px]">receipt</span>
+                    <p class="font-label-lg font-semibold">No se han registrado ventas hoy en esta sucursal.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Datos de UI
+        const cashDrawerLabel = document.getElementById("cash-drawer-total");
+        const digitalPendingLabel = document.getElementById("digital-pending-total");
+        const salesHistoryBody = document.getElementById("sales-history-body");
+        const emptyPlaceholder = document.getElementById("empty-history-placeholder");
+        const salesCountBadge = document.getElementById("sales-count-badge");
+        
+        const storeTitleLabel = document.getElementById("store-title-label");
+        const storeSubtitleLabel = document.getElementById("store-subtitle-label");
+        
+        // WhatsApp Dueño Configurado
+        const OWNER_PHONE = "51936197969";
+
+        // Determinar tienda activa
+        const user = getCurrentUser();
+        let activeStoreId = "";
+
+        if (user.role === "admin") {
+            const adminStorePanel = document.getElementById("admin-store-panel");
+            const adminStoreSelect = document.getElementById("admin-store-select");
+            adminStorePanel.classList.remove("hidden");
+            
+            activeStoreId = localStorage.getItem("escarlu_admin_store_view") || "TDA-01";
+            adminStoreSelect.value = activeStoreId;
+            
+            adminStoreSelect.addEventListener("change", (e) => {
+                activeStoreId = e.target.value;
+                localStorage.setItem("escarlu_admin_store_view", activeStoreId);
+                updateStoreDetails();
+                renderSales();
+            });
+        } else {
+            activeStoreId = user.storeId;
+        }
+
+        // Mostrar fecha actual
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        document.getElementById("current-date-label").textContent = new Date().toLocaleDateString('es-ES', options);
+
+        function updateStoreDetails() {
+            const name = STORE_NAMES[activeStoreId] || "Sucursal";
+            storeTitleLabel.textContent = `Registro de Ventas - ${name}`;
+            storeSubtitleLabel.textContent = `Caja Chica / Ventas - ${name.toUpperCase()}`;
+        }
+        updateStoreDetails();
+
+        // Cargar y renderizar ventas
+        function renderSales() {
+            const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+            // Filtrar las ventas de esta tienda
+            const storeSales = allSales.filter(sale => sale.storeId === activeStoreId);
+            
+            // Ordenar por fecha descendente
+            storeSales.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            salesCountBadge.textContent = `${storeSales.length} ${storeSales.length === 1 ? 'venta' : 'ventas'}`;
+
+            // Limpiar tabla
+            salesHistoryBody.innerHTML = "";
+            
+            if (storeSales.length === 0) {
+                emptyPlaceholder.classList.remove("hidden");
+                salesHistoryBody.closest("table").classList.add("hidden");
+                cashDrawerLabel.textContent = "S/ 0.00";
+                digitalPendingLabel.textContent = "S/ 0.00";
+                return;
+            }
+
+            emptyPlaceholder.classList.add("hidden");
+            salesHistoryBody.closest("table").classList.remove("hidden");
+
+            let cashTotal = 0;
+            let digitalPendingTotal = 0;
+
+            storeSales.forEach(sale => {
+                // Sumar totales
+                if (sale.method === "efectivo") {
+                    cashTotal += sale.amount;
+                } else if (sale.method !== "efectivo" && sale.status === "pendiente") {
+                    digitalPendingTotal += sale.amount;
+                }
+
+                // Fila de tabla
+                const tr = document.createElement("tr");
+                tr.className = "border-b border-surface-variant hover:bg-surface-container-low transition-colors";
+                
+                // Badge de estado
+                let statusBadge = "";
+                let actionBtn = "-";
+
+                if (sale.method === "efectivo") {
+                    statusBadge = `<span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold text-xs">Entregado</span>`;
+                } else {
+                    if (sale.status === "pendiente") {
+                        statusBadge = `<span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-bold text-xs flex items-center w-max gap-1"><span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>Pendiente</span>`;
+                        
+                        // WhatsApp link generator
+                        const storeName = STORE_NAMES[sale.storeId] || sale.storeId;
+                        const waText = encodeURIComponent(`Hola Escarlú, envío comprobante de pago digital:\n\n*Tienda:* ${storeName}\n*Cliente:* ${sale.client}\n*Monto:* S/ ${sale.amount.toFixed(2)}\n*Referencia:* ${sale.reference}\n*Transacción:* ${sale.id}\n\nQuedo a la espera de la validación.`);
+                        const waUrl = `https://wa.me/${OWNER_PHONE}?text=${waText}`;
+                        
+                        actionBtn = `
+                            <a href="${waUrl}" target="_blank" class="h-9 px-3 btn-whatsapp font-bold text-xs rounded-lg flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-sm">share</span>
+                                WhatsApp
+                            </a>
+                        `;
+                    } else if (sale.status === "aprobado" || sale.status === "validado") {
+                        statusBadge = `<span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold text-xs">Validado</span>`;
+                    } else {
+                        statusBadge = `<span class="px-2 py-0.5 bg-red-100 text-red-800 rounded font-bold text-xs">Rechazado</span>`;
+                    }
+                }
+
+                // Formatear fecha
+                const timeStr = new Date(sale.date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+                tr.innerHTML = `
+                    <td class="py-3 px-2 font-mono text-xs text-on-surface-variant">${sale.id}</td>
+                    <td class="py-3 px-2 font-bold">${sale.client}</td>
+                    <td class="py-3 px-2 text-right font-semibold text-primary">S/ ${sale.amount.toFixed(2)}</td>
+                    <td class="py-3 px-2 uppercase font-semibold text-xs text-on-surface-variant">${sale.method} ${sale.reference ? `(${sale.reference})` : ''}</td>
+                    <td class="py-3 px-2">${statusBadge}</td>
+                    <td class="py-3 px-2 flex justify-center">${actionBtn}</td>
+                `;
+                salesHistoryBody.appendChild(tr);
+            });
+
+            // Actualizar labels
+            cashDrawerLabel.textContent = `S/ ${cashTotal.toFixed(2)}`;
+            digitalPendingLabel.textContent = `S/ ${digitalPendingTotal.toFixed(2)}`;
+        }
+
+        renderSales();
+
+        // Real-time synchronization
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'escarlu_sales') {
+                renderSales();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

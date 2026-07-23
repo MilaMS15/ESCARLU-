@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ESCARLÚ - Central Fabric Stock</title>
+<script src="shared.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#e5e2e1",
+                    "tertiary-container": "#cfaa32",
+                    "primary-fixed": "#ffd6fe",
+                    "surface-container": "#f0eded",
+                    "inverse-primary": "#e2bae1",
+                    "secondary-container": "#fecbcb",
+                    "outline": "#7e747c",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "surface-bright": "#fcf9f8",
+                    "on-tertiary": "#ffffff",
+                    "on-surface": "#1c1b1b",
+                    "tertiary": "#735c00",
+                    "surface-container-low": "#f6f3f2",
+                    "background": "#fcf9f8",
+                    "error-container": "#ffdad6",
+                    "primary": "#745475",
+                    "outline-variant": "#cfc3cc",
+                    "surface-variant": "#e5e2e1",
+                    "primary-fixed-dim": "#e2bae1",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#ffdad9",
+                    "on-secondary-fixed": "#2f1314",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#dcd9d9",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#7a5354",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f3f0ef",
+                    "tertiary-fixed": "#ffe088",
+                    "secondary": "#7b5455",
+                    "inverse-surface": "#313030",
+                    "on-primary-fixed-variant": "#5a3c5d",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#4c444b",
+                    "on-primary-fixed": "#2b112f",
+                    "secondary-fixed-dim": "#ecbaba",
+                    "primary-container": "#c8a2c8",
+                    "surface-tint": "#745475",
+                    "surface": "#fcf9f8",
+                    "surface-container-lowest": "#ffffff",
+                    "on-background": "#1c1b1b",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-tertiary-container": "#513f00",
+                    "on-secondary-fixed-variant": "#613d3e",
+                    "on-primary-container": "#553757",
+                    "surface-container-high": "#eae7e7",
+                    "on-tertiary-fixed": "#241a00",
+                    // Brand custom colors for strict mapping (though we should use the system ones mostly)
+                    "brand-lilac": "#C8A2C8",
+                    "brand-pink": "#F4C2C2",
+                    "brand-cream": "#FAFAFA",
+                    "brand-gold": "#D4AF37",
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "stack-sm": "12px",
+                    "gutter": "24px",
+                    "stack-lg": "48px",
+                    "stack-md": "24px",
+                    "container-padding": "40px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Libre Caslon Text"
+                    ],
+                    "body-sm": [
+                            "\"Source Sans 3\""
+                    ],
+                    "label-lg": [
+                            "\"Source Sans 3\""
+                    ],
+                    "headline-md": [
+                            "Libre Caslon Text"
+                    ],
+                    "body-lg": [
+                            "\"Source Sans 3\""
+                    ],
+                    "body-md": [
+                            "\"Source Sans 3\""
+                    ],
+                    "label-md": [
+                            "\"Source Sans 3\""
+                    ],
+                    "display-lg": [
+                            "Libre Caslon Text"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-sm": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            background-color: #FAFAFA; /* Brand Cream */
+        }
+        /* Soft Lilac glow for focus states */
+        *:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(200, 162, 200, 0.4);
+        }
+        /* Custom scrollbar for better visibility */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F6F3F2;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C8A2C8;
+            border-radius: 6px;
+            border: 3px solid #F6F3F2;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #745475;
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md antialiased overflow-hidden h-screen flex">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md docked left-0 h-full w-64 md:w-72 z-40">
+<!-- Header -->
+<div class="mb-stack-lg px-4 pt-4 flex flex-col items-center">
+<!-- Avatar/Logo representation -->
+<div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center mb-4 shadow-sm border-2 border-tertiary-container">
+<span class="material-symbols-outlined text-4xl text-on-primary-container fill">storefront</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-primary text-center">ESCARLÚ</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-center mt-2">Management Dashboard</p>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 space-y-2 overflow-y-auto">
+<!-- Dashboard (Active logic fallback - Semantic Intent: Not exact, but closest to 'Central Fabric Stock' overview) -->
+<a aria-label="Dashboard" class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<!-- Central Fabric Stock (Active) -->
+<a aria-current="page" aria-label="Central Fabric Stock" class="flex items-center gap-4 bg-primary-container text-on-primary-container rounded-lg p-4 font-bold min-h-[56px] cursor-pointer transition-transform active:scale-98 shadow-sm border-t-2 border-tertiary-container" href="#">
+<span class="material-symbols-outlined text-2xl fill" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-lg text-label-lg">Central Fabric Stock</span>
+</a>
+<!-- Department Requests -->
+<a aria-label="Department Requests" class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="reorder">reorder</span>
+<span class="font-label-lg text-label-lg">Department Requests</span>
+</a>
+<!-- Simulation of Trace & Cut -->
+<a aria-label="Simulation of Trace &amp; Cut" class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="content_cut">content_cut</span>
+<span class="font-label-lg text-label-lg">Simulation of Trace &amp; Cut</span>
+</a>
+<!-- Reports -->
+<a aria-label="Reports" class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="assessment">assessment</span>
+<span class="font-label-lg text-label-lg">Reports</span>
+</a>
+</nav>
+<!-- Footer -->
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<a aria-label="Logout" class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="logout">logout</span>
+<span class="font-label-lg text-label-lg">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-72 bg-background h-screen overflow-y-auto">
+<!-- TopAppBar Context (Functional Top Bar for the Canvas) -->
+<header class="sticky top-0 z-30 bg-surface/90 backdrop-blur-md border-b border-outline-variant px-container-padding h-20 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Toggle (Visible only on small screens) -->
+<button class="md:hidden p-2 text-primary rounded-full hover:bg-surface-container-high focus-visible:ring-4 ring-primary-container transition-colors">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+<h2 class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">Inventario y Solicitudes</h2>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-64 h-14 pl-12 pr-4 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary-container transition-all" placeholder="Buscar modelos..." type="text"/>
+</div>
+<button class="relative p-3 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors min-h-[56px] min-w-[56px] flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-3 h-3 bg-tertiary-container rounded-full border-2 border-surface"></span>
+</button>
+<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden shadow-sm cursor-pointer border border-outline-variant hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-on-secondary-container">person</span>
+</div>
+</div>
+</header>
+<div class="p-container-padding max-w-[1440px] mx-auto space-y-12">
+<!-- Métricas Section (Bento Grid approach) -->
+<section aria-labelledby="metrics-heading">
+<h3 class="sr-only" id="metrics-heading">Métricas Clave</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Card 1: Total Stock -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-tertiary-container relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Total Prendas Stock</p>
+<p class="font-display-lg text-display-lg text-primary font-bold">14,250</p>
+</div>
+<div class="w-16 h-16 rounded-full bg-primary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-primary">checkroom</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-xl">trending_up</span>
+<span class="font-body-md text-body-md">+5% vs mes anterior</span>
+</div>
+<!-- Decorative bg -->
+<div class="absolute -bottom-4 -right-4 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl group-hover:bg-primary-container/20 transition-colors"></div>
+</div>
+<!-- Card 2: Pending Requests -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-tertiary-container relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Solicitudes Pendientes</p>
+<p class="font-display-lg text-display-lg text-on-surface font-bold">24</p>
+</div>
+<div class="w-16 h-16 rounded-full bg-secondary-container/50 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-secondary">pending_actions</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">local_shipping</span>
+<span class="font-body-md text-body-md">Para despacho hoy: 12</span>
+</div>
+</div>
+<!-- Card 3: Low Stock Alerts -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-error/80 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Alertas Stock Bajo</p>
+<p class="font-display-lg text-display-lg text-error font-bold">8</p>
+</div>
+<div class="w-16 h-16 rounded-full bg-error-container flex items-center justify-center animate-pulse">
+<span class="material-symbols-outlined text-4xl text-on-error-container">warning</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">inventory</span>
+<span class="font-body-md text-body-md">Requieren atención urgente</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content Area: Split Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Inventario Section (Takes 7 cols on large screens) -->
+<section aria-labelledby="inventory-heading" class="lg:col-span-7 space-y-6">
+<div class="flex justify-between items-end border-b border-outline-variant pb-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary font-bold" id="inventory-heading">Inventario de Prendas</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Vista detallada por modelo y talla</p>
+</div>
+<button class="min-h-[56px] px-6 rounded-full border-2 border-primary-container text-on-surface font-label-lg text-label-lg hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined">filter_list</span>
+                            Filtrar
+                        </button>
+</div>
+<!-- Inventory List (High row height, clear dividers) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(200,162,200,0.15)] overflow-hidden">
+<!-- Row 1 -->
+<div class="min-h-[80px] p-6 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface">Polo Piqué Clásico</h4>
+<div class="flex items-center gap-3 mt-2">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">Azul Marino</span>
+<span class="inline-flex items-center gap-1 text-tertiary-container font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Stock Óptimo
+                                        </span>
+</div>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">S</div>
+<div class="font-body-lg text-body-lg text-on-surface">150</div>
+</div>
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">M</div>
+<div class="font-body-lg text-body-lg text-on-surface font-bold">320</div>
+</div>
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">L</div>
+<div class="font-body-lg text-body-lg text-on-surface">210</div>
+</div>
+<div class="text-center px-3">
+<div class="font-label-md text-label-md text-on-surface-variant">XL</div>
+<div class="font-body-lg text-body-lg text-on-surface">80</div>
+</div>
+<button aria-label="Ver detalles" class="ml-4 w-12 h-12 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
+<span class="material-symbols-outlined text-3xl">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="min-h-[80px] p-6 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface">Polo Algodón Premium</h4>
+<div class="flex items-center gap-3 mt-2">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">Blanco</span>
+<span class="inline-flex items-center gap-1 text-error font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-error"></span> Stock Bajo
+                                        </span>
+</div>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">S</div>
+<div class="font-body-lg text-body-lg text-on-surface">45</div>
+</div>
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">M</div>
+<div class="font-body-lg text-body-lg text-error font-bold">12</div>
+</div>
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">L</div>
+<div class="font-body-lg text-body-lg text-on-surface">85</div>
+</div>
+<div class="text-center px-3">
+<div class="font-label-md text-label-md text-on-surface-variant">XL</div>
+<div class="font-body-lg text-body-lg text-on-surface">30</div>
+</div>
+<button aria-label="Ver detalles" class="ml-4 w-12 h-12 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
+<span class="material-symbols-outlined text-3xl">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="min-h-[80px] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface">Camisa Oxford</h4>
+<div class="flex items-center gap-3 mt-2">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">Celeste</span>
+<span class="inline-flex items-center gap-1 text-tertiary-container font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Stock Óptimo
+                                        </span>
+</div>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">S</div>
+<div class="font-body-lg text-body-lg text-on-surface">90</div>
+</div>
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">M</div>
+<div class="font-body-lg text-body-lg text-on-surface">180</div>
+</div>
+<div class="text-center px-3 border-r border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant">L</div>
+<div class="font-body-lg text-body-lg text-on-surface">140</div>
+</div>
+<div class="text-center px-3">
+<div class="font-label-md text-label-md text-on-surface-variant">XL</div>
+<div class="font-body-lg text-body-lg text-on-surface">60</div>
+</div>
+<button aria-label="Ver detalles" class="ml-4 w-12 h-12 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
+<span class="material-symbols-outlined text-3xl">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 text-center border-t border-outline-variant">
+<button class="font-label-lg text-label-lg text-primary hover:underline underline-offset-4">Ver Catálogo Completo</button>
+</div>
+</div>
+</section>
+<!-- Solicitudes Section (Takes 5 cols, sticky layout for easy access) -->
+<section aria-labelledby="requests-heading" class="lg:col-span-5 space-y-6">
+<div class="flex justify-between items-end border-b border-outline-variant pb-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary font-bold" id="requests-heading">Gestión de Solicitudes</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Atención requerida</p>
+</div>
+</div>
+<div class="space-y-4" id="requests-list-container">
+<!-- Inyectado dinámicamente -->
+</div>
+</section>
+</div>
+<!-- Spacer for bottom padding -->
+<div class="h-12"></div>
+</div>
+</main>
+<script>
+    const user = getCurrentUser();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        renderSideNav("solicitudpendientealmacen");
+        renderRequests();
+    });
+
+    function renderRequests() {
+        const container = document.getElementById("requests-list-container");
+        if (!container) return;
+
+        const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
+        const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+
+        // Filter pending requests where origin is the central warehouse (origin === 'ALM-01')
+        const pending = allReqs.filter(r => r.origin === 'ALM-01' && r.status === 'pendiente');
+
+        // Sort by date descending
+        pending.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        container.innerHTML = "";
+
+        if (pending.length === 0) {
+            container.innerHTML = `
+                <div class="bg-surface-container-lowest rounded-xl p-8 text-center border border-outline-variant/50">
+                    <p class="font-medium text-on-surface-variant">No hay solicitudes pendientes de almacén.</p>
+                </div>
+            `;
+            return;
+        }
+
+        pending.forEach(req => {
+            const storeName = STORE_NAMES[req.destination] || req.destination;
+            const modelLabel = MODEL_NAMES[req.model] || req.model;
+            const colorLabel = COLOR_NAMES[req.color] || req.color;
+            
+            // Get Central Stock
+            const centralStock = inventory["ALM-01"]?.[req.model]?.[req.color]?.[req.size] || 0;
+            const hasEnoughStock = centralStock >= req.qty;
+
+            const card = document.createElement("div");
+            card.className = "bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border border-outline-variant/50 relative";
+            
+            let warningHtml = "";
+            let disabledAttr = "";
+            let opacityClass = "";
+
+            if (!hasEnoughStock) {
+                warningHtml = `
+                    <div class="mt-3 flex items-center gap-2 text-error bg-error-container/30 p-2.5 rounded font-body-sm text-xs font-bold">
+                        <span class="material-symbols-outlined text-base">warning</span>
+                        <span>Stock actual insuficiente (Solo ${centralStock} disp.)</span>
+                    </div>
+                `;
+                disabledAttr = "disabled";
+                opacityClass = "opacity-50 cursor-not-allowed";
+            } else {
+                warningHtml = `
+                    <div class="mt-3 text-xs text-on-surface-variant font-semibold bg-surface-container-low p-2 rounded">
+                        Stock disponible en Almacén Central: <strong class="text-primary">${centralStock} unidades</strong>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="absolute -top-3 left-6 bg-primary text-on-primary px-4 py-1 rounded-full font-label-md text-xs font-bold shadow-sm uppercase">
+                    ${storeName}
+                </div>
+                <div class="mt-4 mb-6">
+                    <p class="font-body-md text-xs text-on-surface-variant mb-2">Solicita:</p>
+                    <div class="flex items-center gap-4 bg-surface-container-low p-4 rounded-lg">
+                        <div class="w-12 h-12 bg-surface rounded flex items-center justify-center border border-outline-variant shrink-0">
+                            <span class="material-symbols-outlined text-on-surface-variant">shopping_bag</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-label-lg font-bold text-sm text-on-surface">${modelLabel}</p>
+                            <p class="font-body-sm text-xs text-on-surface-variant">${colorLabel} • Talla ${req.size}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-display-lg text-primary text-2xl font-bold leading-none">${req.qty}</p>
+                            <p class="font-label-md text-[10px] text-on-surface-variant uppercase font-bold">unidades</p>
+                        </div>
+                    </div>
+                    ${warningHtml}
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="approveRequest('${req.id}')" ${disabledAttr} class="flex-1 min-h-[50px] rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-sm ${opacityClass}">
+                        <span class="material-symbols-outlined text-lg">check_circle</span>
+                        Aprobar y Despachar
+                    </button>
+                    <button onclick="rejectRequest('${req.id}')" class="flex-1 min-h-[50px] rounded-lg bg-error text-on-error font-bold text-sm hover:brightness-95 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <span class="material-symbols-outlined text-lg">cancel</span>
+                        Rechazar
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function approveRequest(id) {
+        const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
+        const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+
+        const reqIndex = allReqs.findIndex(r => r.id === id);
+        if (reqIndex === -1) return;
+
+        const req = allReqs[reqIndex];
+        const centralStock = inventory["ALM-01"]?.[req.model]?.[req.color]?.[req.size] || 0;
+
+        if (centralStock < req.qty) {
+            alert("No hay stock suficiente en el Almacén Central.");
+            return;
+        }
+
+        // Deduct from central warehouse
+        inventory["ALM-01"][req.model][req.color][req.size] -= req.qty;
+        
+        // Add to store stock
+        if (!inventory[req.destination]) {
+            inventory[req.destination] = {};
+        }
+        if (!inventory[req.destination][req.model]) {
+            inventory[req.destination][req.model] = {};
+        }
+        if (!inventory[req.destination][req.model][req.color]) {
+            inventory[req.destination][req.model][req.color] = {};
+        }
+        const currentDestStock = inventory[req.destination][req.model][req.color][req.size] || 0;
+        inventory[req.destination][req.model][req.color][req.size] = currentDestStock + req.qty;
+
+        // Update status
+        req.status = "aprobado";
+
+        localStorage.setItem("escarlu_inventory", JSON.stringify(inventory));
+        localStorage.setItem("escarlu_requests", JSON.stringify(allReqs));
+
+        alert("Solicitud aprobada y despachada con éxito.");
+        renderRequests();
+    }
+
+    function rejectRequest(id) {
+        const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
+        const reqIndex = allReqs.findIndex(r => r.id === id);
+        if (reqIndex === -1) return;
+
+        allReqs[reqIndex].status = "rechazado";
+        localStorage.setItem("escarlu_requests", JSON.stringify(allReqs));
+
+        alert("Solicitud rechazada.");
+        renderRequests();
+    }
+
+    // Real-time synchronization
+    window.addEventListener('storage', (e) => {
+        if (!e.key || e.key === 'escarlu_requests' || e.key === 'escarlu_inventory') {
+            renderRequests();
+        }
+    });
+</script>
+</body></html>

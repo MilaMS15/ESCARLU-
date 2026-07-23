@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stock General Consolidado | ESCARLÚ</title>
+<script src="shared.js"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-background": "#1c1b1b",
+                "on-secondary": "#ffffff",
+                "surface": "#fcf9f8",
+                "on-surface-variant": "#4c444b",
+                "on-error": "#ffffff",
+                "background": "#fcf9f8",
+                "primary-container": "#c8a2c8",
+                "surface-bright": "#fcf9f8",
+                "on-primary-fixed-variant": "#5a3c5d",
+                "primary-fixed": "#ffd6fe",
+                "secondary-container": "#fecbcb",
+                "on-tertiary-fixed": "#241a00",
+                "on-surface": "#1c1b1b",
+                "inverse-primary": "#e2bae1",
+                "primary-fixed-dim": "#e2bae1",
+                "surface-variant": "#e5e2e1",
+                "on-secondary-container": "#7a5354",
+                "tertiary-container": "#cfaa32",
+                "surface-container-highest": "#e5e2e1",
+                "tertiary-fixed": "#ffe088",
+                "on-primary": "#ffffff",
+                "secondary-fixed": "#ffdad9",
+                "surface-container": "#f0eded",
+                "primary": "#745475",
+                "surface-container-high": "#eae7e7",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#745475",
+                "secondary": "#7b5455",
+                "outline": "#7e747c",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed-dim": "#ecbaba",
+                "tertiary-fixed-dim": "#e9c349",
+                "surface-container-low": "#f6f3f2",
+                "outline-variant": "#cfc3cc",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "on-secondary-fixed-variant": "#613d3e",
+                "tertiary": "#735c00",
+                "on-tertiary-fixed-variant": "#574500",
+                "on-primary-fixed": "#2b112f",
+                "on-primary-container": "#553757",
+                "error": "#ba1a1a",
+                "inverse-surface": "#313030",
+                "surface-dim": "#dcd9d9",
+                "inverse-on-surface": "#f3f0ef",
+                "on-tertiary-container": "#513f00",
+                "on-secondary-fixed": "#2f1314"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "stack-sm": "12px",
+                "stack-md": "24px",
+                "gutter": "24px",
+                "stack-lg": "48px",
+                "unit": "8px",
+                "container-padding": "40px"
+            },
+            "fontFamily": {
+                "body-sm": ["Source Sans 3"],
+                "label-lg": ["Source Sans 3"],
+                "headline-md": ["Libre Caslon Text"],
+                "body-lg": ["Source Sans 3"],
+                "display-lg": ["Libre Caslon Text"],
+                "body-md": ["Source Sans 3"],
+                "headline-lg": ["Libre Caslon Text"],
+                "label-md": ["Source Sans 3"]
+            },
+            "fontSize": {
+                "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(200, 162, 200, 0.25);
+        }
+        .gold-accent {
+            border-top: 4px solid #cfaa32;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Aumentar legibilidad */
+        .text-xs { font-size: 13.5px !important; }
+        .text-sm { font-size: 15.5px !important; }
+        .text-[10px] { font-size: 11px !important; }
+        .text-[9px] { font-size: 10px !important; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen">
+<!-- SideNavBar (Cargado por shared.js) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
+
+<!-- Main Content Area -->
+<main class="md:ml-72 min-h-screen bg-background">
+<!-- Unified Top Bar Header -->
+<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto">
+  <!-- Lado Izquierdo: Tag / Badge de Rol -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">storefront</span>
+      <span class="text-xs font-bold text-primary">Administrador / Dueño</span>
+    </div>
+  </div>
+
+  <!-- Centro: Input de Búsqueda Global Centrado -->
+  <div class="flex-1 max-w-md mx-6">
+    <div class="relative w-full">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">search</span>
+      </span>
+      <input type="text" placeholder="Buscar transacción, modelo, SKU o sede..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+    </div>
+  </div>
+
+  <!-- Lado Derecho: Acciones y Perfil -->
+  <div class="flex items-center gap-4">
+    <button aria-label="Notifications" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">notifications</span>
+    </button>
+    <button aria-label="Settings" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">settings</span>
+    </button>
+    <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+      <span class="text-xs font-bold text-on-surface">Administrador</span>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+        <img alt="Perfil Administrador" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Dashboard Content -->
+<div class="p-4 max-w-[1440px] mx-auto space-y-4">
+<!-- Welcome & Filter Header -->
+<section class="space-y-2">
+<div class="flex flex-col md:flex-row justify-between md:items-end gap-4">
+<div>
+<h2 class="text-2xl font-bold text-black tracking-tight">Stock General Consolidado</h2>
+<p class="text-xs text-on-surface-variant">Visión global de inventario en Almacén Central y las 4 Tiendas.</p>
+</div>
+<div class="flex flex-wrap gap-4 items-center">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-xs text-on-surface font-semibold ml-1" for="store-filter-select">Filtrar por Sede:</label>
+<select class="h-12 min-w-[220px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg text-sm px-4 bg-surface cursor-pointer outline-none" id="store-filter-select">
+<option value="all">Consolidado Total (Todas las Sedes)</option>
+<option value="ALM-01">Almacén Central</option>
+<option value="TDA-01">Tienda Santa Lucía</option>
+<option value="TDA-02">Tienda Generales Suplex</option>
+<option value="TDA-03">Tienda Generales Pasadizo</option>
+<option value="TDA-04">Tienda Aviación</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+
+<!-- KPI Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mt-6">
+<div class="glass-card gold-accent p-6 rounded-2xl shadow-sm flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-[28px]">inventory_2</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Total Prendas en Stock</p>
+<p class="text-headline-md font-bold text-primary" id="kpi-total-stock">1,248 unids</p>
+</div>
+</div>
+
+<div class="glass-card p-6 rounded-2xl shadow-sm flex items-center gap-5 border-t-4 border-primary">
+<div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[28px]">warehouse</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Almacén Central</p>
+<p class="text-headline-md font-bold text-on-surface" id="kpi-central-stock">580 unids</p>
+</div>
+</div>
+
+<div class="glass-card p-6 rounded-2xl shadow-sm flex items-center gap-5 border-t-4 border-secondary-container">
+<div class="w-14 h-14 rounded-2xl bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-[28px]">storefront</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Stock en 4 Tiendas</p>
+<p class="text-headline-md font-bold text-on-surface" id="kpi-tiendas-stock">668 unids</p>
+</div>
+</div>
+
+<div class="glass-card p-6 rounded-2xl shadow-sm flex items-center gap-5 border-t-4 border-error">
+<div class="w-14 h-14 rounded-2xl bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-error-container text-[28px]">warning</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Alertas de Stock Bajo</p>
+<p class="text-headline-md font-bold text-error" id="kpi-alerts-count">4 Variantes</p>
+</div>
+</div>
+</div>
+
+<!-- Main Inventory Section -->
+<section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
+<div class="p-6 bg-surface-container-low border-b border-outline-variant flex flex-wrap justify-between items-center gap-4">
+<h3 class="font-headline-md text-primary font-bold flex items-center gap-3">
+<span class="material-symbols-outlined">checkroom</span>
+                    Existencias por Modelo y Talla
+                </h3>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span>Filtrar</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-on-primary font-semibold text-sm shadow-sm hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Exportar Reporte</span>
+</button>
+</div>
+</div>
+
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse" id="inventory-table">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-md text-xs uppercase tracking-wider">
+<th class="px-6 py-4 border-b border-outline-variant">Modelo / Tipo</th>
+<th class="px-4 py-4 border-b border-outline-variant">Color</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">S</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">M</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">L</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">XL</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">Total Stock</th>
+<th class="px-4 py-4 border-b border-outline-variant">Estado</th>
+<th class="px-6 py-4 border-b border-outline-variant text-right">Detalle por Sede</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-sm font-body-md" id="inventory-tbody">
+<!-- Rows rendered by script -->
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Cargar inventario desde localStorage o DEFAULT_INVENTORY
+    let invData = {};
+    function loadInv() {
+        const rawInv = localStorage.getItem("escarlu_inventory");
+        invData = rawInv ? JSON.parse(rawInv) : (typeof DEFAULT_INVENTORY !== 'undefined' ? DEFAULT_INVENTORY : {});
+    }
+    loadInv();
+
+    const tbody = document.getElementById("inventory-tbody");
+    const storeSelect = document.getElementById("store-filter-select");
+    const searchInput = document.getElementById("inventory-search-input");
+
+    function renderTable() {
+        if (!invData || Object.keys(invData).length === 0) return;
+
+        const selectedStore = storeSelect ? storeSelect.value : "all";
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+
+        let rowsHtml = "";
+        let totalItems = 0;
+        let centralItems = 0;
+        let tiendasItems = 0;
+        let lowAlerts = 0;
+
+        // Modelos y Colores dinámicos desde shared.js
+        const models = Object.entries(MODEL_NAMES).map(([key, name]) => ({
+            key,
+            name,
+            sku: `ESC-2026-${key}`
+        }));
+
+        const colors = Object.entries(COLOR_NAMES).map(([key, name]) => {
+            let badge = "bg-surface-variant text-on-surface-variant";
+            if (key === "COL-01") badge = "bg-black text-white";
+            else if (key === "COL-02") badge = "bg-white border border-outline-variant text-on-surface";
+            else if (key === "COL-03") badge = "bg-amber-100 text-amber-800";
+            else if (key === "COL-14") badge = "bg-rose-100 text-rose-800";
+            else if (key === "COL-18") badge = "bg-purple-100 text-purple-800";
+            return { key, name, badge };
+        });
+
+        models.forEach(m => {
+            colors.forEach(c => {
+                let sSum = 0, mSum = 0, lSum = 0, xlSum = 0;
+
+                // Sumar según filtro de sede
+                Object.keys(invData).forEach(sKey => {
+                    const storeInv = invData[sKey];
+                    if (storeInv && storeInv[m.key] && storeInv[m.key][c.key]) {
+                        const sizes = storeInv[m.key][c.key];
+                        const sVal = sizes.S || 0;
+                        const mVal = sizes.M || 0;
+                        const lVal = sizes.L || 0;
+                        const xlVal = sizes.XL || 0;
+
+                        const rowTotal = sVal + mVal + lVal + xlVal;
+                        if (sKey === "ALM-01") centralItems += rowTotal;
+                        else if (sKey.startsWith("TDA-")) tiendasItems += rowTotal;
+
+                        if (selectedStore === "all" || selectedStore === sKey) {
+                            sSum += sVal;
+                            mSum += mVal;
+                            lSum += lVal;
+                            xlSum += xlVal;
+                        }
+                    }
+                });
+
+                const totalRow = sSum + mSum + lSum + xlSum;
+
+                // Solo contar si pertenece al filtro o si no hay filtro
+                if (selectedStore === "all") {
+                    totalItems += totalRow;
+                } else {
+                    totalItems = Object.keys(invData).reduce((sum, sKey) => {
+                        if (sKey !== selectedStore) return sum;
+                        const storeInv = invData[sKey];
+                        let storeSum = 0;
+                        Object.keys(storeInv).forEach(mK => {
+                            Object.keys(storeInv[mK]).forEach(cK => {
+                                Object.values(storeInv[mK][cK]).forEach(val => storeSum += val);
+                            });
+                        });
+                        return storeSum;
+                    }, 0);
+                }
+
+                if (totalRow < 5) lowAlerts++;
+
+                // Filtro de búsqueda
+                const matchSearch = m.name.toLowerCase().includes(query) || c.name.toLowerCase().includes(query) || m.sku.toLowerCase().includes(query);
+                if (!matchSearch) return;
+
+                // Estado de Stock
+                let statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-[11px] font-bold">Disponible</span>`;
+                if (totalRow === 0) {
+                    statusBadge = `<span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-[11px] font-bold">Agotado</span>`;
+                } else if (totalRow < 5) {
+                    statusBadge = `<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[11px] font-bold">Bajo Stock</span>`;
+                }
+
+                // Generar detalle por sede para el modal/alert
+                let detailStr = "";
+                Object.keys(invData).forEach(sKey => {
+                    const qty = (invData[sKey]?.[m.key]?.[c.key]?.S || 0) + 
+                                (invData[sKey]?.[m.key]?.[c.key]?.M || 0) + 
+                                (invData[sKey]?.[m.key]?.[c.key]?.L || 0) + 
+                                (invData[sKey]?.[m.key]?.[c.key]?.XL || 0);
+                    if (qty > 0) {
+                        detailStr += `\\n- ${STORE_NAMES[sKey] || sKey}: ${qty} uds (S:${invData[sKey]?.[m.key]?.[c.key]?.S||0}, M:${invData[sKey]?.[m.key]?.[c.key]?.M||0}, L:${invData[sKey]?.[m.key]?.[c.key]?.L||0}, XL:${invData[sKey]?.[m.key]?.[c.key]?.XL||0})`;
+                    }
+                });
+                if (!detailStr) detailStr = "Sin existencias en ninguna sede.";
+
+                rowsHtml += `
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-on-surface text-xs">${m.name}</div>
+                            <div class="text-[10px] text-on-surface-variant">REF: ${m.sku}</div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <span class="px-3 py-1 rounded-full text-[11px] font-semibold ${c.badge}">${c.name}</span>
+                        </td>
+                        <td class="px-4 py-4 text-center font-bold ${sSum < 5 ? 'text-error font-extrabold' : ''}">${sSum}</td>
+                        <td class="px-4 py-4 text-center font-bold ${mSum < 5 ? 'text-error font-extrabold' : ''}">${mSum}</td>
+                        <td class="px-4 py-4 text-center font-bold ${lSum < 5 ? 'text-error font-extrabold' : ''}">${lSum}</td>
+                        <td class="px-4 py-4 text-center font-bold ${xlSum < 5 ? 'text-error font-extrabold' : ''}">${xlSum}</td>
+                        <td class="px-4 py-4 text-center font-extrabold text-primary text-sm">${totalRow}</td>
+                        <td class="px-4 py-4">${statusBadge}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="alert('${m.name} (${c.name}):${detailStr}')" class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary-container/20 text-[10px] font-bold transition-colors">
+                                Ver Sedes
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+
+        tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="p-8 text-center text-on-surface-variant font-semibold">No se encontraron productos que coincidan.</td></tr>`;
+
+        // Calcular totalItems y alerts correctos según filtro
+        let filterTotal = 0;
+        let filterCentral = 0;
+        let filterTiendas = 0;
+        
+        Object.keys(invData).forEach(sKey => {
+            let storeSum = 0;
+            Object.keys(invData[sKey] || {}).forEach(mK => {
+                Object.keys(invData[sKey][mK] || {}).forEach(cK => {
+                    Object.values(invData[sKey][mK][cK] || {}).forEach(val => storeSum += val);
+                });
+            });
+            if (sKey === "ALM-01") filterCentral += storeSum;
+            else if (sKey.startsWith("TDA-")) filterTiendas += storeSum;
+            
+            if (selectedStore === "all" || selectedStore === sKey) {
+                filterTotal += storeSum;
+            }
+        });
+
+        document.getElementById("kpi-total-stock").textContent = `${filterTotal.toLocaleString('es-PE')} unids`;
+        document.getElementById("kpi-central-stock").textContent = `${filterCentral.toLocaleString('es-PE')} unids`;
+        document.getElementById("kpi-tiendas-stock").textContent = `${filterTiendas.toLocaleString('es-PE')} unids`;
+        document.getElementById("kpi-alerts-count").textContent = `${lowAlerts} Variantes`;
+    }
+
+    renderTable();
+
+    if (storeSelect) storeSelect.addEventListener("change", renderTable);
+    if (searchInput) searchInput.addEventListener("input", renderTable);
+
+    // Sync en tiempo real
+    window.addEventListener('storage', (e) => {
+        if (!e.key || e.key === 'escarlu_inventory') {
+            loadInv();
+            renderTable();
+        }
+    });
+});
+</script>
+</body></html>

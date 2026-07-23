@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Consulta de Stock Multisede | ESCARLÚ</title>
+<script src="shared.js"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-background": "#1c1b1b",
+                "on-secondary": "#ffffff",
+                "surface": "#fcf9f8",
+                "on-surface-variant": "#4c444b",
+                "on-error": "#ffffff",
+                "background": "#fcf9f8",
+                "primary-container": "#c8a2c8",
+                "surface-bright": "#fcf9f8",
+                "on-primary-fixed-variant": "#5a3c5d",
+                "primary-fixed": "#ffd6fe",
+                "secondary-container": "#fecbcb",
+                "on-tertiary-fixed": "#241a00",
+                "on-surface": "#1c1b1b",
+                "inverse-primary": "#e2bae1",
+                "primary-fixed-dim": "#e2bae1",
+                "surface-variant": "#e5e2e1",
+                "on-secondary-container": "#7a5354",
+                "tertiary-container": "#cfaa32",
+                "surface-container-highest": "#e5e2e1",
+                "tertiary-fixed": "#ffe088",
+                "on-primary": "#ffffff",
+                "secondary-fixed": "#ffdad9",
+                "surface-container": "#f0eded",
+                "primary": "#745475",
+                "surface-container-high": "#eae7e7",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#745475",
+                "secondary": "#7b5455",
+                "outline": "#7e747c",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed-dim": "#ecbaba",
+                "tertiary-fixed-dim": "#e9c349",
+                "surface-container-low": "#f6f3f2",
+                "outline-variant": "#cfc3cc",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "on-secondary-fixed-variant": "#613d3e",
+                "tertiary": "#735c00",
+                "on-tertiary-fixed-variant": "#574500",
+                "on-primary-fixed": "#2b112f",
+                "on-primary-container": "#553757",
+                "error": "#ba1a1a",
+                "inverse-surface": "#313030",
+                "surface-dim": "#dcd9d9",
+                "inverse-on-surface": "#f3f0ef",
+                "on-tertiary-container": "#513f00",
+                "on-secondary-fixed": "#2f1314"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "stack-sm": "12px",
+                "stack-md": "24px",
+                "gutter": "24px",
+                "stack-lg": "48px",
+                "unit": "8px",
+                "container-padding": "40px"
+            },
+            "fontFamily": {
+                "body-sm": ["Source Sans 3"],
+                "label-lg": ["Source Sans 3"],
+                "headline-md": ["Libre Caslon Text"],
+                "body-lg": ["Source Sans 3"],
+                "display-lg": ["Libre Caslon Text"],
+                "body-md": ["Source Sans 3"],
+                "headline-lg": ["Libre Caslon Text"],
+                "label-md": ["Source Sans 3"]
+            },
+            "fontSize": {
+                "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(200, 162, 200, 0.2);
+        }
+        .gold-accent {
+            border-top: 3px solid #cfaa32;
+        }
+        /* Custom scrollbar for senior accessibility */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #f0eded; }
+        ::-webkit-scrollbar-thumb { background: #c8a2c8; border-radius: 10px; border: 3px solid #f0eded; }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- Sidebar Navigation -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md docked left-0 h-full w-64 md:w-72 z-50">
+<div class="px-4 mb-8">
+<h1 class="font-headline-md text-headline-md text-primary">ESCARLÚ</h1>
+<p class="text-on-surface-variant font-label-md opacity-70">Management Dashboard</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 bg-primary-container text-on-primary-container rounded-lg p-4 font-bold min-h-[56px] cursor-pointer shadow-sm" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-lg">Central Fabric Stock</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer" href="#">
+<span class="material-symbols-outlined">reorder</span>
+<span class="font-label-lg">Department Requests</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-label-lg">Simulation of Trace &amp; Cut</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-lg">Reports</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4">
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px]" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-lg">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 md:ml-72 min-h-screen">
+<!-- Top Navigation -->
+<header class="flex justify-between items-center w-full px-container-padding h-14 md:h-16 bg-surface border-b-2 border-primary shadow-sm sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-64 font-body-md text-on-surface-variant" placeholder="Buscar producto o sede..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative hover:bg-surface-container-high p-2 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="hover:bg-surface-container-high p-2 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary">settings</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<div class="text-right">
+<p class="font-label-lg leading-tight">Administrador</p>
+<p class="text-xs text-on-surface-variant">Tienda Principal</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-primary object-cover" data-alt="A sophisticated professional portrait of a senior retail administrator in a high-end textile studio. The lighting is soft and bright, highlighting the elegant and airy atmosphere of the workspace. The person is dressed in smart, minimalist attire that complements the soft lilac and gold brand colors of Escarlú." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOn4MswHU1zW1d6_K5vwtKgxQ7kVwj6sTk2MeKvhPWoTwCiiJU5tjcssFxSTZyO57Z9r1o8-5ZXx66fssPa4UT6EyLQ7Cp8TNWFrou85AHPYY5eOeRvXu1KBKzFGvJmQ3ePy7O8bWDS3EUEz_rsnu06AcQPCB8ADIhm0eKDr_vhXF8ruVnddjCBLNSsslBlt-upt_9RGS1NLRfWtolHgcFLaUGGG2Ae2PPl9sQLh3VT6grj1AKdaI"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-container-padding max-w-[1440px] mx-auto space-y-stack-lg">
+<!-- Welcome & Selector -->
+<section class="space-y-stack-sm">
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Consulta de Stock Multisede</h2>
+<p class="text-body-lg text-on-surface-variant">Gestione y traslade existencias entre sus sedes con precisión.</p>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-on-surface ml-1">Sede Origen</label>
+<div class="flex items-center gap-2 px-6 h-14 bg-surface-container-low border-2 border-primary-container rounded-xl">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<span class="font-label-lg">Tienda Principal</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-on-surface ml-1">Consultar En:</label>
+<select id="store-select" class="h-14 min-w-[240px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
+<option value="ALM-01">Almacén Central</option>
+<option value="TDA-01" selected="">Tienda Santa Lucía</option>
+<option value="TDA-02">Tienda Generales Suplex</option>
+<option value="TDA-03">Tienda Generales Pasadizo</option>
+<option value="TDA-04">Tienda Aviación</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="glass-card gold-accent p-6 rounded-xl shadow-sm flex items-center gap-6">
+<div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">store</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Stock en Sede Seleccionada</p>
+<p id="stat-selected-stock" class="text-headline-md font-bold">0 Unidades</p>
+</div>
+</div>
+<div class="glass-card p-6 rounded-xl shadow-sm flex items-center gap-6 border-t-3 border-transparent">
+<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">trending_up</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Nivel de Rotación</p>
+<p id="stat-rotation" class="text-headline-md font-bold">Alta (84%)</p>
+</div>
+</div>
+<div class="glass-card p-6 rounded-xl shadow-sm flex items-center gap-6 border-t-3 border-transparent">
+<div class="w-14 h-14 rounded-full bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-container">priority_high</span>
+</div>
+<div>
+<p class="text-body-sm text-on-surface-variant font-semibold">Alertas de Reposición</p>
+<p id="stat-alerts" class="text-headline-md font-bold text-error">0 Modelos</p>
+</div>
+</div>
+</div>
+<!-- Main Inventory Grid -->
+<section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
+<div class="p-6 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+<h3 id="table-header-title" class="font-headline-md text-primary flex items-center gap-3">
+<span class="material-symbols-outlined">checkroom</span>
+                        Stock de Polos - Sede
+                    </h3>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span class="font-label-md">Filtrar</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+<span class="font-label-md">Exportar</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-md uppercase tracking-wider">
+<th class="px-8 py-5 border-b border-outline-variant">Producto / Modelo</th>
+<th class="px-4 py-5 border-b border-outline-variant">Color</th>
+<th class="px-4 py-5 border-b border-outline-variant text-center">S</th>
+<th class="px-4 py-5 border-b border-outline-variant text-center">M</th>
+<th class="px-4 py-5 border-b border-outline-variant text-center">L</th>
+<th class="px-4 py-5 border-b border-outline-variant text-center">XL</th>
+<th class="px-4 py-5 border-b border-outline-variant">Estado</th>
+<th class="px-8 py-5 border-b border-outline-variant text-right">Acción</th>
+</tr>
+</thead>
+<tbody id="inventory-tbody" class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary-fixed rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">apparel</span>
+</div>
+<div>
+<p class="font-bold text-lg">Polo Premium Pima</p>
+<p class="text-sm text-on-surface-variant">REF: ESC-2024-001</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-6">
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-sm font-semibold">Rosa Palo</span>
+</td>
+<td class="px-4 py-6 text-center font-bold">12</td>
+<td class="px-4 py-6 text-center font-bold">25</td>
+<td class="px-4 py-6 text-center font-bold text-error">4</td>
+<td class="px-4 py-6 text-center font-bold">18</td>
+<td class="px-4 py-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-tertiary-container"></div>
+<span class="text-sm font-medium">Stock Moderado</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-lg shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95">
+                                        Solicitar Traspaso
+                                    </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary-fixed rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">apparel</span>
+</div>
+<div>
+<p class="font-bold text-lg">Polo Clásico Cuello V</p>
+<p class="text-sm text-on-surface-variant">REF: ESC-2024-042</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-6">
+<span class="px-3 py-1 bg-surface-variant text-on-surface-variant rounded-full text-sm font-semibold">Blanco Seda</span>
+</td>
+<td class="px-4 py-6 text-center font-bold">45</td>
+<td class="px-4 py-6 text-center font-bold">60</td>
+<td class="px-4 py-6 text-center font-bold">52</td>
+<td class="px-4 py-6 text-center font-bold">38</td>
+<td class="px-4 py-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-[#4CAF50]"></div>
+<span class="text-sm font-medium">Stock Óptimo</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-lg shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95">
+                                        Solicitar Traspaso
+                                    </button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary-fixed rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">apparel</span>
+</div>
+<div>
+<p class="font-bold text-lg">Polo Slim Fit Urbano</p>
+<p class="text-sm text-on-surface-variant">REF: ESC-2024-089</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-6">
+<span class="px-3 py-1 bg-on-primary-fixed-variant text-primary-fixed rounded-full text-sm font-semibold">Lila Obscuro</span>
+</td>
+<td class="px-4 py-6 text-center font-bold text-error">2</td>
+<td class="px-4 py-6 text-center font-bold text-error">1</td>
+<td class="px-4 py-6 text-center font-bold text-error">0</td>
+<td class="px-4 py-6 text-center font-bold text-error">3</td>
+<td class="px-4 py-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-error animate-pulse"></div>
+<span class="text-sm font-medium text-error font-bold">Stock Crítico</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right opacity-50">
+<button class="bg-outline text-on-surface-variant px-6 py-3 rounded-xl font-label-lg cursor-not-allowed" disabled="">
+                                        Sin Existencias
+                                    </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination / Footer -->
+<div class="p-6 bg-surface-container flex justify-between items-center">
+<p class="text-body-sm text-on-surface-variant italic">Mostrando 3 de 145 modelos de polos disponibles.</p>
+<div class="flex gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors">3</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</section>
+<!-- Stock Movement History Preview (Bento Style) -->
+<div class="grid grid-cols-1 gap-gutter">
+<section class="glass-card p-8 rounded-2xl space-y-4">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-md text-primary">Solicitudes Pendientes</h4>
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-xs font-bold uppercase">5 En Camino</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-outline-variant">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+<div>
+<p class="font-bold">Traspaso #4582</p>
+<p class="text-xs text-on-surface-variant">Desde: Almacén Central</p>
+</div>
+</div>
+<span class="text-sm font-semibold">Hoy, 10:30 AM</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-outline-variant">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+<div>
+<p class="font-bold">Traspaso #4580</p>
+<p class="text-xs text-on-surface-variant">Desde: Tienda Santa Lucía</p>
+</div>
+</div>
+<span class="text-sm font-semibold">Ayer, 04:15 PM</span>
+</div>
+</div>
+<button class="w-full text-primary font-label-lg hover:underline transition-all">Ver todo el historial</button>
+</section>
+</div>
+</div>
+<!-- Notification Toast (Simulation) -->
+<div class="fixed bottom-8 right-8 bg-inverse-surface text-inverse-on-surface px-8 py-4 rounded-xl shadow-2xl flex items-center gap-4 translate-y-24 transition-transform duration-300 z-50" id="toast">
+<span class="material-symbols-outlined text-primary-fixed">check_circle</span>
+<p class="font-label-lg">Solicitud de traspaso enviada correctamente.</p>
+</div>
+</main>
+<script>
+        const user = getCurrentUser();
+        let invData = {};
+        let reqsData = [];
+
+        function loadData() {
+            const rawInv = localStorage.getItem("escarlu_inventory");
+            invData = rawInv ? JSON.parse(rawInv) : (typeof DEFAULT_INVENTORY !== 'undefined' ? DEFAULT_INVENTORY : {});
+            
+            const rawReqs = localStorage.getItem("escarlu_requests");
+            reqsData = rawReqs ? JSON.parse(rawReqs) : (typeof DEFAULT_REQUESTS !== 'undefined' ? DEFAULT_REQUESTS : []);
+        }
+
+        const tbody = document.getElementById("inventory-tbody");
+        const storeSelect = document.getElementById("store-select");
+        const searchInput = document.querySelector('input[placeholder="Buscar producto o sede..."]');
+        const tableTitle = document.getElementById("table-header-title");
+
+        function renderInventory() {
+            if (!invData || Object.keys(invData).length === 0) return;
+
+            const selectedStore = storeSelect.value;
+            const storeName = STORE_NAMES[selectedStore] || selectedStore;
+            tableTitle.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Stock de Polos - ${storeName}`;
+
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+
+            tbody.innerHTML = "";
+            let selectedStoreTotal = 0;
+            let lowStockCount = 0;
+
+            const targetInventory = invData[selectedStore] || {};
+
+            for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+                for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
+                    if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
+                        continue;
+                    }
+
+                    const sizes = targetInventory[modelKey]?.[colorKey] || { S: 0, M: 0, L: 0, XL: 0 };
+                    const totalRow = Object.values(sizes).reduce((sum, v) => sum + v, 0);
+
+                    selectedStoreTotal += totalRow;
+                    if (totalRow < 5) {
+                        lowStockCount++;
+                    }
+
+                    let statusBadge = "";
+                    let actionButton = "";
+
+                    if (totalRow > 15) {
+                        statusBadge = `
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-[#4CAF50]"></div>
+                                <span class="text-sm font-medium">Stock Óptimo</span>
+                            </div>
+                        `;
+                    } else if (totalStockIsLow(sizes)) {
+                        statusBadge = `
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-error animate-pulse"></div>
+                                <span class="text-sm font-medium text-error font-bold">Stock Crítico</span>
+                            </div>
+                        `;
+                    } else {
+                        statusBadge = `
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-tertiary-container"></div>
+                                <span class="text-sm font-medium">Stock Moderado</span>
+                            </div>
+                        `;
+                    }
+
+                    const canRequest = selectedStore !== user?.storeId;
+
+                    if (canRequest && totalRow > 0) {
+                        actionButton = `
+                            <button onclick="requestTransfer('${modelKey}', '${colorKey}', '${selectedStore}')" class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-lg shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95 text-xs uppercase font-bold">
+                                Solicitar Traspaso
+                            </button>
+                        `;
+                    } else {
+                        actionButton = `
+                            <button class="bg-outline text-on-surface-variant px-6 py-3 rounded-xl font-label-lg cursor-not-allowed text-xs font-bold" disabled>
+                                No disponible
+                            </button>
+                        `;
+                    }
+
+                    const tr = document.createElement("tr");
+                    tr.className = "hover:bg-surface-container-low transition-colors group";
+                    tr.innerHTML = `
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-primary-fixed rounded-lg flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-primary">apparel</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-lg text-on-surface">${modelName}</p>
+                                    <p class="text-sm text-on-surface-variant">REF: ESC-2026-${modelKey}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-6">
+                            <span class="px-3 py-1 bg-surface-container-high text-on-surface rounded-full text-sm font-semibold">${colorName}</span>
+                        </td>
+                        <td class="px-4 py-6 text-center font-bold ${sizes.S < 5 ? 'text-error font-extrabold' : ''}">${sizes.S}</td>
+                        <td class="px-4 py-6 text-center font-bold ${sizes.M < 5 ? 'text-error font-extrabold' : ''}">${sizes.M}</td>
+                        <td class="px-4 py-6 text-center font-bold ${sizes.L < 5 ? 'text-error font-extrabold' : ''}">${sizes.L}</td>
+                        <td class="px-4 py-6 text-center font-bold ${sizes.XL < 5 ? 'text-error font-extrabold' : ''}">${sizes.XL}</td>
+                        <td class="px-4 py-6">${statusBadge}</td>
+                        <td class="px-8 py-6 text-right">${actionButton}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            }
+
+            document.getElementById("stat-selected-stock").textContent = `${selectedStoreTotal.toLocaleString('es-PE')} Unidades`;
+            document.getElementById("stat-alerts").textContent = `${lowStockCount} Modelos`;
+        }
+
+        function totalStockIsLow(sizes) {
+            return Object.values(sizes).some(v => v < 5);
+        }
+
+        window.requestTransfer = function(modelKey, colorKey, originStoreId) {
+            const modelName = MODEL_NAMES[modelKey];
+            const colorName = COLOR_NAMES[colorKey];
+            const storeName = STORE_NAMES[originStoreId];
+
+            const input = prompt(`Solicitar traspaso de [${modelName} - ${colorName}] desde [${storeName}].\nEscribe la talla y cantidad deseada (ejemplo: M=5):`);
+            if (!input) return;
+
+            const parts = input.toUpperCase().trim().split('=');
+            if (parts.length !== 2) {
+                alert("Formato incorrecto. Use: TALLA=CANTIDAD (ejemplo: M=5)");
+                return;
+            }
+
+            const size = parts[0].trim();
+            const qty = parseInt(parts[1].trim());
+
+            if (!['S', 'M', 'L', 'XL'].includes(size)) {
+                alert("Talla inválida. Permitidas: S, M, L, XL");
+                return;
+            }
+
+            if (isNaN(qty) || qty <= 0) {
+                alert("Cantidad inválida. Debe ser mayor a 0.");
+                return;
+            }
+
+            // Verify origin store has enough stock
+            const originStock = invData[originStoreId]?.[modelKey]?.[colorKey]?.[size] || 0;
+            if (originStock < qty) {
+                alert(`Stock insuficiente en la tienda origen. Solo tienen ${originStock} unidades disponibles de la talla ${size}.`);
+                return;
+            }
+
+            // Create request
+            const orderId = `REQ-${Math.floor(1000 + Math.random() * 9000)}`;
+            const destStoreId = user?.storeId || 'TDA-01';
+
+            reqsData.push({
+                id: orderId,
+                type: "traspaso",
+                origin: originStoreId,
+                destination: destStoreId,
+                model: modelKey,
+                color: colorKey,
+                size: size,
+                qty: qty,
+                status: "pendiente",
+                date: new Date().toISOString()
+            });
+
+            localStorage.setItem("escarlu_requests", JSON.stringify(reqsData));
+
+            showToast(`Solicitud de traspaso ${orderId} enviada correctamente.`);
+            renderInventory();
+        };
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.querySelector('p').textContent = text;
+            toast.classList.remove('translate-y-24');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24');
+            }, 3000);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadData();
+            renderInventory();
+
+            if (storeSelect) {
+                storeSelect.addEventListener("change", renderInventory);
+            }
+            if (searchInput) {
+                searchInput.addEventListener("input", renderInventory);
+            }
+        });
+
+        // Simulating search responsiveness
+        if (searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('scale-105', 'transition-transform');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('scale-105');
+            });
+        }
+
+        // Real-time updates
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'escarlu_inventory' || e.key === 'escarlu_requests') {
+                loadData();
+                renderInventory();
+            }
+        });
+    </script>
+</body></html>

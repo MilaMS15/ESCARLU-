@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Consulta de Stock Multisede | ESCARLÚ</title>
+<script src="shared.js"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-background": "#1c1b1b",
+                "on-secondary": "#ffffff",
+                "surface": "#fcf9f8",
+                "on-surface-variant": "#4c444b",
+                "on-error": "#ffffff",
+                "background": "#fcf9f8",
+                "primary-container": "#c8a2c8",
+                "surface-bright": "#fcf9f8",
+                "on-primary-fixed-variant": "#5a3c5d",
+                "primary-fixed": "#ffd6fe",
+                "secondary-container": "#fecbcb",
+                "on-tertiary-fixed": "#241a00",
+                "on-surface": "#1c1b1b",
+                "inverse-primary": "#e2bae1",
+                "primary-fixed-dim": "#e2bae1",
+                "surface-variant": "#e5e2e1",
+                "on-secondary-container": "#7a5354",
+                "tertiary-container": "#cfaa32",
+                "surface-container-highest": "#e5e2e1",
+                "tertiary-fixed": "#ffe088",
+                "on-primary": "#ffffff",
+                "secondary-fixed": "#ffdad9",
+                "surface-container": "#f0eded",
+                "primary": "#745475",
+                "surface-container-high": "#eae7e7",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#745475",
+                "secondary": "#7b5455",
+                "outline": "#7e747c",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed-dim": "#ecbaba",
+                "tertiary-fixed-dim": "#e9c349",
+                "surface-container-low": "#f6f3f2",
+                "outline-variant": "#cfc3cc",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "on-secondary-fixed-variant": "#613d3e",
+                "tertiary": "#735c00",
+                "on-tertiary-fixed-variant": "#574500",
+                "on-primary-fixed": "#2b112f",
+                "on-primary-container": "#553757",
+                "error": "#ba1a1a",
+                "inverse-surface": "#313030",
+                "surface-dim": "#dcd9d9",
+                "inverse-on-surface": "#f3f0ef",
+                "on-tertiary-container": "#513f00",
+                "on-secondary-fixed": "#2f1314"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "stack-sm": "12px",
+                "stack-md": "24px",
+                "gutter": "24px",
+                "stack-lg": "48px",
+                "unit": "8px",
+                "container-padding": "40px"
+            },
+            "fontFamily": {
+                "body-sm": ["Source Sans 3"],
+                "label-lg": ["Source Sans 3"],
+                "headline-md": ["Libre Caslon Text"],
+                "body-lg": ["Source Sans 3"],
+                "display-lg": ["Libre Caslon Text"],
+                "body-md": ["Source Sans 3"],
+                "headline-lg": ["Libre Caslon Text"],
+                "label-md": ["Source Sans 3"]
+            },
+            "fontSize": {
+                "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(200, 162, 200, 0.2);
+        }
+        .gold-accent {
+            border-top: 3px solid #cfaa32;
+        }
+        /* Custom scrollbar for senior accessibility */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #f0eded; }
+        ::-webkit-scrollbar-thumb { background: #c8a2c8; border-radius: 10px; border: 3px solid #f0eded; }
+
+        /* POS Layout constraints */
+        html, body { height: 100vh; overflow: hidden; }
+        main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .dashboard-content { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 12px !important; gap: 12px !important; }
+        .stats-section { shrink-0; }
+        .table-section { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+        .table-container { flex: 1; overflow-y: auto; max-height: calc(100vh - 350px); }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- Sidebar Navigation -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md docked left-0 h-full w-64 md:w-72 z-50">
+<div class="px-4 mb-8">
+<h1 class="font-headline-md text-headline-md text-primary">ESCARLÚ</h1>
+<p class="text-on-surface-variant font-label-md opacity-70">Management Dashboard</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 bg-primary-container text-on-primary-container rounded-lg p-4 font-bold min-h-[56px] cursor-pointer shadow-sm" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-lg">Central Fabric Stock</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer" href="#">
+<span class="material-symbols-outlined">reorder</span>
+<span class="font-label-lg">Department Requests</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-label-lg">Simulation of Trace &amp; Cut</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px] cursor-pointer" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-lg">Reports</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4">
+<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-surface-container-highest transition-all duration-200 min-h-[56px]" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-lg">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 md:ml-72 flex flex-col h-screen overflow-hidden">
+  <!-- Unified Top Bar Header (Tienda) -->
+  <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
+    <!-- Lado Izquierdo: Badge de Sede -->
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+        <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
+        <span class="text-xs font-bold text-primary">Tienda Santa Lucía</span>
+      </div>
+    </div>
+
+    <!-- Centro: Input de Búsqueda Global Centrado -->
+    <div class="flex-1 max-w-md mx-6">
+      <div class="relative w-full">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+          <span class="material-symbols-outlined text-sm">search</span>
+        </span>
+        <input type="text" placeholder="Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+      </div>
+    </div>
+
+    <!-- Lado Derecho: Indicador y Usuario -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span class="text-[11px] font-bold text-green-700">Caja Abierta</span>
+      </div>
+      <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+        <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
+        <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+          <img alt="Vendedora Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content max-w-[1440px] mx-auto w-full">
+    <!-- Welcome & Selector -->
+    <section class="shrink-0 mt-1">
+      <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mb-1">
+        <div class="flex items-center gap-3">
+          <h2 id="page-title" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Inventario de Tienda</h2>
+          <span class="text-xs text-on-surface-variant font-semibold">| Fecha: <span id="current-date-label">23 de Julio, 2026</span></span>
+        </div>
+        <div class="hidden">
+          <p id="page-desc"></p>
+        </div>
+      </div>
+    </section>
+<!-- Quick Stats -->
+<div class="stats-section grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="glass-card gold-accent p-3.5 rounded-xl shadow-sm flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-sm">store</span>
+</div>
+<div>
+<p id="stat-total-label" class="text-[11px] text-on-surface-variant font-bold">Stock Local</p>
+<p id="stat-total-stock" class="text-sm font-black">0 Unidades</p>
+</div>
+</div>
+<div class="glass-card p-3.5 rounded-xl shadow-sm flex items-center gap-4 border-t-3 border-transparent">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-sm">category</span>
+</div>
+<div>
+<p class="text-[11px] text-on-surface-variant font-bold">Variaciones de Productos</p>
+<p id="stat-diff-models" class="text-sm font-black">16 Variaciones</p>
+</div>
+</div>
+<div class="glass-card p-3.5 rounded-xl shadow-sm flex items-center gap-4 border-t-3 border-transparent">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-container text-sm">priority_high</span>
+</div>
+<div>
+<p class="text-[11px] text-on-surface-variant font-bold">Alertas Stock Bajo (<5)</p>
+<p id="stat-alerts" class="text-sm font-black text-error">0 Modelos</p>
+</div>
+</div>
+</div><!-- Main Inventory Grid (Side-by-side columns: Stock left, Solicitudes right) -->
+<div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden">
+  
+  <!-- Columna Izquierda (8/12): Stock de Polos -->
+  <section class="lg:col-span-8 flex flex-col min-h-0 glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
+    <!-- Tabs Navigation -->
+    <div class="flex border-b border-outline-variant bg-surface-container-low px-4 pt-2 gap-2 shrink-0">
+        <button id="tab-local" onclick="switchTab('local')" class="px-4 py-2 font-bold border-b-4 border-primary text-primary transition-all text-xs">
+            Mi Stock Local
+        </button>
+        <button id="tab-central" onclick="switchTab('central')" class="px-4 py-2 font-semibold text-on-surface-variant hover:text-primary transition-all text-xs">
+            Consulta Almacén Central
+        </button>
+    </div>
+    <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center shrink-0">
+      <h3 id="table-header-title" class="text-xs text-primary flex items-center gap-2 font-bold uppercase tracking-wider">
+        <span class="material-symbols-outlined text-sm">checkroom</span>
+        Stock de Polos
+      </h3>
+      <div class="flex items-center gap-3">
+        <!-- Buscador compacto de tabla -->
+        <input type="text" id="inventory-search-table" placeholder="Buscar por modelo o SKU..." class="h-8 border border-outline-variant bg-surface rounded px-2 text-[11px] font-bold text-on-surface focus:ring-0 outline-none w-48" />
+        
+        <!-- Paginación compacta -->
+        <div class="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant bg-surface border border-outline-variant p-0.5 rounded">
+          <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_left</span></button>
+          <span class="px-1.5">1/3</span>
+          <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_right</span></button>
+        </div>
+
+        <a href="solitienda.html" class="flex items-center gap-1 px-3 h-8 rounded bg-surface hover:bg-surface-container-high border border-outline-variant text-primary text-[11px] font-bold transition-colors">
+          <span class="material-symbols-outlined text-xs">swap_horiz</span>
+          Pedir Stock
+        </a>
+      </div>
+    </div>
+    <div class="table-container overflow-auto flex-1 max-h-[380px]">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-surface-container text-on-surface-variant text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10">
+            <th class="px-4 py-3 border-b border-outline-variant">Producto / Modelo</th>
+            <th class="px-2 py-3 border-b border-outline-variant">Color</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">S</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">M</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">L</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">XL</th>
+            <th class="px-2 py-3 border-b border-outline-variant">Estado</th>
+            <th id="action-col-header" class="px-4 py-3 border-b border-outline-variant text-right">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="inventory-table-body" class="divide-y divide-outline-variant text-xs">
+            <!-- Inyectado dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Columna Derecha (4/12): Solicitudes Pendientes -->
+  <section class="lg:col-span-4 flex flex-col min-h-0 glass-card rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
+    <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-start shrink-0">
+      <h4 class="text-xs text-primary font-bold uppercase tracking-wider flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">local_shipping</span>
+        Solicitudes Pendientes
+      </h4>
+      <span id="pending-count-badge" class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[10px] font-bold uppercase">0 En Camino</span>
+    </div>
+    <div class="p-4 overflow-y-auto flex-1 space-y-3 max-h-[380px]" id="pending-transfers-container">
+        <!-- Inyectado dinámicamente -->
+    </div>
+  </section>
+
+</div>
+</section>
+</div>
+</div>
+<!-- Notification Toast (Simulation) -->
+<div class="fixed bottom-8 right-8 bg-inverse-surface text-inverse-on-surface px-8 py-4 rounded-xl shadow-2xl flex items-center gap-4 translate-y-24 transition-transform duration-300 z-50" id="toast">
+<span class="material-symbols-outlined text-primary-fixed">check_circle</span>
+<p id="toast-text" class="font-label-lg">Solicitud de traspaso enviada correctamente.</p>
+</div>
+</main>
+<script>
+    let activeTab = 'local';
+    const user = getCurrentUser();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        renderSideNav("stocktienda");
+
+        // Set dynamic page title
+        const storeName = STORE_NAMES[user.storeId] || "Santa Lucía";
+        document.getElementById("page-title").textContent = `Inventario de Tienda - ${storeName}`;
+
+        renderFinanceStats();
+        renderInventoryTable();
+        renderPendingTransfers();
+
+        // Bind table search input
+        const tableSearchInput = document.getElementById("inventory-search-table");
+        if (tableSearchInput) {
+            tableSearchInput.addEventListener('input', () => {
+                renderInventoryTable();
+            });
+        }
+
+        // Listen for storage updates
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'escarlu_inventory' || e.key === 'escarlu_requests') {
+                renderFinanceStats();
+                renderInventoryTable();
+                renderPendingTransfers();
+            }
+        });
+    });
+
+    function switchTab(tab) {
+        activeTab = tab;
+        const btnLocal = document.getElementById("tab-local");
+        const btnCentral = document.getElementById("tab-central");
+        const headerTitle = document.getElementById("table-header-title");
+
+        if (tab === 'local') {
+            btnLocal.className = "px-6 py-3 font-bold border-b-4 border-primary text-primary transition-all";
+            btnCentral.className = "px-6 py-3 font-semibold text-on-surface-variant hover:text-primary transition-all";
+            headerTitle.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Stock de Polos - Sucursal Local`;
+            document.getElementById("stat-total-label").textContent = "Stock en esta Sucursal";
+        } else {
+            btnCentral.className = "px-6 py-3 font-bold border-b-4 border-primary text-primary transition-all";
+            btnLocal.className = "px-6 py-3 font-semibold text-on-surface-variant hover:text-primary transition-all";
+            headerTitle.innerHTML = `<span class="material-symbols-outlined">warehouse</span> Stock de Polos - Almacén Central`;
+            document.getElementById("stat-total-label").textContent = "Stock en Almacén Central";
+        }
+
+        renderFinanceStats();
+        renderInventoryTable();
+    }
+
+    function renderFinanceStats() {
+        const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+        const targetStore = activeTab === 'local' ? user.storeId : 'ALM-01';
+        const storeStock = inventory[targetStore] || {};
+
+        let totalUnits = 0;
+        let variationsCount = 0;
+        let alertCount = 0;
+
+        for (const [model, colors] of Object.entries(storeStock)) {
+            for (const [color, sizes] of Object.entries(colors)) {
+                let rowSum = 0;
+                for (const [size, qty] of Object.entries(sizes)) {
+                    totalUnits += qty;
+                    rowSum += qty;
+                    if (qty < 5) {
+                        alertCount++;
+                    }
+                }
+                variationsCount++;
+            }
+        }
+
+        document.getElementById("stat-total-stock").textContent = `${totalUnits.toLocaleString('es-PE')} Unidades`;
+        document.getElementById("stat-diff-models").textContent = `${variationsCount} Variaciones`;
+        document.getElementById("stat-alerts").textContent = `${alertCount} Tallas Críticas`;
+    }
+
+    function renderInventoryTable() {
+        const tbody = document.getElementById("inventory-table-body");
+        if (!tbody) return;
+
+        const actionColHeader = document.getElementById("action-col-header");
+        if (activeTab === 'local') {
+            actionColHeader.classList.remove("hidden");
+        } else {
+            actionColHeader.classList.add("hidden");
+        }
+
+        const query = (document.getElementById("inventory-search-table")?.value || "").toLowerCase();
+
+        const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+        const targetStore = activeTab === 'local' ? user.storeId : 'ALM-01';
+        const storeStock = inventory[targetStore] || {};
+
+        tbody.innerHTML = "";
+
+        // Iterate through all model names and color names to keep list unified
+        for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+            for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
+                if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
+                    continue;
+                }
+
+                const sizes = storeStock[modelKey]?.[colorKey] || { S: 0, M: 0, L: 0, XL: 0 };
+                const totalStock = Object.values(sizes).reduce((sum, v) => sum + v, 0);
+
+                let statusBadge = "";
+                if (totalStock > 15) {
+                    statusBadge = `
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+                            <span class="text-[11px] font-semibold text-green-700">Óptimo</span>
+                        </div>
+                    `;
+                } else if (totalStock >= 5) {
+                    statusBadge = `
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-tertiary-container"></div>
+                            <span class="text-[11px] font-semibold text-yellow-700">Moderado</span>
+                        </div>
+                    `;
+                } else {
+                    statusBadge = `
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+                            <span class="text-[11px] font-bold text-error">Crítico</span>
+                        </div>
+                    `;
+                }
+
+                let actionTd = "";
+                if (activeTab === 'local') {
+                    actionTd = `
+                        <td class="px-4 py-2 text-right">
+                            <button onclick="adjustStock('${modelKey}', '${colorKey}')" class="bg-primary text-on-primary px-3 py-1.5 rounded-lg shadow-sm hover:brightness-95 transition-all active:scale-95 text-[10px] font-bold uppercase">
+                                Ajustar
+                            </button>
+                        </td>
+                    `;
+                }
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-surface-container-low transition-colors group";
+                tr.innerHTML = `
+                    <td class="px-4 py-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-primary-fixed rounded flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-primary text-sm">apparel</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xs text-on-surface">${modelName}</p>
+                                <p class="text-[10px] text-on-surface-variant">REF: ESC-2026-${modelKey.toUpperCase()}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-2 py-2">
+                        <span class="px-2 py-0.5 bg-surface-container-high text-on-surface rounded-full text-[10px] font-semibold">${colorName}</span>
+                    </td>
+                    <td class="px-2 py-2 text-center font-bold ${sizes.S < 5 ? 'text-error font-extrabold' : ''}">${sizes.S}</td>
+                    <td class="px-2 py-2 text-center font-bold ${sizes.M < 5 ? 'text-error font-extrabold' : ''}">${sizes.M}</td>
+                    <td class="px-2 py-2 text-center font-bold ${sizes.L < 5 ? 'text-error font-extrabold' : ''}">${sizes.L}</td>
+                    <td class="px-2 py-2 text-center font-bold ${sizes.XL < 5 ? 'text-error font-extrabold' : ''}">${sizes.XL}</td>
+                    <td class="px-2 py-2">${statusBadge}</td>
+                    ${actionTd}
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+    }
+
+    function adjustStock(model, color) {
+        const modelName = MODEL_NAMES[model];
+        const colorName = COLOR_NAMES[color];
+        
+        const input = prompt(`Ajustar stock para [${modelName} - ${colorName}].\nEscribe la talla y la nueva cantidad (ej: M=12 o S=5):`);
+        if (!input) return;
+
+        const parts = input.toUpperCase().trim().split('=');
+        if (parts.length !== 2) {
+            alert("Formato incorrecto. Use: TALLA=CANTIDAD (ejemplo: M=8)");
+            return;
+        }
+
+        const size = parts[0].trim();
+        const qty = parseInt(parts[1].trim());
+
+        if (!['S', 'M', 'L', 'XL'].includes(size)) {
+            alert("Talla inválida. Permitidas: S, M, L, XL");
+            return;
+        }
+        if (isNaN(qty) || qty < 0) {
+            alert("Cantidad inválida. Debe ser mayor o igual a 0.");
+            return;
+        }
+
+        const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+        if (!inventory[user.storeId]) inventory[user.storeId] = {};
+        if (!inventory[user.storeId][model]) inventory[user.storeId][model] = {};
+        if (!inventory[user.storeId][model][color]) inventory[user.storeId][model][color] = {};
+
+        inventory[user.storeId][model][color][size] = qty;
+        localStorage.setItem("escarlu_inventory", JSON.stringify(inventory));
+
+        // Toast
+        showToast(`Stock de talla ${size} ajustado a ${qty} correctamente.`);
+        renderFinanceStats();
+        renderInventoryTable();
+    }
+
+    function orderReplenishment(model, color) {
+        const modelName = MODEL_NAMES[model];
+        const colorName = COLOR_NAMES[color];
+
+        const input = prompt(`Pedir reposición para [${modelName} - ${colorName}] del Almacén Central.\nEscribe la talla y cantidad deseada (ej: L=10):`);
+        if (!input) return;
+
+        const parts = input.toUpperCase().trim().split('=');
+        if (parts.length !== 2) {
+            alert("Formato incorrecto. Use: TALLA=CANTIDAD (ejemplo: L=10)");
+            return;
+        }
+
+        const size = parts[0].trim();
+        const qty = parseInt(parts[1].trim());
+
+        if (!['S', 'M', 'L', 'XL'].includes(size)) {
+            alert("Talla inválida. Permitidas: S, M, L, XL");
+            return;
+        }
+        if (isNaN(qty) || qty <= 0) {
+            alert("Cantidad inválida. Debe ser mayor a 0.");
+            return;
+        }
+
+        // Create request
+        const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
+        const newReq = {
+            id: `REQ-${Math.floor(1000 + Math.random() * 9000)}`,
+            type: "reposicion",
+            origin: "central",
+            destination: user.storeId,
+            model: model,
+            color: color,
+            size: size,
+            qty: qty,
+            status: "pendiente",
+            date: new Date().toISOString()
+        };
+
+        allReqs.push(newReq);
+        localStorage.setItem("escarlu_requests", JSON.stringify(allReqs));
+
+        showToast(`Reposición ${newReq.id} enviada correctamente.`);
+        renderPendingTransfers();
+    }
+
+    function renderPendingTransfers() {
+        const container = document.getElementById("pending-transfers-container");
+        if (!container) return;
+
+        const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
+        // Filter incoming requests to this store
+        const incoming = allReqs.filter(r => r.destination === user.storeId && r.status === 'pendiente');
+
+        const badge = document.getElementById("pending-count-badge");
+        badge.textContent = `${incoming.length} En Camino`;
+
+        container.innerHTML = "";
+
+        if (incoming.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-6 text-on-surface-variant font-medium text-sm">
+                    No tienes mercaderías o solicitudes en camino.
+                </div>
+            `;
+            return;
+        }
+
+        incoming.forEach(req => {
+            const div = document.createElement("div");
+            div.className = "flex items-center justify-between p-4 bg-surface rounded-xl border border-outline-variant hover:bg-surface-container-low transition-colors";
+
+            const modelLabel = MODEL_NAMES[req.model] || req.model;
+            const colorLabel = COLOR_NAMES[req.color] || req.color;
+            const originName = req.origin === 'central' ? 'Almacén Central' : (STORE_NAMES[req.origin] || req.origin);
+            const dateObj = new Date(req.date);
+            const dateStr = isNaN(dateObj) ? req.date.slice(0, 10) : dateObj.toLocaleDateString('es-PE', { hour: '2-digit', minute: '2-digit' });
+
+            div.innerHTML = `
+                <div class="flex gap-3">
+                    <span class="material-symbols-outlined text-primary">local_shipping</span>
+                    <div>
+                        <p class="font-bold text-sm text-on-surface">${req.type === 'reposicion' ? 'Reposición' : 'Traspaso'} #${req.id.replace('REQ-', '')}</p>
+                        <p class="text-xs text-on-surface-variant">Desde: ${originName} • ${modelLabel} (${colorLabel}, Talla ${req.size}, Cant: ${req.qty})</p>
+                    </div>
+                </div>
+                <span class="text-xs font-semibold text-on-surface-variant">${dateStr}</span>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function showToast(text) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-text').textContent = text;
+        toast.classList.remove('translate-y-24');
+        setTimeout(() => {
+            toast.classList.add('translate-y-24');
+        }, 3000);
+    }
+</script>
+</body></html>

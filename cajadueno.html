@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ESCARLÚ - Dashboard de Administración</title>
+<script src="shared.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(200, 162, 200, 0.2);
+        }
+        body {
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+        }
+        /* Aumentar legibilidad */
+        .text-xs { font-size: 13.5px !important; }
+        .text-sm { font-size: 15.5px !important; }
+        .text-[10px] { font-size: 11px !important; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#ecbaba",
+                        "on-primary-container": "#553757",
+                        "on-secondary-fixed": "#2f1314",
+                        "on-primary-fixed": "#2b112f",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "tertiary-fixed": "#ffe088",
+                        "surface-container-low": "#f6f3f2",
+                        "outline": "#7e747c",
+                        "outline-variant": "#cfc3cc",
+                        "on-primary-fixed-variant": "#5a3c5d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#513f00",
+                        "surface-container-high": "#eae7e7",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#c8a2c8",
+                        "on-surface": "#1c1b1b",
+                        "tertiary": "#735c00",
+                        "inverse-primary": "#e2bae1",
+                        "surface-dim": "#dcd9d9",
+                        "surface-tint": "#745475",
+                        "on-surface-variant": "#4c444b",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#e2bae1",
+                        "background": "#fcf9f8",
+                        "primary": "#745475",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-secondary-fixed-variant": "#613d3e",
+                        "inverse-surface": "#313030",
+                        "surface": "#fcf9f8",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "on-background": "#1c1b1b",
+                        "secondary-fixed": "#ffdad9",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fcf9f8",
+                        "on-error-container": "#93000a",
+                        "secondary": "#7b5455",
+                        "primary-fixed": "#ffd6fe",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#7a5354",
+                        "secondary-container": "#fecbcb",
+                        "surface-container": "#f0eded",
+                        "tertiary-container": "#cfaa32",
+                        "inverse-on-surface": "#f3f0ef"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-sm": "12px",
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "stack-lg": "48px",
+                        "container-padding": "40px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Libre Caslon Text"],
+                        "body-lg": ["\"Source Sans 3\""],
+                        "label-md": ["\"Source Sans 3\""],
+                        "label-lg": ["\"Source Sans 3\""],
+                        "body-sm": ["\"Source Sans 3\""],
+                        "body-md": ["\"Source Sans 3\""],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "headline-md": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen">
+<!-- Sidebar Section (Inyectado por shared.js) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-72 bg-background min-h-screen">
+<!-- Top Navigation Bar / Role Selector -->
+<!-- Unified Top Bar Header -->
+<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto">
+  <!-- Lado Izquierdo: Tag / Badge de Rol -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">storefront</span>
+      <span class="text-xs font-bold text-primary">Administrador / Dueño</span>
+    </div>
+  </div>
+
+  <!-- Centro: Input de Búsqueda Global Centrado -->
+  <div class="flex-1 max-w-md mx-6">
+    <div class="relative w-full">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">search</span>
+      </span>
+      <input type="text" placeholder="Buscar transacción, modelo, SKU o sede..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+    </div>
+  </div>
+
+  <!-- Lado Derecho: Acciones y Perfil -->
+  <div class="flex items-center gap-4">
+    <button aria-label="Notifications" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">notifications</span>
+    </button>
+    <button aria-label="Settings" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">settings</span>
+    </button>
+    <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+      <span class="text-xs font-bold text-on-surface">Administrador</span>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+        <img alt="Perfil Administrador" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+      </div>
+    </div>
+  </div>
+</header>
+<section class="px-6 py-4 max-w-[1440px] mx-auto space-y-4">
+<!-- Dashboard Title & Date & KPIs (Fila 1 & 2) -->
+<div class="space-y-4">
+    <!-- Fila 1: Título y Botones de Acción -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/30">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-black tracking-tight">Flujo de Caja</h2>
+                <p class="text-xs text-on-surface-variant">Control consolidado de Ingresos y Egresos</p>
+            </div>
+            <input type="month" id="filter-period" class="h-10 border border-outline-variant bg-surface rounded-lg px-2 text-sm font-bold text-black focus:ring-0 outline-none mt-1 sm:mt-0" />
+        </div>
+        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button class="flex items-center gap-1.5 px-4 py-2 border border-outline-variant bg-white text-on-surface-variant hover:bg-surface-container font-semibold text-sm rounded-lg transition-colors">
+                <span class="material-symbols-outlined text-sm">download</span>
+                <span>Exportar Excel</span>
+            </button>
+            <button onclick="openEgresoModal()" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white font-bold text-sm rounded-lg hover:brightness-95 transition-all shadow-sm">
+                <span class="material-symbols-outlined text-sm">add</span>
+                Registrar Gasto/Egreso
+            </button>
+        </div>
+    </div>
+
+    <!-- Fila 2: Tarjetas de Balance KPI -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Ingresos -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-28">
+            <span class="text-xs text-green-700 font-bold uppercase tracking-wider">Total Ingresos</span>
+            <span id="kpi-ingresos" class="text-3xl font-black text-green-600 mt-2">S/ 0.00</span>
+        </div>
+        <!-- Egresos -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-28">
+            <span class="text-xs text-red-700 font-bold uppercase tracking-wider">Total Egresos</span>
+            <span id="kpi-egresos" class="text-3xl font-black text-red-600 mt-2">S/ 0.00</span>
+        </div>
+        <!-- Balance Neto -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-28">
+            <span class="text-xs text-purple-700 font-bold uppercase tracking-wider">Balance Neto</span>
+            <span id="kpi-utilidad" class="text-3xl font-black text-primary mt-2">S/ 0.00</span>
+        </div>
+    </div>
+</div>
+
+<!-- Layout en 2 Columnas (Fila 2) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <!-- Columna Izquierda (65%): Últimos Movimientos -->
+    <div class="lg:col-span-8 bg-white rounded-2xl p-4 shadow-sm border border-outline-variant/30 flex flex-col justify-between min-h-[380px]">
+        <div>
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold text-black">Últimos Movimientos</h3>
+                <span class="text-xs text-on-surface-variant font-medium">Ingresos vs Egresos del Período</span>
+            </div>
+            <div class="overflow-x-auto max-h-[340px] overflow-y-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-outline-variant/50 text-[11px] font-bold text-on-surface-variant uppercase bg-slate-50 sticky top-0">
+                            <th class="py-2 px-3">Fecha/Hora</th>
+                            <th class="py-2 px-3">Sede</th>
+                            <th class="py-2 px-3">Concepto / Categoría</th>
+                            <th class="py-2 px-3 text-right">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="movements-table-body" class="divide-y divide-outline-variant/30 text-xs">
+                        <!-- Inyectado dinámicamente -->
+                    </tbody>
+                </table>
+                <div id="movements-empty" class="hidden text-center py-8 text-on-surface-variant font-medium text-xs">
+                    No hay movimientos registrados en este período.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna Derecha (35%): Yapes y Cierres -->
+    <div class="lg:col-span-4 space-y-4">
+        <!-- Bloque 1: Yapes Pendientes de Aprobar -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-outline-variant/30 flex flex-col justify-between min-h-[180px]">
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-bold text-black">Yapes Pendientes de Aprobar</h3>
+                    <span class="bg-error-container text-on-error-container text-[10px] px-2 py-0.5 rounded-full font-bold">Por verificar</span>
+                </div>
+                <div class="space-y-2 max-h-[140px] overflow-y-auto" id="yapes-list-container">
+                    <!-- Inyectado dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+</main>
+
+<!-- Add Egreso Glassmorphism Modal -->
+<div id="egreso-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full border border-outline-variant/50 shadow-2xl space-y-6">
+        <div class="flex justify-between items-center">
+            <h3 class="font-display-lg text-headline-lg text-primary font-bold">Registrar Nuevo Egreso</h3>
+            <button onclick="closeEgresoModal()" class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block font-bold text-sm text-on-surface-variant mb-1">Concepto / Descripción *</label>
+                <input id="egreso-concepto" type="text" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" placeholder="Ej. Compra de telas de piqué" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Categoría</label>
+                    <select id="egreso-categoria" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0">
+                        <option value="proveedores">Proveedores / Telas</option>
+                        <option value="fabricacion">Fabricación</option>
+                        <option value="servicios">Servicios Básicos</option>
+                        <option value="personal">Personal / Sueldos</option>
+                        <option value="caja chica">Reposición Caja Chica</option>
+                        <option value="impuestos">Impuestos</option>
+                        <option value="otros">Otros Gastos</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Monto (S/) *</label>
+                    <input id="egreso-monto" type="number" min="0.01" step="0.01" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" placeholder="0.00" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Sede / Destino</label>
+                    <select id="egreso-sede" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0">
+                        <option value="general">General / Almacén</option>
+                        <option value="tienda_1">Tienda Santa Lucía</option>
+                        <option value="tienda_2">Tienda Generales Suplex</option>
+                        <option value="tienda_3">Tienda Generales Pasadizo</option>
+                        <option value="tienda_4">Tienda Aviación</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Fecha *</label>
+                    <input id="egreso-fecha" type="date" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" />
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="closeEgresoModal()" class="flex-1 h-12 rounded-xl border border-outline bg-transparent font-bold hover:bg-surface-container transition-all">Cancelar</button>
+            <button onclick="saveEgreso()" class="flex-1 h-12 rounded-xl bg-primary text-white font-bold hover:brightness-95 transition-all">Guardar Egreso</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // WhatsApp Owner Config
+    const OWNER_PHONE = "51936197969";
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        renderSideNav("cajadueno");
+
+        // Set default month to current month/year (YYYY-MM)
+        const periodFilter = document.getElementById("filter-period");
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        periodFilter.value = `${yyyy}-${mm}`;
+
+        // Initialize lists and KPIs
+        renderFinanceDashboard();
+
+        // Listen for filter changes
+        periodFilter.addEventListener('change', renderFinanceDashboard);
+
+        // Setup real-time storage sync
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'escarlu_sales' || e.key === 'escarlu_expenses') {
+                renderFinanceDashboard();
+            }
+        });
+    });
+
+    function renderFinanceDashboard() {
+        const selectedPeriod = document.getElementById("filter-period").value; // YYYY-MM
+        if (!selectedPeriod) return;
+
+        const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const allExpenses = JSON.parse(localStorage.getItem("escarlu_expenses")) || [];
+
+        // 1. Filter Sales for the selected month (Approved sales only)
+        const approvedSales = allSales.filter(sale => {
+            if (!sale.date) return false;
+            return sale.date.startsWith(selectedPeriod) && sale.status === 'aprobado';
+        });
+
+        // 2. Filter Expenses for the selected month
+        const monthlyExpenses = allExpenses.filter(exp => {
+            if (!exp.date) return false;
+            return exp.date.startsWith(selectedPeriod);
+        });
+
+        // 3. Calculate KPIs
+        const totalIngresos = approvedSales.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+        const totalEgresos = monthlyExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+        const utilidad = totalIngresos - totalEgresos;
+
+        // Render KPIs
+        document.getElementById("kpi-ingresos").textContent = `S/ ${totalIngresos.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById("kpi-egresos").textContent = `S/ ${totalEgresos.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        
+        const kpiUtilidad = document.getElementById("kpi-utilidad");
+        kpiUtilidad.textContent = `S/ ${utilidad.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (utilidad >= 0) {
+            kpiUtilidad.className = "text-3xl font-black text-primary mt-2";
+        } else {
+            kpiUtilidad.className = "text-3xl font-black text-error mt-2";
+        }
+
+        // 4. Render Yape Verification Panel
+        renderPendingYapes();
+
+        // 5. Render Movements Table
+        const movements = [];
+
+        // Add Sales as Ingresos
+        approvedSales.forEach(sale => {
+            movements.push({
+                date: sale.date,
+                category: "Venta Tienda",
+                concept: `Venta a ${sale.client || 'Cliente'} (${sale.method.toUpperCase()})`,
+                store: STORE_NAMES[sale.storeId] || sale.storeId,
+                amount: parseFloat(sale.amount || 0),
+                type: 'ingreso'
+            });
+        });
+
+        // Add Expenses as Egresos
+        monthlyExpenses.forEach(exp => {
+            movements.push({
+                date: exp.date.includes('T') ? exp.date : `${exp.date}T00:00:00`,
+                category: exp.category.charAt(0).toUpperCase() + exp.category.slice(1),
+                concept: exp.description,
+                store: exp.storeId ? (STORE_NAMES[exp.storeId] || exp.storeId) : "General / Almacén",
+                amount: parseFloat(exp.amount || 0),
+                type: 'egreso'
+            });
+        });
+
+        // Sort movements by date descending
+        movements.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        const tbody = document.getElementById("movements-table-body");
+        const emptyDiv = document.getElementById("movements-empty");
+        tbody.innerHTML = "";
+
+        if (movements.length === 0) {
+            emptyDiv.classList.remove("hidden");
+            tbody.closest("table").classList.add("hidden");
+        } else {
+            emptyDiv.classList.add("hidden");
+            tbody.closest("table").classList.remove("hidden");
+
+            movements.forEach(m => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-surface-container-low transition-colors";
+
+                const dateObj = new Date(m.date);
+                const dateStr = isNaN(dateObj) ? m.date.slice(0,10) : dateObj.toLocaleString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+                const amtClass = m.type === 'ingreso' ? 'text-green-600 font-bold text-right' : 'text-secondary font-bold text-right';
+                const amtSign = m.type === 'ingreso' ? `+S/ ${m.amount.toFixed(2)}` : `-S/ ${m.amount.toFixed(2)}`;
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 text-on-surface-variant font-medium">${dateStr}</td>
+                    <td class="py-3.5 px-4 font-bold text-on-surface">${m.category}</td>
+                    <td class="py-3.5 px-4 text-on-surface-variant font-medium">${m.concept}</td>
+                    <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 bg-primary-container/20 text-primary text-xs font-bold rounded-full">${m.store}</span></td>
+                    <td class="py-3.5 px-4 ${amtClass}">${amtSign}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    function renderPendingYapes() {
+        const pendingContainer = document.getElementById("yapes-list-container");
+        if (!pendingContainer) return;
+
+        const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const pendingSales = allSales.filter(s => s.status === 'pendiente');
+
+        // Update badge count
+        const badge = pendingContainer.closest('.bg-white').querySelector('.bg-error-container') || pendingContainer.closest('.bg-white').querySelector('.bg-green-100');
+        if (badge) {
+            if (pendingSales.length === 0) {
+                badge.className = "bg-green-100 text-green-800 px-4 py-1 rounded-full font-label-md text-xs font-bold";
+                badge.textContent = "0 Pendientes";
+            } else {
+                badge.className = "bg-error-container text-on-error-container px-4 py-1 rounded-full font-label-md text-xs font-bold";
+                badge.textContent = `${pendingSales.length} Pendientes`;
+            }
+        }
+
+        pendingContainer.innerHTML = "";
+
+        if (pendingSales.length === 0) {
+            pendingContainer.innerHTML = `
+                <div class="text-center py-8 text-on-surface-variant font-medium text-sm">
+                    No hay yapes ni transferencias pendientes de verificar.
+                </div>
+            `;
+            return;
+        }
+
+        pendingSales.forEach(sale => {
+            const div = document.createElement("div");
+            div.className = "flex items-center gap-2 p-2.5 rounded-xl hover:bg-surface-container transition-colors border border-outline-variant/30";
+            
+            const storeName = STORE_NAMES[sale.storeId] || sale.storeId;
+            const timeStr = sale.date ? new Date(sale.date).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }) : "";
+
+            div.innerHTML = `
+                <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white shrink-0">
+                    <span class="material-symbols-outlined text-xl">image</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-bold text-xs text-on-surface truncate">S/ ${parseFloat(sale.amount).toFixed(2)}</p>
+                    <p class="text-[10px] text-on-surface-variant font-medium leading-tight truncate">${storeName}</p>
+                    <p class="text-[9px] text-on-surface-variant opacity-85 leading-none truncate">Ref: ${sale.reference || 'N/A'} • ${timeStr}</p>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                    <button onclick="approveYape('${sale.id}')" class="px-2.5 py-1.5 bg-primary text-white rounded-lg text-[10px] font-bold uppercase tracking-wider hover:shadow active:scale-95 transition-all">
+                        Aprobar
+                    </button>
+                    <button onclick="rejectYape('${sale.id}')" class="w-7 h-7 flex items-center justify-center border border-error text-error rounded-lg hover:bg-error/5 active:scale-95 transition-colors">
+                        <span class="material-symbols-outlined text-base">close</span>
+                    </button>
+                </div>
+            `;
+            pendingContainer.appendChild(div);
+        });
+    }
+
+    function approveYape(id) {
+        const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const saleIndex = allSales.findIndex(s => s.id === id);
+        if (saleIndex === -1) return;
+
+        allSales[saleIndex].status = "aprobado";
+        localStorage.setItem("escarlu_sales", JSON.stringify(allSales));
+        
+        alert("Pago verificado y aprobado.");
+        renderFinanceDashboard();
+    }
+
+    function rejectYape(id) {
+        if (!confirm("¿Seguro de rechazar y anular este pago pendiente?")) return;
+
+        const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const saleIndex = allSales.findIndex(s => s.id === id);
+        if (saleIndex === -1) return;
+
+        allSales[saleIndex].status = "rechazado";
+        localStorage.setItem("escarlu_sales", JSON.stringify(allSales));
+
+        alert("Pago rechazado y eliminado del balance.");
+        renderFinanceDashboard();
+    }
+
+    // Modal Control
+    function openEgresoModal() {
+        document.getElementById("egreso-modal").classList.remove("hidden");
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById("egreso-fecha").value = todayStr;
+    }
+
+    function closeEgresoModal() {
+        document.getElementById("egreso-modal").classList.add("hidden");
+        document.getElementById("egreso-concepto").value = "";
+        document.getElementById("egreso-monto").value = "";
+    }
+
+    function saveEgreso() {
+        const concepto = document.getElementById("egreso-concepto").value.trim();
+        const categoria = document.getElementById("egreso-categoria").value;
+        const monto = parseFloat(document.getElementById("egreso-monto").value);
+        const sede = document.getElementById("egreso-sede").value;
+        const fecha = document.getElementById("egreso-fecha").value;
+
+        if (!concepto || isNaN(monto) || monto <= 0 || !fecha) {
+            alert("Por favor complete todos los campos obligatorios correctamente.");
+            return;
+        }
+
+        const allExpenses = JSON.parse(localStorage.getItem("escarlu_expenses")) || [];
+        const newExpense = {
+            id: `EXP-${Math.floor(1000 + Math.random() * 9000)}`,
+            description: concepto,
+            category: categoria,
+            amount: monto,
+            storeId: sede === 'general' ? '' : sede,
+            date: fecha
+        };
+
+        allExpenses.push(newExpense);
+        localStorage.setItem("escarlu_expenses", JSON.stringify(allExpenses));
+
+        // Cambiar el filtro de mes al periodo del egreso para mostrarlo al instante
+        const expenseMonth = fecha.substring(0, 7);
+        document.getElementById("filter-period").value = expenseMonth;
+
+        closeEgresoModal();
+        alert("Gasto/Egreso registrado correctamente.");
+        renderFinanceDashboard();
+    }
+</script>
+</body></html>
