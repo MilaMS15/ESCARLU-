@@ -22,6 +22,9 @@ jobs:
           echo "const SUPABASE_KEY = \"${{ secrets.SUPABASE_ANON_KEY }}\";" >> config.js
           echo "if (window.supabase) { window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); }" >> config.js
 
+      - name: Remove .gitignore for deployment
+        run: rm -f .gitignore
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
