@@ -71,10 +71,10 @@
                     "full": "9999px"
             },
             "spacing": {
-                    "container-padding": "40px",
-                    "gutter": "24px",
-                    "stack-md": "24px",
-                    "stack-lg": "48px",
+                    "container-padding": "20px",
+                    "gutter": "16px",
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
                     "stack-sm": "12px",
                     "unit": "8px"
             },
@@ -133,8 +133,8 @@
 </head>
 <body class="min-h-screen overflow-x-hidden">
 <!-- Sidebar Navigation -->
-<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md z-50 w-64 md:w-72">
-<div class="mb-10 px-4">
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md z-50 w-60 md:w-64">
+<div class="mb-5 px-4">
 <h1 class="font-headline-md text-headline-md text-primary">ESCARLÚ</h1>
 <p class="font-label-lg text-label-lg text-on-surface-variant opacity-70">Management Dashboard</p>
 </div>
@@ -168,9 +168,9 @@
 </div>
 </aside>
 <!-- Main Content Area -->
-<main class="ml-64 md:ml-72 min-h-screen bg-background">
+<main class="ml-60 md:ml-64 min-h-screen bg-background">
 <!-- Top Bar with Role Simulator -->
-<header class="flex justify-between items-center w-full px-container-padding h-14 md:h-16 border-b-2 border-primary sticky top-0 bg-surface z-40 shadow-sm">
+<header class="flex justify-between items-center w-full px-container-padding h-10 md:h-16 border-b-2 border-primary sticky top-0 bg-surface z-40 shadow-sm">
 <div class="flex items-center gap-4">
 <h1 class="text-lg font-bold text-black">Almacén Central</h1>
 </div>
@@ -195,8 +195,8 @@
 <p class="text-xs text-on-surface-variant">Seguimiento detallado de ingresos y egresos de productos textiles.</p>
 </div>
 <!-- Summary Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-10">
-<div class="glass-card rounded-2xl p-8 gold-accent">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+<div class="glass-card rounded-2xl p-5 gold-accent">
 <div class="flex justify-between items-start mb-4">
 <div class="p-3 bg-primary-container/20 rounded-xl">
 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">trending_up</span>
@@ -206,7 +206,7 @@
 <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Total Ingresos (Mes)</h3>
 <p class="font-display-lg text-display-lg text-primary">2,480 <span class="text-xl font-normal text-on-surface-variant">Uds</span></p>
 </div>
-<div class="glass-card rounded-2xl p-8 gold-accent">
+<div class="glass-card rounded-2xl p-5 gold-accent">
 <div class="flex justify-between items-start mb-4">
 <div class="p-3 bg-secondary-container/20 rounded-xl">
 <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">trending_down</span>
@@ -216,7 +216,7 @@
 <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Total Egresos (Mes)</h3>
 <p class="font-display-lg text-display-lg text-secondary">1,854 <span class="text-xl font-normal text-on-surface-variant">Uds</span></p>
 </div>
-<div class="glass-card rounded-2xl p-8 gold-accent">
+<div class="glass-card rounded-2xl p-5 gold-accent">
 <div class="flex justify-between items-start mb-4">
 <div class="p-3 bg-tertiary-container/20 rounded-xl">
 <span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
@@ -228,16 +228,16 @@
 </div>
 </div>
 <!-- Filters -->
-<div class="glass-card rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-6 items-end">
+<div class="glass-card rounded-2xl p-6 mb-4 flex flex-col md:flex-row gap-6 items-end">
 <div class="flex-1 w-full space-y-2">
 <label class="font-label-md text-label-md text-on-surface-variant">Fecha</label>
 <div class="flex gap-2">
-<input id="date-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary" type="date"/>
+<input id="date-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-10 px-4 focus:ring-primary focus:border-primary" type="date"/>
 </div>
 </div>
 <div class="flex-1 w-full space-y-2">
 <label class="font-label-md text-label-md text-on-surface-variant">Tipo de Movimiento</label>
-<select id="type-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary">
+<select id="type-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-10 px-4 focus:ring-primary focus:border-primary">
 <option value="all">Todos los movimientos</option>
 <option value="ingreso">Ingreso (Entradas)</option>
 <option value="egreso">Egreso (Salidas)</option>
@@ -245,7 +245,7 @@
 </div>
 <div class="flex-1 w-full space-y-2">
 <label class="font-label-md text-label-md text-on-surface-variant">Tienda / Destino</label>
-<select id="store-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary">
+<select id="store-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-10 px-4 focus:ring-primary focus:border-primary">
 <option value="all">Todas las sedes</option>
 <option value="ALM-01">Almacén Central</option>
 <option value="TDA-01">Tienda Santa Lucía</option>
@@ -254,30 +254,30 @@
 <option value="TDA-04">Tienda Aviación</option>
 </select>
 </div>
-<button id="btn-filter" class="h-14 px-8 bg-primary text-on-primary font-label-lg text-label-lg rounded-xl hover:bg-on-primary-container transition-all active:scale-95 flex items-center gap-2">
+<button id="btn-filter" class="h-10 px-8 bg-primary text-on-primary font-label-lg text-label-lg rounded-xl hover:bg-on-primary-container transition-all active:scale-95 flex items-center gap-2">
 <span class="material-symbols-outlined">filter_list</span>
                     Filtrar
                 </button>
 </div>
 <!-- Main Movement Table -->
 <div class="glass-card rounded-2xl overflow-hidden mb-12">
-<div class="overflow-x-auto">
+<div class="overflow-x-auto max-h-[500px] overflow-y-auto">
 <table class="w-full text-left border-collapse">
 <thead>
 <tr class="bg-surface-container-high border-b border-outline-variant">
-<th class="p-6 font-label-lg text-label-lg text-primary">Movimiento</th>
-<th class="p-6 font-label-lg text-label-lg text-primary">Fecha y Hora</th>
-<th class="p-6 font-label-lg text-label-lg text-primary">Producto</th>
-<th class="p-6 font-label-lg text-label-lg text-primary text-center">Cantidad</th>
-<th class="p-6 font-label-lg text-label-lg text-primary">Origen / Destino</th>
-<th class="p-6 font-label-lg text-label-lg text-primary">Responsable</th>
-<th class="p-6 font-label-lg text-label-lg text-primary"></th>
+<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Movimiento</th>
+<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Fecha y Hora</th>
+<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Producto</th>
+<th class="py-3 px-4 font-label-lg text-label-lg text-primary text-center">Cantidad</th>
+<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Origen / Destino</th>
+<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Responsable</th>
+<th class="py-3 px-4 font-label-lg text-label-lg text-primary"></th>
 </tr>
 </thead>
 <tbody id="history-tbody" class="divide-y divide-outline-variant/30">
 <!-- Row 1 -->
 <tr class="hover:bg-primary-container/5 transition-colors group">
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex items-center gap-3">
 <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
@@ -285,15 +285,15 @@
 <span class="font-label-md text-label-md text-on-surface">Ingreso</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex flex-col">
 <span class="font-body-md text-body-md text-on-surface">24 May 2024</span>
 <span class="font-body-sm text-body-sm text-on-surface-variant">09:15 AM</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
 <img class="w-full h-full object-cover" data-alt="A close-up high-resolution photograph of premium silk fabric in a deep lilac color, showing its rich texture and subtle sheen. The background is a clean, neutral textile workshop environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVuoSa14jfjUi7aCrKYUHE0AjxBlnB2YdDtFdFvfgh1HC2h7VUKK8ntKyoBCx7hyq9Ri_S-te99nOGAx-0SMlqrfFwoQXlXiOuW-IJmcUg3Ti6Os5oCvmCAaohfAcGgL3e-FHmHM314z1HfNdmxR35oj_0QbydKIgRiQh_WW7y8iAQl23yzTiUVFkyNwZVRjZ8ypgLjf76MuzaBgqO4J1PiTIf2MR7gr6UepGGs1xW6nn49xNFXvk"/>
 </div>
 <div class="flex flex-col">
@@ -302,19 +302,19 @@
 </div>
 </div>
 </td>
-<td class="p-6 text-center">
+<td class="py-3 px-4 text-center">
 <span class="font-display-lg text-headline-md text-on-surface">120</span>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-tertiary">location_on</span>
 <span class="font-body-md text-body-md">Almacén Central</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <span class="font-label-md text-label-md text-on-surface-variant">Carlos Rivas</span>
 </td>
-<td class="p-6 text-right">
+<td class="py-3 px-4 text-right">
 <button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
 <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
 </button>
@@ -322,7 +322,7 @@
 </tr>
 <!-- Row 2 -->
 <tr class="hover:bg-primary-container/5 transition-colors group">
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex items-center gap-3">
 <div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">remove_circle</span>
@@ -330,15 +330,15 @@
 <span class="font-label-md text-label-md text-on-surface">Egreso</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex flex-col">
 <span class="font-body-md text-body-md text-on-surface">24 May 2024</span>
 <span class="font-body-sm text-body-sm text-on-surface-variant">10:45 AM</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
 <img class="w-full h-full object-cover" data-alt="A stack of folded high-quality linen shirts in soft rose and pastel pink shades. The photograph captures the elegant weave of the linen fabric in a bright, professionally lit boutique setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_l80sld5J-eGRwUxN5U_Rx926UtS4o4LKlv_G4CKsMyCRjMiajoq7lv4dXDA023Dt20Mu0csdZAaC8ydxEUGwU1Ie43c-28PyJ_Fd1yO2p-PkHo4MZV88Yq0pEBxclilX9ygPQa8S5JeszLmNP7HMmJdADlyqNJpEM04v6SOvRmDVovYHxuF-kDnPoAAM_3647I7kv7rgnVfhYwUwXchL-PZhoNovYkXGTwdSJi4bIx0qQM8dj4E"/>
 </div>
 <div class="flex flex-col">
@@ -347,10 +347,10 @@
 </div>
 </div>
 </td>
-<td class="p-6 text-center">
+<td class="py-3 px-4 text-center">
 <span class="font-display-lg text-headline-md text-on-surface">45</span>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex flex-col">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-primary">store</span>
@@ -359,10 +359,10 @@
 <span class="text-xs text-on-surface-variant ml-7 italic">Pedido Stock Semanal</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <span class="font-label-md text-label-md text-on-surface-variant">Elena Gómez</span>
 </td>
-<td class="p-6 text-right">
+<td class="py-3 px-4 text-right">
 <button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
 <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
 </button>
@@ -370,7 +370,7 @@
 </tr>
 <!-- Row 3 -->
 <tr class="hover:bg-primary-container/5 transition-colors group">
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex items-center gap-3">
 <div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">remove_circle</span>
@@ -378,15 +378,15 @@
 <span class="font-label-md text-label-md text-on-surface">Egreso</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex flex-col">
 <span class="font-body-md text-body-md text-on-surface">23 May 2024</span>
 <span class="font-body-sm text-body-sm text-on-surface-variant">04:20 PM</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
 <img class="w-full h-full object-cover" data-alt="Close-up of a luxurious dark velvet textile with a rich deep purple tone. The light reflects off the soft pile of the fabric, highlighting its premium quality. Suitable for an elegant textile fashion brand dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqlkEG-bYSUvxkF7pS1BfmnDW5XJsO6qJt0mAsQGzzIL6Vdu-6Mbg_SSyqvpdWGmOrt5r-UAbCVW9bkIUs1tN3Z_EiMm2_-aZtnUXBClTC2PBnmDAAmFHNr7yPUoRpP-CZMOqrjgYQPt6L0LrAGM64wSxc2mxnK8KWBjOOMgeQZcignyhYfaed1lupbr5l7a57Pui4-GUyOcC8MwVu5IZvTLk-KdDAEm4AQP-2usM5Lnf-bhQzuoM"/>
 </div>
 <div class="flex flex-col">
@@ -395,10 +395,10 @@
 </div>
 </div>
 </td>
-<td class="p-6 text-center">
+<td class="py-3 px-4 text-center">
 <span class="font-display-lg text-headline-md text-on-surface">15</span>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <div class="flex flex-col">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-primary">storefront</span>
@@ -407,10 +407,10 @@
 <span class="text-xs text-on-surface-variant ml-7 italic">Reposición Urgente</span>
 </div>
 </td>
-<td class="p-6">
+<td class="py-3 px-4">
 <span class="font-label-md text-label-md text-on-surface-variant">Elena Gómez</span>
 </td>
-<td class="p-6 text-right">
+<td class="py-3 px-4 text-right">
 <button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
 <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
 </button>
@@ -420,7 +420,7 @@
 </table>
 </div>
 <!-- Pagination -->
-<div class="p-6 border-t border-outline-variant flex justify-between items-center bg-surface-container-low">
+<div class="p-4 border-t border-outline-variant flex justify-between items-center bg-surface-container-low">
 <span class="font-body-sm text-body-sm text-on-surface-variant">Mostrando 1-10 de 125 movimientos</span>
 <div class="flex gap-2">
 <button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all disabled:opacity-50" disabled="">
@@ -519,7 +519,7 @@
         });
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-on-surface-variant font-medium">No se encontraron movimientos registrados.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="p-5 text-center text-on-surface-variant font-medium">No se encontraron movimientos registrados.</td></tr>`;
             return;
         }
 
@@ -545,21 +545,21 @@
             const tr = document.createElement("tr");
             tr.className = "hover:bg-primary-container/5 transition-colors group";
             tr.innerHTML = `
-                <td class="p-6">
+                <td class="py-3 px-4">
                     <div class="flex items-center gap-3">
                         ${typeIcon}
                         <span class="font-label-md text-label-md text-on-surface">${typeLabel}</span>
                     </div>
                 </td>
-                <td class="p-6">
+                <td class="py-3 px-4">
                     <div class="flex flex-col">
                         <span class="font-body-md text-body-md text-on-surface">${dateStr}</span>
                         <span class="font-body-sm text-body-sm text-on-surface-variant">${timeStr}</span>
                     </div>
                 </td>
-                <td class="p-6">
+                <td class="py-3 px-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
+                        <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
                             <span class="material-symbols-outlined text-primary text-xl">apparel</span>
                         </div>
                         <div class="flex flex-col">
@@ -568,8 +568,8 @@
                         </div>
                     </div>
                 </td>
-                <td class="p-6 text-center font-bold text-sm">${m.qty}</td>
-                <td class="p-6">
+                <td class="py-3 px-4 text-center font-bold text-sm">${m.qty}</td>
+                <td class="py-3 px-4">
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary text-sm">${m.type === 'ingreso' ? 'warehouse' : 'storefront'}</span>
@@ -577,10 +577,10 @@
                         </div>
                     </div>
                 </td>
-                <td class="p-6">
+                <td class="py-3 px-4">
                     <span class="font-label-md text-label-md text-on-surface-variant">${m.user}</span>
                 </td>
-                <td class="p-6 text-right"></td>
+                <td class="py-3 px-4 text-right"></td>
             `;
             tbody.appendChild(tr);
         });
