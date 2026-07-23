@@ -178,11 +178,11 @@
 <label class="font-label-md text-xs text-on-surface font-semibold ml-1" for="store-filter-select">Filtrar por Sede:</label>
 <select class="h-12 min-w-[220px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg text-sm px-4 bg-surface cursor-pointer outline-none" id="store-filter-select">
 <option value="all">Consolidado Total (Todas las Sedes)</option>
-<option value="central">Almacén Central</option>
-<option value="tienda_1">Tienda Santa Lucía</option>
-<option value="tienda_2">Tienda Generales Suplex</option>
-<option value="tienda_3">Tienda Generales pasadizo</option>
-<option value="tienda_4">Tienda Aviación</option>
+<option value="ALM-01">Almacén Central</option>
+<option value="TDA-01">Tienda Santa Lucía</option>
+<option value="TDA-02">Tienda Generales Suplex</option>
+<option value="TDA-03">Tienda Generales Pasadizo</option>
+<option value="TDA-04">Tienda Aviación</option>
 </select>
 </div>
 </div>
@@ -279,8 +279,12 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // Cargar inventario desde localStorage o DEFAULT_INVENTORY
-    const rawInv = localStorage.getItem("escarlu_inventory");
-    const invData = rawInv ? JSON.parse(rawInv) : (typeof DEFAULT_INVENTORY !== 'undefined' ? DEFAULT_INVENTORY : {});
+    let invData = {};
+    function loadInv() {
+        const rawInv = localStorage.getItem("escarlu_inventory");
+        invData = rawInv ? JSON.parse(rawInv) : (typeof DEFAULT_INVENTORY !== 'undefined' ? DEFAULT_INVENTORY : {});
+    }
+    loadInv();
 
     const tbody = document.getElementById("inventory-tbody");
     const storeSelect = document.getElementById("store-filter-select");
@@ -298,20 +302,22 @@ document.addEventListener('DOMContentLoaded', () => {
         let tiendasItems = 0;
         let lowAlerts = 0;
 
-        // Modelos y Colores
-        const models = [
-            { key: "classic", name: "Polo Clásico Piqué", sku: "ESC-PL-CLASSIC" },
-            { key: "slim", name: "Polo Slim Fit Mercerizado", sku: "ESC-PL-SLIM" },
-            { key: "sport", name: "Polo Técnico Deportivo", sku: "ESC-PL-SPORT" },
-            { key: "premium", name: "Polo Premium Seda/Algodón", sku: "ESC-PL-PREMIUM" }
-        ];
+        // Modelos y Colores dinámicos desde shared.js
+        const models = Object.entries(MODEL_NAMES).map(([key, name]) => ({
+            key,
+            name,
+            sku: `ESC-2026-${key}`
+        }));
 
-        const colors = [
-            { key: "blanco", name: "Blanco", badge: "bg-white border border-outline-variant text-on-surface" },
-            { key: "marino", name: "Azul Marino", badge: "bg-primary text-on-primary" },
-            { key: "rosa", name: "Rosa Pastel", badge: "bg-secondary-container text-on-secondary-container" },
-            { key: "lila", name: "Lila Pastel", badge: "bg-primary-container text-on-primary-container" }
-        ];
+        const colors = Object.entries(COLOR_NAMES).map(([key, name]) => {
+            let badge = "bg-surface-variant text-on-surface-variant";
+            if (key === "COL-01") badge = "bg-black text-white";
+            else if (key === "COL-02") badge = "bg-white border border-outline-variant text-on-surface";
+            else if (key === "COL-03") badge = "bg-amber-100 text-amber-800";
+            else if (key === "COL-14") badge = "bg-rose-100 text-rose-800";
+            else if (key === "COL-18") badge = "bg-purple-100 text-purple-800";
+            return { key, name, badge };
+        });
 
         models.forEach(m => {
             colors.forEach(c => {
@@ -328,8 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const xlVal = sizes.XL || 0;
 
                         const rowTotal = sVal + mVal + lVal + xlVal;
-                        if (sKey === "central") centralItems += rowTotal;
-                        else tiendasItems += rowTotal;
+                        if (sKey === "ALM-01") centralItems += rowTotal;
+                        else if (sKey.startsWith("TDA-")) tiendasItems += rowTotal;
 
                         if (selectedStore === "all" || selectedStore === sKey) {
                             sSum += sVal;
@@ -341,39 +347,68 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const totalRow = sSum + mSum + lSum + xlSum;
-                totalItems += totalRow;
 
-                if (totalRow < 20) lowAlerts++;
+                // Solo contar si pertenece al filtro o si no hay filtro
+                if (selectedStore === "all") {
+                    totalItems += totalRow;
+                } else {
+                    totalItems = Object.keys(invData).reduce((sum, sKey) => {
+                        if (sKey !== selectedStore) return sum;
+                        const storeInv = invData[sKey];
+                        let storeSum = 0;
+                        Object.keys(storeInv).forEach(mK => {
+                            Object.keys(storeInv[mK]).forEach(cK => {
+                                Object.values(storeInv[mK][cK]).forEach(val => storeSum += val);
+                            });
+                        });
+                        return storeSum;
+                    }, 0);
+                }
+
+                if (totalRow < 5) lowAlerts++;
 
                 // Filtro de búsqueda
                 const matchSearch = m.name.toLowerCase().includes(query) || c.name.toLowerCase().includes(query) || m.sku.toLowerCase().includes(query);
                 if (!matchSearch) return;
 
                 // Estado de Stock
-                let statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">Disponible</span>`;
+                let statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-[11px] font-bold">Disponible</span>`;
                 if (totalRow === 0) {
-                    statusBadge = `<span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-xs font-bold">Agotado</span>`;
-                } else if (totalRow < 20) {
-                    statusBadge = `<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-xs font-bold">Bajo Stock</span>`;
+                    statusBadge = `<span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-[11px] font-bold">Agotado</span>`;
+                } else if (totalRow < 5) {
+                    statusBadge = `<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[11px] font-bold">Bajo Stock</span>`;
                 }
+
+                // Generar detalle por sede para el modal/alert
+                let detailStr = "";
+                Object.keys(invData).forEach(sKey => {
+                    const qty = (invData[sKey]?.[m.key]?.[c.key]?.S || 0) + 
+                                (invData[sKey]?.[m.key]?.[c.key]?.M || 0) + 
+                                (invData[sKey]?.[m.key]?.[c.key]?.L || 0) + 
+                                (invData[sKey]?.[m.key]?.[c.key]?.XL || 0);
+                    if (qty > 0) {
+                        detailStr += `\\n- ${STORE_NAMES[sKey] || sKey}: ${qty} uds (S:${invData[sKey]?.[m.key]?.[c.key]?.S||0}, M:${invData[sKey]?.[m.key]?.[c.key]?.M||0}, L:${invData[sKey]?.[m.key]?.[c.key]?.L||0}, XL:${invData[sKey]?.[m.key]?.[c.key]?.XL||0})`;
+                    }
+                });
+                if (!detailStr) detailStr = "Sin existencias en ninguna sede.";
 
                 rowsHtml += `
                     <tr class="hover:bg-surface-container-low transition-colors">
                         <td class="px-6 py-4">
-                            <div class="font-bold text-on-surface">${m.name}</div>
-                            <div class="text-xs text-on-surface-variant">SKU: ${m.sku}</div>
+                            <div class="font-bold text-on-surface text-xs">${m.name}</div>
+                            <div class="text-[10px] text-on-surface-variant">REF: ${m.sku}</div>
                         </td>
                         <td class="px-4 py-4">
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${c.badge}">${c.name}</span>
+                            <span class="px-3 py-1 rounded-full text-[11px] font-semibold ${c.badge}">${c.name}</span>
                         </td>
                         <td class="px-4 py-4 text-center font-bold ${sSum < 5 ? 'text-error font-extrabold' : ''}">${sSum}</td>
                         <td class="px-4 py-4 text-center font-bold ${mSum < 5 ? 'text-error font-extrabold' : ''}">${mSum}</td>
                         <td class="px-4 py-4 text-center font-bold ${lSum < 5 ? 'text-error font-extrabold' : ''}">${lSum}</td>
                         <td class="px-4 py-4 text-center font-bold ${xlSum < 5 ? 'text-error font-extrabold' : ''}">${xlSum}</td>
-                        <td class="px-4 py-4 text-center font-extrabold text-primary text-base">${totalRow}</td>
+                        <td class="px-4 py-4 text-center font-extrabold text-primary text-sm">${totalRow}</td>
                         <td class="px-4 py-4">${statusBadge}</td>
                         <td class="px-6 py-4 text-right">
-                            <button onclick="alert('${m.name} (${c.name}): S:${sSum}, M:${mSum}, L:${lSum}, XL:${xlSum}')" class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary-container/20 text-xs font-bold transition-colors">
+                            <button onclick="alert('${m.name} (${c.name}):${detailStr}')" class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary-container/20 text-[10px] font-bold transition-colors">
                                 Ver Sedes
                             </button>
                         </td>
@@ -384,10 +419,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="p-8 text-center text-on-surface-variant font-semibold">No se encontraron productos que coincidan.</td></tr>`;
 
-        // Actualizar KPIs
-        document.getElementById("kpi-total-stock").textContent = `${totalItems} unids`;
-        document.getElementById("kpi-central-stock").textContent = `${centralItems} unids`;
-        document.getElementById("kpi-tiendas-stock").textContent = `${tiendasItems} unids`;
+        // Calcular totalItems y alerts correctos según filtro
+        let filterTotal = 0;
+        let filterCentral = 0;
+        let filterTiendas = 0;
+        
+        Object.keys(invData).forEach(sKey => {
+            let storeSum = 0;
+            Object.keys(invData[sKey] || {}).forEach(mK => {
+                Object.keys(invData[sKey][mK] || {}).forEach(cK => {
+                    Object.values(invData[sKey][mK][cK] || {}).forEach(val => storeSum += val);
+                });
+            });
+            if (sKey === "ALM-01") filterCentral += storeSum;
+            else if (sKey.startsWith("TDA-")) filterTiendas += storeSum;
+            
+            if (selectedStore === "all" || selectedStore === sKey) {
+                filterTotal += storeSum;
+            }
+        });
+
+        document.getElementById("kpi-total-stock").textContent = `${filterTotal.toLocaleString('es-PE')} unids`;
+        document.getElementById("kpi-central-stock").textContent = `${filterCentral.toLocaleString('es-PE')} unids`;
+        document.getElementById("kpi-tiendas-stock").textContent = `${filterTiendas.toLocaleString('es-PE')} unids`;
         document.getElementById("kpi-alerts-count").textContent = `${lowAlerts} Variantes`;
     }
 
@@ -395,6 +449,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (storeSelect) storeSelect.addEventListener("change", renderTable);
     if (searchInput) searchInput.addEventListener("input", renderTable);
+
+    // Sync en tiempo real
+    window.addEventListener('storage', (e) => {
+        if (!e.key || e.key === 'escarlu_inventory') {
+            loadInv();
+            renderTable();
+        }
+    });
 });
 </script>
 </body></html>

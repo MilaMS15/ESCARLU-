@@ -142,6 +142,13 @@ async function syncExpensesToSupabase(localExpenses) {
     }
 }
 
+function triggerStorageUpdate(key, value) {
+    const event = new Event('storage');
+    event.key = key;
+    event.newValue = value;
+    window.dispatchEvent(event);
+}
+
 async function downloadFromSupabase() {
     const client = getSupabaseClient();
     if (!client) return;
@@ -162,7 +169,9 @@ async function downloadFromSupabase() {
             if (!inventory[storeId][modelId][colorId]) inventory[storeId][modelId][colorId] = {};
             inventory[storeId][modelId][colorId][sizeName] = row.cantidad;
         });
-        originalSetItem.call(localStorage, 'escarlu_inventory', JSON.stringify(inventory));
+        const invStr = JSON.stringify(inventory);
+        originalSetItem.call(localStorage, 'escarlu_inventory', invStr);
+        triggerStorageUpdate('escarlu_inventory', invStr);
     }
 
     // 2. Download Sales
@@ -178,7 +187,9 @@ async function downloadFromSupabase() {
             client: row.client || "Cliente General",
             date: row.fecha_hora
         }));
-        originalSetItem.call(localStorage, 'escarlu_sales', JSON.stringify(sales));
+        const salesStr = JSON.stringify(sales);
+        originalSetItem.call(localStorage, 'escarlu_sales', salesStr);
+        triggerStorageUpdate('escarlu_sales', salesStr);
     }
 
     // 3. Download Requests
@@ -196,7 +207,9 @@ async function downloadFromSupabase() {
             status: row.estado,
             date: row.fecha_solicitud
         }));
-        originalSetItem.call(localStorage, 'escarlu_requests', JSON.stringify(reqs));
+        const reqsStr = JSON.stringify(reqs);
+        originalSetItem.call(localStorage, 'escarlu_requests', reqsStr);
+        triggerStorageUpdate('escarlu_requests', reqsStr);
     }
 
     // 4. Download Expenses
@@ -210,11 +223,10 @@ async function downloadFromSupabase() {
             date: row.fecha,
             storeId: row.id_sede
         }));
-        originalSetItem.call(localStorage, 'escarlu_expenses', JSON.stringify(expenses));
+        const expStr = JSON.stringify(expenses);
+        originalSetItem.call(localStorage, 'escarlu_expenses', expStr);
+        triggerStorageUpdate('escarlu_expenses', expStr);
     }
-
-    // Dispatch StorageEvent to trigger window refresh listeners across pages
-    window.dispatchEvent(new Event('storage'));
 }
 
 const DEFAULT_INVENTORY = {

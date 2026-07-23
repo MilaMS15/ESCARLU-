@@ -167,27 +167,10 @@
     </div>
 </main>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const form = document.getElementById("login-form");
-        const emailInput = document.getElementById("email");
-        const passwordInput = document.getElementById("password");
-        const errorDiv = document.getElementById("login-error");
-
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            
-            const result = login(email, password);
-            if (result.success) {
-                // Reconoce automáticamente el rol y redirige a la vista correspondiente
-                redirectToDefaultPage(result.user);
-            } else {
-                errorDiv.textContent = result.message;
-                errorDiv.classList.remove("hidden");
-            }
-        });
-    });
-</script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Configuration -->
+    <script src="config.js"></script>
+    <!-- Authentication Logic -->
+    <script src="auth.js"></script>
 </body></html>

@@ -507,8 +507,8 @@
         const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
         const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
 
-        // Filter pending requests destined to central warehouse (origin === 'central')
-        const pending = allReqs.filter(r => r.origin === 'central' && r.status === 'pendiente');
+        // Filter pending requests where origin is the central warehouse (origin === 'ALM-01')
+        const pending = allReqs.filter(r => r.origin === 'ALM-01' && r.status === 'pendiente');
 
         // Sort by date descending
         pending.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -530,7 +530,7 @@
             const colorLabel = COLOR_NAMES[req.color] || req.color;
             
             // Get Central Stock
-            const centralStock = inventory["central"]?.[req.model]?.[req.color]?.[req.size] || 0;
+            const centralStock = inventory["ALM-01"]?.[req.model]?.[req.color]?.[req.size] || 0;
             const hasEnoughStock = centralStock >= req.qty;
 
             const card = document.createElement("div");
@@ -601,7 +601,7 @@
         if (reqIndex === -1) return;
 
         const req = allReqs[reqIndex];
-        const centralStock = inventory["central"]?.[req.model]?.[req.color]?.[req.size] || 0;
+        const centralStock = inventory["ALM-01"]?.[req.model]?.[req.color]?.[req.size] || 0;
 
         if (centralStock < req.qty) {
             alert("No hay stock suficiente en el Almacén Central.");
@@ -609,7 +609,7 @@
         }
 
         // Deduct from central warehouse
-        inventory["central"][req.model][req.color][req.size] -= req.qty;
+        inventory["ALM-01"][req.model][req.color][req.size] -= req.qty;
         
         // Add to store stock
         if (!inventory[req.destination]) {
@@ -648,7 +648,7 @@
 
     // Real-time synchronization
     window.addEventListener('storage', (e) => {
-        if (e.key === 'escarlu_requests') {
+        if (!e.key || e.key === 'escarlu_requests' || e.key === 'escarlu_inventory') {
             renderRequests();
         }
     });

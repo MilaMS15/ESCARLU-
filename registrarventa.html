@@ -146,7 +146,7 @@
     <div class="flex items-center gap-2">
       <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
         <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
-        <span class="text-xs font-bold text-primary">🏪 Tienda Santa Lucía</span>
+        <span class="text-xs font-bold text-primary">Tienda Santa Lucía</span>
       </div>
     </div>
 
@@ -156,7 +156,7 @@
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
           <span class="material-symbols-outlined text-sm">search</span>
         </span>
-        <input type="text" placeholder="🔍 Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+        <input type="text" placeholder="Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
       </div>
     </div>
 
@@ -164,7 +164,7 @@
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-        <span class="text-[11px] font-bold text-green-700">🟢 Caja Abierta</span>
+        <span class="text-[11px] font-bold text-green-700">Caja Abierta</span>
       </div>
       <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
         <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
@@ -179,7 +179,7 @@
   <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mt-1">
       <div class="flex items-center gap-3">
           <h2 id="store-title-label" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Registrar Venta</h2>
-          <span class="text-xs text-on-surface-variant font-semibold">| Estado: <span class="text-green-600 font-bold">🟢 Activo</span></span>
+          <span class="text-xs text-on-surface-variant font-semibold">| Estado: <span class="text-green-600 font-bold">Activo</span></span>
       </div>
       <div class="hidden">
           <span id="store-subtitle-label"></span>
@@ -524,6 +524,12 @@
             document.querySelector('input[name="payment_method"][value="efectivo"]').checked = true;
             whatsappArea.classList.add('hidden');
             whatsappArea.classList.remove('flex');
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'escarlu_inventory') {
+                console.log("Inventory synced in background.");
+            }
         });
     });
 

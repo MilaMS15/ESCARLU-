@@ -149,7 +149,7 @@
       <div class="flex items-center gap-2">
         <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
           <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
-          <span class="text-xs font-bold text-primary">🏪 Tienda Santa Lucía</span>
+          <span class="text-xs font-bold text-primary">Tienda Santa Lucía</span>
         </div>
       </div>
 
@@ -159,7 +159,7 @@
           <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
             <span class="material-symbols-outlined text-sm">search</span>
           </span>
-          <input type="text" placeholder="🔍 Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+          <input type="text" placeholder="Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
         </div>
       </div>
 
@@ -167,7 +167,7 @@
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
           <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span class="text-[11px] font-bold text-green-700">🟢 Caja Abierta</span>
+          <span class="text-[11px] font-bold text-green-700">Caja Abierta</span>
         </div>
         <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
           <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
@@ -184,6 +184,15 @@
             <h2 id="store-title-label" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Registro de Ventas</h2>
             <span class="text-xs text-on-surface-variant font-semibold">| Fecha: <span id="current-date-label">21 de Julio, 2026</span></span>
         </div>
+        <div id="admin-store-panel" class="hidden flex items-center gap-2">
+            <label class="text-xs font-bold text-on-surface" for="admin-store-select">Sede:</label>
+            <select id="admin-store-select" class="h-9 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary outline-none">
+                <option value="TDA-01">Tienda Santa Lucía</option>
+                <option value="TDA-02">Tienda Generales Suplex</option>
+                <option value="TDA-03">Tienda Generales Pasadizo</option>
+                <option value="TDA-04">Tienda Aviación</option>
+            </select>
+        </div>
         <div class="hidden">
             <span id="store-subtitle-label"></span>
         </div>
@@ -195,30 +204,30 @@
             <!-- Cards de Montos -->
             <section class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Efectivo en Caja -->
-                <div class="glass-card rounded-xl p-5 flex items-center justify-between border-t-4 border-green-500">
+                <div class="glass-card rounded-xl p-4 flex items-center justify-between border-t-4 border-green-500 h-24">
                     <div>
-                        <h4 class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1 mb-1">
+                        <h4 class="text-xs font-bold text-on-surface-variant flex items-center gap-1 mb-1">
                             <span class="material-symbols-outlined text-[16px] text-green-500">savings</span>
                             Efectivo en Caja Física
                         </h4>
-                        <p id="cash-drawer-total" class="font-headline-lg text-headline-lg font-bold text-on-surface">S/ 0.00</p>
+                        <p id="cash-drawer-total" class="text-2xl font-black text-on-surface">S/ 0.00</p>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[28px]">payments</span>
+                    <div class="w-11 h-11 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[24px]">payments</span>
                     </div>
                 </div>
 
                 <!-- Digital Pendiente -->
-                <div class="glass-card rounded-xl p-5 flex items-center justify-between border-t-4 border-amber-400">
+                <div class="glass-card rounded-xl p-4 flex items-center justify-between border-t-4 border-amber-400 h-24">
                     <div>
-                        <h4 class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1 mb-1">
+                        <h4 class="text-xs font-bold text-on-surface-variant flex items-center gap-1 mb-1">
                             <span class="material-symbols-outlined text-[16px] text-amber-500 font-bold">pending_actions</span>
                             Digital Pendiente de Validar
                         </h4>
-                        <p id="digital-pending-total" class="font-headline-lg text-headline-lg font-bold text-on-surface">S/ 0.00</p>
+                        <p id="digital-pending-total" class="text-2xl font-black text-on-surface">S/ 0.00</p>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[28px]">hourglass_empty</span>
+                    <div class="w-11 h-11 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[24px]">hourglass_empty</span>
                     </div>
                 </div>
             </section>
@@ -285,7 +294,7 @@
             const adminStoreSelect = document.getElementById("admin-store-select");
             adminStorePanel.classList.remove("hidden");
             
-            activeStoreId = localStorage.getItem("escarlu_admin_store_view") || "tienda_1";
+            activeStoreId = localStorage.getItem("escarlu_admin_store_view") || "TDA-01";
             adminStoreSelect.value = activeStoreId;
             
             adminStoreSelect.addEventListener("change", (e) => {
@@ -397,6 +406,13 @@
         }
 
         renderSales();
+
+        // Real-time synchronization
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'escarlu_sales') {
+                renderSales();
+            }
+        });
     });
 </script>
 

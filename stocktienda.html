@@ -177,7 +177,7 @@
     <div class="flex items-center gap-2">
       <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
         <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
-        <span class="text-xs font-bold text-primary">🏪 Tienda Santa Lucía</span>
+        <span class="text-xs font-bold text-primary">Tienda Santa Lucía</span>
       </div>
     </div>
 
@@ -187,7 +187,7 @@
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
           <span class="material-symbols-outlined text-sm">search</span>
         </span>
-        <input type="text" placeholder="🔍 Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+        <input type="text" placeholder="Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
       </div>
     </div>
 
@@ -195,7 +195,7 @@
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-        <span class="text-[11px] font-bold text-green-700">🟢 Caja Abierta</span>
+        <span class="text-[11px] font-bold text-green-700">Caja Abierta</span>
       </div>
       <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
         <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
@@ -249,70 +249,77 @@
 <p id="stat-alerts" class="text-sm font-black text-error">0 Modelos</p>
 </div>
 </div>
-</div>
-
-<!-- Main Inventory Grid -->
-<section class="table-section glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
-<!-- Tabs Navigation -->
-<div class="flex border-b border-outline-variant bg-surface-container-low px-4 pt-2 gap-2 shrink-0">
-    <button id="tab-local" onclick="switchTab('local')" class="px-4 py-2 font-bold border-b-4 border-primary text-primary transition-all text-xs">
-        Mi Stock Local
-    </button>
-    <button id="tab-central" onclick="switchTab('central')" class="px-4 py-2 font-semibold text-on-surface-variant hover:text-primary transition-all text-xs">
-        Consulta Almacén Central
-    </button>
-</div>
-<div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center shrink-0">
-<h3 id="table-header-title" class="text-xs text-primary flex items-center gap-2 font-bold uppercase tracking-wider">
-<span class="material-symbols-outlined text-sm">checkroom</span>
-                        Stock de Polos
-                    </h3>
-<div class="flex items-center gap-3">
-  <!-- Buscador compacto de tabla -->
-  <input type="text" id="inventory-search-table" placeholder="Buscar por modelo o SKU..." class="h-8 border border-outline-variant bg-surface rounded px-2 text-[11px] font-bold text-on-surface focus:ring-0 outline-none w-48" />
+</div><!-- Main Inventory Grid (Side-by-side columns: Stock left, Solicitudes right) -->
+<div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden">
   
-  <!-- Paginación compacta -->
-  <div class="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant bg-surface border border-outline-variant p-0.5 rounded">
-    <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_left</span></button>
-    <span class="px-1.5">1/3</span>
-    <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_right</span></button>
-  </div>
+  <!-- Columna Izquierda (8/12): Stock de Polos -->
+  <section class="lg:col-span-8 flex flex-col min-h-0 glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
+    <!-- Tabs Navigation -->
+    <div class="flex border-b border-outline-variant bg-surface-container-low px-4 pt-2 gap-2 shrink-0">
+        <button id="tab-local" onclick="switchTab('local')" class="px-4 py-2 font-bold border-b-4 border-primary text-primary transition-all text-xs">
+            Mi Stock Local
+        </button>
+        <button id="tab-central" onclick="switchTab('central')" class="px-4 py-2 font-semibold text-on-surface-variant hover:text-primary transition-all text-xs">
+            Consulta Almacén Central
+        </button>
+    </div>
+    <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center shrink-0">
+      <h3 id="table-header-title" class="text-xs text-primary flex items-center gap-2 font-bold uppercase tracking-wider">
+        <span class="material-symbols-outlined text-sm">checkroom</span>
+        Stock de Polos
+      </h3>
+      <div class="flex items-center gap-3">
+        <!-- Buscador compacto de tabla -->
+        <input type="text" id="inventory-search-table" placeholder="Buscar por modelo o SKU..." class="h-8 border border-outline-variant bg-surface rounded px-2 text-[11px] font-bold text-on-surface focus:ring-0 outline-none w-48" />
+        
+        <!-- Paginación compacta -->
+        <div class="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant bg-surface border border-outline-variant p-0.5 rounded">
+          <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_left</span></button>
+          <span class="px-1.5">1/3</span>
+          <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_right</span></button>
+        </div>
 
-  <a href="solitienda.html" class="flex items-center gap-1 px-3 h-8 rounded bg-surface hover:bg-surface-container-high border border-outline-variant text-primary text-[11px] font-bold transition-colors">
-    <span class="material-symbols-outlined text-xs">swap_horiz</span>
-    Ir a Pedir Stock
-  </a>
-</div>
-</div>
-<div class="table-container overflow-auto flex-1">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container text-on-surface-variant text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10">
-<th class="px-4 py-3 border-b border-outline-variant">Producto / Modelo</th>
-<th class="px-2 py-3 border-b border-outline-variant">Color</th>
-<th class="px-2 py-3 border-b border-outline-variant text-center">S</th>
-<th class="px-2 py-3 border-b border-outline-variant text-center">M</th>
-<th class="px-2 py-3 border-b border-outline-variant text-center">L</th>
-<th class="px-2 py-3 border-b border-outline-variant text-center">XL</th>
-<th class="px-2 py-3 border-b border-outline-variant">Estado</th>
-<th id="action-col-header" class="px-4 py-3 border-b border-outline-variant text-right">Acción</th>
-</tr>
-</thead>
-<tbody id="inventory-table-body" class="divide-y divide-outline-variant text-xs">
-    <!-- Inyectado dinámicamente -->
-</tbody>
-</table>
-</div>
-</section>
-<!-- Stock Movement History Preview (Bento Style) -->
-<div class="w-full">
-<section class="glass-card p-8 rounded-2xl space-y-4">
-<div class="flex justify-between items-start">
-<h4 class="font-headline-md text-primary font-bold">Solicitudes Pendientes (En Camino)</h4>
-<span id="pending-count-badge" class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-xs font-bold uppercase">0 En Camino</span>
-</div>
-<div class="space-y-4" id="pending-transfers-container">
-    <!-- Inyectado dinámicamente -->
+        <a href="solitienda.html" class="flex items-center gap-1 px-3 h-8 rounded bg-surface hover:bg-surface-container-high border border-outline-variant text-primary text-[11px] font-bold transition-colors">
+          <span class="material-symbols-outlined text-xs">swap_horiz</span>
+          Pedir Stock
+        </a>
+      </div>
+    </div>
+    <div class="table-container overflow-auto flex-1 max-h-[380px]">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-surface-container text-on-surface-variant text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10">
+            <th class="px-4 py-3 border-b border-outline-variant">Producto / Modelo</th>
+            <th class="px-2 py-3 border-b border-outline-variant">Color</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">S</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">M</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">L</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">XL</th>
+            <th class="px-2 py-3 border-b border-outline-variant">Estado</th>
+            <th id="action-col-header" class="px-4 py-3 border-b border-outline-variant text-right">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="inventory-table-body" class="divide-y divide-outline-variant text-xs">
+            <!-- Inyectado dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Columna Derecha (4/12): Solicitudes Pendientes -->
+  <section class="lg:col-span-4 flex flex-col min-h-0 glass-card rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
+    <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-start shrink-0">
+      <h4 class="text-xs text-primary font-bold uppercase tracking-wider flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">local_shipping</span>
+        Solicitudes Pendientes
+      </h4>
+      <span id="pending-count-badge" class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[10px] font-bold uppercase">0 En Camino</span>
+    </div>
+    <div class="p-4 overflow-y-auto flex-1 space-y-3 max-h-[380px]" id="pending-transfers-container">
+        <!-- Inyectado dinámicamente -->
+    </div>
+  </section>
+
 </div>
 </section>
 </div>
@@ -349,7 +356,7 @@
 
         // Listen for storage updates
         window.addEventListener('storage', (e) => {
-            if (e.key === 'escarlu_inventory' || e.key === 'escarlu_requests') {
+            if (!e.key || e.key === 'escarlu_inventory' || e.key === 'escarlu_requests') {
                 renderFinanceStats();
                 renderInventoryTable();
                 renderPendingTransfers();
@@ -381,7 +388,7 @@
 
     function renderFinanceStats() {
         const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
-        const targetStore = activeTab === 'local' ? user.storeId : 'central';
+        const targetStore = activeTab === 'local' ? user.storeId : 'ALM-01';
         const storeStock = inventory[targetStore] || {};
 
         let totalUnits = 0;
@@ -421,7 +428,7 @@
         const query = (document.getElementById("inventory-search-table")?.value || "").toLowerCase();
 
         const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
-        const targetStore = activeTab === 'local' ? user.storeId : 'central';
+        const targetStore = activeTab === 'local' ? user.storeId : 'ALM-01';
         const storeStock = inventory[targetStore] || {};
 
         tbody.innerHTML = "";

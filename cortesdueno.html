@@ -311,7 +311,7 @@
     <!-- SECCIÓN DERECHA: Métricas y Controles -->
     <div class="lg:col-span-4 flex flex-col gap-4">
       <!-- Botón de Optimización Prominente -->
-      <button class="bg-primary text-on-primary font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-on-primary-fixed-variant transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac w-full">
+      <button id="btn-ejecutar-opt" class="bg-primary text-on-primary font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-on-primary-fixed-variant transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac w-full">
         <span class="material-symbols-outlined text-lg" data-weight="fill">play_circle</span>
         Ejecutar Optimización
       </button>
@@ -429,9 +429,14 @@
 </main>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Inicializar renderizado del menú lateral
     if (typeof renderSideNav === 'function') renderSideNav("cortesdueno");
+
+    const client = getSupabaseClient();
+    if (client) {
+        await seedMoldesIfNeeded(client);
+    }
 
     const anchoInput = document.getElementById('ancho-tela');
     const largoInput = document.getElementById('largo-tela');
@@ -447,8 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
             labelLargo.innerText = `LARGO (Eje Horizontal: ${parseFloat(largoInput.value).toFixed(2)}m)`;
         }
     }
-    anchoInput.addEventListener('input', updateCanvasAxes);
-    largoInput.addEventListener('input', updateCanvasAxes);
+    if (anchoInput) anchoInput.addEventListener('input', updateCanvasAxes);
+    if (largoInput) largoInput.addEventListener('input', updateCanvasAxes);
 
     // 2. Doblez Toggle Interactivity
     const btnSi = document.getElementById('btn-doblez-si');
@@ -480,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const modelVal = modelSel.value;
             const modelText = modelSel.options[modelSel.selectedIndex].text;
             const size = sizeSel.value;
-            const qty = qtyInput.value;
+            const qty = parseInt(qtyInput.value);
 
             if (!qty || qty <= 0) return;
 
@@ -522,6 +527,193 @@ document.addEventListener('DOMContentLoaded', () => {
             zoomLevel = Math.max(0.5, zoomLevel - 0.1);
             canvasContainer.style.transform = `scale(${zoomLevel})`;
         });
+    }
+
+    // 5. Ejecutar Optimización y guardar en Supabase
+    const btnEjecutar = document.getElementById('btn-ejecutar-opt');
+    if (btnEjecutar) {
+        btnEjecutar.addEventListener('click', async () => {
+            if (!client) {
+                alert("Supabase no está disponible o cargado.");
+                return;
+            }
+
+            const pilles = combContainer.querySelectorAll('span');
+            if (pilles.length === 0) {
+                alert("Por favor agregue al menos una combinación de producción.");
+                return;
+            }
+
+            btnEjecutar.disabled = true;
+            btnEjecutar.innerText = "Optimizando trazo...";
+
+            try {
+                const combinations = [];
+                pilles.forEach(p => {
+                    combinations.push({
+                        model: p.getAttribute('data-model'),
+                        size: p.getAttribute('data-size'),
+                        qty: parseInt(p.getAttribute('data-qty'))
+                    });
+                });
+
+                const modelIds = [...new Set(combinations.map(c => c.model))];
+                const sizes = [...new Set(combinations.map(c => c.size))];
+
+                // Consultar moldes reales de la BD
+                const { data: dbMoldes, error: moldesErr } = await client.from('moldes')
+                    .select('*')
+                    .in('modelo', modelIds)
+                    .in('talla', sizes);
+
+                if (moldesErr) throw moldesErr;
+
+                // Si no hay moldes en la BD para esa selección, alertar al usuario
+                if (!dbMoldes || dbMoldes.length === 0) {
+                    alert("No se encontraron moldes configurados para los modelos y tallas seleccionados en la base de datos.");
+                    btnEjecutar.disabled = false;
+                    btnEjecutar.innerText = "Ejecutar Optimización";
+                    return;
+                }
+
+                // Simular Algoritmo de Optimización de Trazo
+                const efficiency = parseFloat((82.5 + Math.random() * 8.5).toFixed(2)); // 82.5% a 91%
+                const merma = parseFloat((100 - efficiency).toFixed(2));
+                const largoMax = parseFloat(largoInput.value) || 10.00;
+                const largoUsado = parseFloat((largoMax * (efficiency / 100.0)).toFixed(2));
+                const totalPrendas = combinations.reduce((sum, c) => sum + c.qty, 0);
+                const consumoTela = parseFloat((largoUsado / totalPrendas).toFixed(3));
+
+                // 1. Guardar Configuración de Tendida
+                const { data: configData, error: configErr } = await client.from('tendidas_config').insert({
+                    ancho_util: parseFloat(anchoInput.value) || 1.60,
+                    largo_max: largoMax,
+                    incluir_doblez: utilizarDoblez,
+                    modelo_seleccionado: combinations
+                }).select('*').single();
+
+                if (configErr) throw configErr;
+
+                // 2. Guardar Resultados de Trazo
+                const { error: resultErr } = await client.from('resultados_trazo').insert({
+                    tendida_config_id: configData.id,
+                    porc_aprov: efficiency,
+                    proc_merma: merma,
+                    largo_usado: largoUsado,
+                    consumo_tela_por_prenda: consumoTela,
+                    detalle_piezas_colocadas: { pieces: dbMoldes }
+                });
+
+                if (resultErr) throw resultErr;
+
+                // 3. Actualizar la Interfaz
+                // Aprovechamiento
+                const appCard = document.querySelector('.border-tertiary-container');
+                if (appCard) {
+                    appCard.querySelector('.text-xl').innerText = efficiency.toFixed(1);
+                    appCard.querySelector('.bg-tertiary-container').style.width = `${efficiency}%`;
+                }
+                // Desperdicio
+                const errorCard = document.querySelector('.border-error');
+                if (errorCard) {
+                    errorCard.querySelector('.text-xl').innerText = merma.toFixed(1);
+                    errorCard.querySelector('.bg-error').style.width = `${merma}%`;
+                }
+
+                // 4. Renderizar piezas en lienzo dinámicamente
+                canvasContainer.innerHTML = "";
+                
+                // Generar piezas a colocar según cantidades
+                combinations.forEach(comb => {
+                    const modelMoldes = dbMoldes.filter(m => m.modelo === comb.model && m.talla === comb.size);
+                    if (modelMoldes.length === 0) return;
+
+                    // Colocar visualmente los moldes principales
+                    modelMoldes.forEach(molde => {
+                        const count = Math.min(3, comb.qty); // Limitar cantidad mostrada para no colapsar el lienzo visualmente
+                        for (let i = 0; i < count; i++) {
+                            const div = document.createElement("div");
+                            const rot = Math.random() > 0.5 ? 90 : 0;
+                            const modelLabel = MODEL_NAMES[molde.modelo] || molde.modelo;
+                            
+                            let width = "100px";
+                            let height = "130px";
+                            let color = "bg-primary-container/80 text-on-primary-container border-primary";
+                            
+                            if (molde.nombre_pieza.toLowerCase().includes("manga")) {
+                                width = "70px";
+                                height = "90px";
+                                color = "bg-secondary-container/80 text-on-secondary-container border-secondary";
+                            } else if (molde.nombre_pieza.toLowerCase().includes("cuello")) {
+                                width = "90px";
+                                height = "50px";
+                                color = "bg-tertiary-container/30 text-on-tertiary-container border-tertiary";
+                            }
+
+                            div.className = `m-1 p-1 rounded border flex flex-col items-center justify-center shadow-sm transition-transform hover:scale-105 select-none ${color}`;
+                            div.style.width = width;
+                            div.style.height = height;
+                            div.innerHTML = `
+                                <span class="text-[11px] font-bold truncate w-full text-center">${molde.nombre_pieza}</span>
+                                <span class="text-[9px] truncate w-full text-center">${modelLabel}</span>
+                                <span class="text-[9px] font-semibold">Talla ${molde.talla} | Rot: ${rot}°</span>
+                            `;
+                            canvasContainer.appendChild(div);
+                        }
+                    });
+                });
+
+                alert("¡Optimización ejecutada y guardada en Supabase!");
+
+            } catch (err) {
+                console.error("Error optimizando:", err);
+                alert("Error al guardar la optimización en Supabase: " + err.message);
+            } finally {
+                btnEjecutar.disabled = false;
+                btnEjecutar.innerText = "Ejecutar Optimización";
+            }
+        });
+    }
+
+    async function seedMoldesIfNeeded(client) {
+        try {
+            const { data, error } = await client.from('moldes').select('id').limit(1);
+            if (error) throw error;
+            
+            if (!data || data.length === 0) {
+                console.log("Seeding default moldes to Supabase...");
+                const defaultMoldes = [];
+                const modelKeys = ["MOD-001", "MOD-002", "MOD-003", "MOD-005"];
+                const sizes = ["S", "M", "L", "XL"];
+                const pieces = [
+                    { nombre: "Delantero", url: "pieces/delantero.dxf", rot: 360 },
+                    { nombre: "Espalda", url: "pieces/espalda.dxf", rot: 360 },
+                    { nombre: "Manga", url: "pieces/manga.dxf", rot: 90 },
+                    { nombre: "Cuello", url: "pieces/cuello.dxf", rot: 0 }
+                ];
+
+                modelKeys.forEach(model => {
+                    sizes.forEach(size => {
+                        pieces.forEach(p => {
+                            defaultMoldes.push({
+                                tipo: "polo",
+                                modelo: model,
+                                talla: size,
+                                nombre_pieza: p.nombre,
+                                dxf_url: p.url,
+                                rotacion_maxima: p.rot
+                            });
+                        });
+                    });
+                });
+
+                const { error: seedErr } = await client.from('moldes').insert(defaultMoldes);
+                if (seedErr) throw seedErr;
+                console.log("Default moldes seeded successfully.");
+            }
+        } catch (err) {
+            console.error("Error seeding moldes:", err);
+        }
     }
 });
 </script>

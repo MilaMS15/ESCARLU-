@@ -230,29 +230,31 @@
 <!-- Filters -->
 <div class="glass-card rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-6 items-end">
 <div class="flex-1 w-full space-y-2">
-<label class="font-label-md text-label-md text-on-surface-variant">Rango de Fecha</label>
+<label class="font-label-md text-label-md text-on-surface-variant">Fecha</label>
 <div class="flex gap-2">
-<input class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary" type="date"/>
+<input id="date-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary" type="date"/>
 </div>
 </div>
 <div class="flex-1 w-full space-y-2">
 <label class="font-label-md text-label-md text-on-surface-variant">Tipo de Movimiento</label>
-<select class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary">
-<option>Todos los movimientos</option>
-<option>Ingreso (Entradas)</option>
-<option>Egreso (Salidas)</option>
+<select id="type-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary">
+<option value="all">Todos los movimientos</option>
+<option value="ingreso">Ingreso (Entradas)</option>
+<option value="egreso">Egreso (Salidas)</option>
 </select>
 </div>
 <div class="flex-1 w-full space-y-2">
 <label class="font-label-md text-label-md text-on-surface-variant">Tienda / Destino</label>
-<select class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary">
-<option>Todas las sedes</option>
-<option>Almacén Central</option>
-<option>Tienda Santa Lucía</option>
-<option>Tienda Aviación</option>
+<select id="store-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-14 px-4 focus:ring-primary focus:border-primary">
+<option value="all">Todas las sedes</option>
+<option value="ALM-01">Almacén Central</option>
+<option value="TDA-01">Tienda Santa Lucía</option>
+<option value="TDA-02">Tienda Generales Suplex</option>
+<option value="TDA-03">Tienda Generales Pasadizo</option>
+<option value="TDA-04">Tienda Aviación</option>
 </select>
 </div>
-<button class="h-14 px-8 bg-primary text-on-primary font-label-lg text-label-lg rounded-xl hover:bg-on-primary-container transition-all active:scale-95 flex items-center gap-2">
+<button id="btn-filter" class="h-14 px-8 bg-primary text-on-primary font-label-lg text-label-lg rounded-xl hover:bg-on-primary-container transition-all active:scale-95 flex items-center gap-2">
 <span class="material-symbols-outlined">filter_list</span>
                     Filtrar
                 </button>
@@ -272,7 +274,7 @@
 <th class="p-6 font-label-lg text-label-lg text-primary"></th>
 </tr>
 </thead>
-<tbody class="divide-y divide-outline-variant/30">
+<tbody id="history-tbody" class="divide-y divide-outline-variant/30">
 <!-- Row 1 -->
 <tr class="hover:bg-primary-container/5 transition-colors group">
 <td class="p-6">
@@ -447,30 +449,148 @@
 <span class="absolute right-full mr-4 bg-primary text-on-primary px-4 py-2 rounded-xl font-label-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Nuevo Movimiento</span>
 </button>
 <script>
-        // Micro-interactions and Tab Logic
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if(!this.classList.contains('bg-primary-container')) {
-                    // Simulating navigation
-                    document.querySelectorAll('nav a').forEach(l => {
-                        l.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold');
-                        l.classList.add('text-on-surface-variant');
-                    });
-                    this.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold');
-                    this.classList.remove('text-on-surface-variant');
-                }
+    const user = getCurrentUser();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        if (typeof renderSideNav === 'function') renderSideNav("historialmacen");
+
+        // Populate table on load
+        renderHistory();
+
+        // Bind filter button
+        document.getElementById('btn-filter').addEventListener('click', renderHistory);
+
+        // Bind FAB click to redirect to ingresoprendalmacen.html
+        const fab = document.querySelector('button.fixed.bottom-10');
+        if (fab) {
+            fab.addEventListener('click', () => {
+                window.location.href = "ingresoprendalmacen.html";
             });
+        }
+    });
+
+    function renderHistory() {
+        const tbody = document.getElementById("history-tbody");
+        if (!tbody) return;
+
+        // Load logs
+        const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
+        const entries = JSON.parse(localStorage.getItem("escarlu_warehouse_entries")) || [];
+
+        // Map approved requests from ALM-01 as Egresos
+        const egresos = allReqs
+            .filter(r => r.origin === 'ALM-01' && r.status === 'aprobado')
+            .map(r => ({
+                id: r.id,
+                type: 'egreso',
+                date: r.date,
+                model: r.model,
+                color: r.color,
+                size: r.size,
+                qty: r.qty,
+                store: r.destination,
+                user: 'Sistema (Auto)'
+            }));
+
+        // Combine all movements
+        const movements = [...entries, ...egresos];
+
+        // Sort by date descending
+        movements.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Get filter values
+        const dateVal = document.getElementById('date-filter').value;
+        const typeVal = document.getElementById('type-filter').value;
+        const storeVal = document.getElementById('store-filter').value;
+
+        tbody.innerHTML = "";
+
+        // Filter movements
+        const filtered = movements.filter(m => {
+            if (dateVal && m.date.slice(0, 10) !== dateVal) return false;
+            if (typeVal !== 'all' && m.type !== typeVal) return false;
+            
+            if (storeVal !== 'all') {
+                if (m.type === 'ingreso' && storeVal !== 'ALM-01') return false;
+                if (m.type === 'egreso' && m.store !== storeVal) return false;
+            }
+            return true;
         });
 
-        // Hover animation for rows
-        const rows = document.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            row.addEventListener('mouseenter', () => {
-                row.querySelector('.material-symbols-outlined:last-child')?.classList.add('translate-x-1');
-            });
-            row.addEventListener('mouseleave', () => {
-                row.querySelector('.material-symbols-outlined:last-child')?.classList.remove('translate-x-1');
-            });
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-on-surface-variant font-medium">No se encontraron movimientos registrados.</td></tr>`;
+            return;
+        }
+
+        filtered.forEach(m => {
+            const dateObj = new Date(m.date);
+            const dateStr = isNaN(dateObj) ? m.date.slice(0, 10) : dateObj.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
+            const timeStr = isNaN(dateObj) ? "" : dateObj.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+
+            const modelLabel = MODEL_NAMES[m.model] || m.model;
+            const colorLabel = COLOR_NAMES[m.color] || m.color;
+            const storeLabel = m.type === 'ingreso' ? 'Almacén Central' : (STORE_NAMES[m.store] || m.store);
+
+            let typeIcon = "";
+            let typeLabel = "";
+            if (m.type === 'ingreso') {
+                typeIcon = `<div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span></div>`;
+                typeLabel = "Ingreso";
+            } else {
+                typeIcon = `<div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">remove_circle</span></div>`;
+                typeLabel = "Egreso";
+            }
+
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-primary-container/5 transition-colors group";
+            tr.innerHTML = `
+                <td class="p-6">
+                    <div class="flex items-center gap-3">
+                        ${typeIcon}
+                        <span class="font-label-md text-label-md text-on-surface">${typeLabel}</span>
+                    </div>
+                </td>
+                <td class="p-6">
+                    <div class="flex flex-col">
+                        <span class="font-body-md text-body-md text-on-surface">${dateStr}</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">${timeStr}</span>
+                    </div>
+                </td>
+                <td class="p-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
+                            <span class="material-symbols-outlined text-primary text-xl">apparel</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-label-lg text-label-lg text-on-surface">${modelLabel}</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant">${colorLabel} / Talla ${m.size}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="p-6 text-center font-bold text-sm">${m.qty}</td>
+                <td class="p-6">
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">${m.type === 'ingreso' ? 'warehouse' : 'storefront'}</span>
+                            <span class="font-body-md text-body-md">${storeLabel}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="p-6">
+                    <span class="font-label-md text-label-md text-on-surface-variant">${m.user}</span>
+                </td>
+                <td class="p-6 text-right"></td>
+            `;
+            tbody.appendChild(tr);
         });
-    </script>
+    }
+
+    // Sync in real time
+    window.addEventListener('storage', (e) => {
+        if (!e.key || e.key === 'escarlu_requests' || e.key === 'escarlu_warehouse_entries') {
+            renderHistory();
+        }
+    });
+</script>
 </body></html>

@@ -133,7 +133,7 @@
       <div class="flex items-center gap-2">
         <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
           <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
-          <span class="text-xs font-bold text-primary">🏪 Tienda Santa Lucía</span>
+          <span class="text-xs font-bold text-primary">Tienda Santa Lucía</span>
         </div>
       </div>
 
@@ -143,7 +143,7 @@
           <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
             <span class="material-symbols-outlined text-sm">search</span>
           </span>
-          <input type="text" placeholder="🔍 Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+          <input type="text" placeholder="Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
         </div>
       </div>
 
@@ -151,7 +151,7 @@
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
           <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span class="text-[11px] font-bold text-green-700">🟢 Caja Abierta</span>
+          <span class="text-[11px] font-bold text-green-700">Caja Abierta</span>
         </div>
         <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
           <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
@@ -175,8 +175,8 @@
 <!-- Bento Layout Content -->
 <div class="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-0">
 <!-- Section: Crear Solicitud (Origen y Modelo) -->
-<div class="lg:col-span-6 bento-card p-4 rounded-xl flex flex-col justify-between min-h-0 overflow-y-auto">
-<div class="flex items-center gap-3 mb-4">
+<div class="lg:col-span-6 bento-card p-4 rounded-xl flex flex-col justify-start gap-4 min-h-0 overflow-y-auto">
+<div class="flex items-center gap-3">
 <span class="material-symbols-outlined text-primary text-3xl">playlist_add</span>
 <h3 class="font-headline-md text-headline-md text-primary font-bold">Nueva Solicitud de Prenda</h3>
 </div>
@@ -321,6 +321,7 @@ Agregar a la Lista
     let selectedTalla = 'M';
     let cartItems = [];
     const user = getCurrentUser();
+    window.MAX_STOCK_VAL = 0;
 
     document.addEventListener("DOMContentLoaded", () => {
         checkAuth();
@@ -330,11 +331,36 @@ Agregar a la Lista
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         document.getElementById("current-date-label").textContent = new Date().toLocaleDateString('es-ES', options);
 
+        // Populate select-model from MODEL_NAMES
+        const selectModel = document.getElementById('select-model');
+        if (selectModel) {
+            selectModel.innerHTML = "";
+            for (const [modelId, modelName] of Object.entries(MODEL_NAMES)) {
+                const opt = document.createElement('option');
+                opt.value = modelId;
+                opt.textContent = modelName;
+                selectModel.appendChild(opt);
+            }
+        }
+
+        // Populate select-color from COLOR_NAMES
+        const selectColor = document.getElementById('select-color');
+        if (selectColor) {
+            selectColor.innerHTML = "";
+            for (const [colorId, colorName] of Object.entries(COLOR_NAMES)) {
+                const opt = document.createElement('option');
+                opt.value = colorId;
+                opt.textContent = colorName;
+                selectColor.appendChild(opt);
+            }
+        }
+
         // Populate select-origin-store excluding current store
         const selectOriginStore = document.getElementById('select-origin-store');
         if (selectOriginStore && user) {
+            selectOriginStore.innerHTML = "";
             for (const [storeId, storeName] of Object.entries(STORE_NAMES)) {
-                if (storeId !== user.storeId) {
+                if (storeId !== user.storeId && storeId !== 'ALM-01') {
                     const opt = document.createElement('option');
                     opt.value = storeId;
                     opt.textContent = storeName;
@@ -342,6 +368,11 @@ Agregar a la Lista
                 }
             }
         }
+
+        // Listen for selector changes to update stock
+        if (selectModel) selectModel.addEventListener('change', updateSelectedStock);
+        if (selectColor) selectColor.addEventListener('change', updateSelectedStock);
+        if (selectOriginStore) selectOriginStore.addEventListener('change', updateSelectedStock);
 
         // Bind origin toggle
         const btnAlmacen = document.getElementById('btn-almacen');
@@ -353,6 +384,7 @@ Agregar a la Lista
             btnAlmacen.className = 'px-8 py-3 rounded-lg font-label-md text-label-md transition-all bg-primary text-on-primary shadow-sm';
             btnTraspaso.className = 'px-8 py-3 rounded-lg font-label-md text-label-md transition-all text-on-surface-variant hover:bg-surface-container-highest';
             originStoreContainer.classList.add('hidden');
+            updateSelectedStock();
         });
 
         btnTraspaso.addEventListener('click', () => {
@@ -360,6 +392,7 @@ Agregar a la Lista
             btnTraspaso.className = 'px-8 py-3 rounded-lg font-label-md text-label-md transition-all bg-primary text-on-primary shadow-sm';
             btnAlmacen.className = 'px-8 py-3 rounded-lg font-label-md text-label-md transition-all text-on-surface-variant hover:bg-surface-container-highest';
             originStoreContainer.classList.remove('hidden');
+            updateSelectedStock();
         });
 
         // Bind talla buttons click
@@ -373,6 +406,7 @@ Agregar a la Lista
                 // Highlight selected button
                 btn.className = 'talla-btn flex-1 h-14 border-2 border-primary bg-primary-container text-on-primary-container font-bold rounded-lg font-label-md';
                 selectedTalla = btn.getAttribute('data-talla');
+                updateSelectedStock();
             });
         });
 
@@ -388,9 +422,18 @@ Agregar a la Lista
                 return;
             }
 
+            if (qtyVal > window.MAX_STOCK_VAL) {
+                alert('La cantidad excede el stock disponible en el origen seleccionado.');
+                return;
+            }
+
             // Check if item already in cart, if so sum quantity
             const existingIdx = cartItems.findIndex(item => item.model === modelVal && item.color === colorVal && item.size === selectedTalla);
             if (existingIdx > -1) {
+                if (cartItems[existingIdx].qty + qtyVal > window.MAX_STOCK_VAL) {
+                    alert('La cantidad total en la lista excede el stock disponible.');
+                    return;
+                }
                 cartItems[existingIdx].qty += qtyVal;
             } else {
                 cartItems.push({
@@ -411,7 +454,7 @@ Agregar a la Lista
         btnSubmitConsolidated.addEventListener('click', () => {
             if (cartItems.length === 0) return;
 
-            const originVal = activeOrigin === 'central' ? 'central' : document.getElementById('select-origin-store').value;
+            const originVal = activeOrigin === 'central' ? 'ALM-01' : document.getElementById('select-origin-store').value;
             const orderId = `REQ-${Math.floor(1000 + Math.random() * 9000)}`;
             const date = new Date().toISOString();
 
@@ -423,7 +466,7 @@ Agregar a la Lista
                     orderId: orderId,
                     type: activeOrigin === 'central' ? 'reposicion' : 'traspaso',
                     origin: originVal,
-                    destination: user ? user.storeId || 'tienda_1' : 'tienda_1',
+                    destination: user ? user.storeId || 'TDA-01' : 'TDA-01',
                     model: item.model,
                     color: item.color,
                     size: item.size,
@@ -438,16 +481,17 @@ Agregar a la Lista
             renderCart();
             alert(`¡Pedido consolidado ${orderId} enviado correctamente!`);
             renderRequests();
+            updateSelectedStock();
         });
 
-        // Initial requests render
+        // Initial calls
+        updateSelectedStock();
         renderRequests();
     });
 
     // Simple Interaction Scripts for quantity
     const qtyInput = document.getElementById('qty-input');
     const stockAlert = document.getElementById('stock-alert');
-    const MAX_STOCK = 12;
 
     function updateQty(delta) {
         let currentVal = parseInt(qtyInput.value);
@@ -460,7 +504,7 @@ Agregar a la Lista
     }
 
     function validateStock(val) {
-        if (val > MAX_STOCK) {
+        if (val > window.MAX_STOCK_VAL) {
             stockAlert.classList.remove('hidden');
             qtyInput.classList.add('text-error');
         } else {
@@ -469,9 +513,30 @@ Agregar a la Lista
         }
     }
 
-    qtyInput.addEventListener('change', (e) => {
-        validateStock(parseInt(e.target.value));
-    });
+    if (qtyInput) {
+        qtyInput.addEventListener('change', (e) => {
+            validateStock(parseInt(e.target.value));
+        });
+    }
+
+    function updateSelectedStock() {
+        const selectModel = document.getElementById('select-model');
+        const selectColor = document.getElementById('select-color');
+        if (!selectModel || !selectColor) return;
+
+        const model = selectModel.value;
+        const color = selectColor.value;
+        const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+        
+        const originStore = activeOrigin === 'central' ? 'ALM-01' : document.getElementById('select-origin-store').value;
+        const stock = inventory[originStore]?.[model]?.[color]?.[selectedTalla] || 0;
+        
+        document.getElementById('current-stock').textContent = `${stock} Unidades`;
+        window.MAX_STOCK_VAL = stock;
+        
+        const qtyVal = parseInt(qtyInput.value) || 1;
+        validateStock(qtyVal);
+    }
 
     function renderCart() {
         const cartPanel = document.getElementById("cart-panel");
@@ -593,8 +658,9 @@ Agregar a la Lista
 
     // Real-time synchronization
     window.addEventListener('storage', (e) => {
-        if (e.key === 'escarlu_requests') {
+        if (!e.key || e.key === 'escarlu_requests') {
             renderRequests();
+            updateSelectedStock();
         }
     });
 </script>
