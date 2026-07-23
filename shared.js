@@ -384,7 +384,7 @@ function checkAuth() {
         // Restricciones de acceso por rol
         const ownerPages = ["cajadueno.html", "cortesdueno.html", "stockgeneraldueno.html"];
         const almacenPages = ["historialmacen.html", "ingresoprendalmacen.html", "solicitudpendientealmacen.html", "stockalmacen.html", "almacen.html"];
-        const tiendaPages = ["cajatienda.html", "solitienda.html", "registrarventa.html", "registrarventatienda.html", "stocktienda.html", "solicitud.html", "atenderpedidos.html"];
+        const tiendaPages = ["cajatienda.html", "solitienda.html", "registrarventa.html", "stocktienda.html", "solicitud.html", "atenderpedidos.html"];
 
         const currentPage = path.split("/").pop();
 

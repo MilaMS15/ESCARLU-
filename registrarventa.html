@@ -128,6 +128,10 @@
             outline: 2px solid #c8a2c8; /* primary-container */
             outline-offset: 2px;
         }
+        /* POS Layout constraints */
+        html, body { height: 100vh; overflow: hidden; }
+        main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; padding: 12px !important; gap: 12px !important; }
+        .bento-card { margin-top: 0 !important; }
     </style>
 </head>
 <body class="bg-background text-on-background font-body-md antialiased overflow-hidden flex">
@@ -135,24 +139,55 @@
 <aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container docked w-64 md:w-72 shadow-md z-40 border-r border-outline-variant/30"></aside>
 
 <!-- Main Content Area -->
-<main class="w-full h-screen overflow-y-auto md:ml-72 p-container-padding flex justify-center">
-<!-- Max Width Container for Canvas -->
-<div class="max-w-[1080px] w-full grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
-<!-- Page Header -->
-<header class="col-span-1 lg:col-span-12 mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4 pb-2 border-b border-surface-variant">
-    <div>
-        <div class="flex items-center gap-2 text-primary mb-1">
-            <span class="material-symbols-outlined">point_of_sale</span>
-            <span id="store-subtitle-label" class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-bold">Caja / Ventas</span>
+<main class="w-full h-screen overflow-hidden md:ml-72 flex flex-col gap-3">
+  <!-- Unified Top Bar Header (Tienda) -->
+  <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
+    <!-- Lado Izquierdo: Badge de Sede -->
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+        <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
+        <span class="text-xs font-bold text-primary">🏪 Tienda Santa Lucía</span>
+      </div>
+    </div>
+
+    <!-- Centro: Input de Búsqueda Global Centrado -->
+    <div class="flex-1 max-w-md mx-6">
+      <div class="relative w-full">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+          <span class="material-symbols-outlined text-sm">search</span>
+        </span>
+        <input type="text" placeholder="🔍 Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+      </div>
+    </div>
+
+    <!-- Lado Derecho: Indicador y Usuario -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span class="text-[11px] font-bold text-green-700">🟢 Caja Abierta</span>
+      </div>
+      <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+        <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
+        <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+          <img alt="Vendedora Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
         </div>
-        <h2 id="store-title-label" class="font-display-lg text-display-lg text-on-surface font-bold">Registrar Venta</h2>
-        <p class="font-body-md text-body-md text-on-surface-variant">Complete los detalles para registrar la nueva transacción de venta.</p>
+      </div>
     </div>
-    <div class="text-right">
-        <p class="font-label-md text-label-md text-on-surface-variant">Estado de Caja</p>
-        <p class="font-headline-md text-headline-md text-primary font-bold">Caja Abierta</p>
-    </div>
-</header>
+  </header>
+
+  <!-- Page Header (Compact) -->
+  <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mt-1">
+      <div class="flex items-center gap-3">
+          <h2 id="store-title-label" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Registrar Venta</h2>
+          <span class="text-xs text-on-surface-variant font-semibold">| Estado: <span class="text-green-600 font-bold">🟢 Activo</span></span>
+      </div>
+      <div class="hidden">
+          <span id="store-subtitle-label"></span>
+      </div>
+  </div>
+
+  <!-- Max Width Container for Canvas -->
+  <div class="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-0 overflow-y-auto">
 <!-- Left Column: POS Form (Takes up more space) -->
 <div class="col-span-1 lg:col-span-8 flex flex-col gap-6">
     <!-- Selector de Productos -->

@@ -22,6 +22,10 @@
             background-color: #fcf9f8;
             color: #1c1b1b;
         }
+        /* Aumentar legibilidad */
+        .text-xs { font-size: 13.5px !important; }
+        .text-sm { font-size: 15.5px !important; }
+        .text-[10px] { font-size: 11px !important; }
     </style>
 <script id="tailwind-config">
         tailwind.config = {
@@ -122,181 +126,133 @@
 <!-- Main Content Canvas -->
 <main class="md:ml-72 bg-background min-h-screen">
 <!-- Top Navigation Bar / Role Selector -->
-<header class="flex justify-between items-center w-full px-container-padding h-16 md:h-20 max-w-[1440px] mx-auto border-b border-primary/20 sticky top-0 bg-surface/90 backdrop-blur-md z-40">
-<div class="flex items-center gap-4">
-<div class="bg-primary-container/20 p-2 rounded-lg">
-<span class="material-symbols-outlined text-primary">store</span>
-</div>
-<span class="font-label-lg text-label-lg text-primary font-bold">Administrador / Dueño</span>
-</div>
-<div class="flex items-center gap-gutter">
-<div class="hidden md:flex bg-surface-container-high rounded-full px-6 py-2 items-center gap-3">
-<span class="material-symbols-outlined text-on-surface-variant">search</span>
-<input class="bg-transparent border-none focus:ring-0 font-body-md text-body-md w-64" placeholder="Buscar transacción..." type="text"/>
-</div>
-<div class="flex gap-4">
-<button class="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant">
-<span class="material-symbols-outlined">notifications</span>
-</button>
-<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
-<img class="w-full h-full object-cover" data-alt="Professional studio portrait of an elderly female administrator with a kind expression, wearing a stylish lilac blazer in a bright, modern office setting. The lighting is soft and professional, reflecting the functional elegance and premium textile theme of the brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLrMJVg1dpp40hiD_OYTvuKWKSGl_2qYmkxbQ8cqKO0wU7Zc0TDA9veedoq-o66nD13VrVuY8KzHNo45DLkvUbAYwokTgURIZIP-9K2CJepBQk5i1ziDNddWVkT21-GnFmLXlncmGCQhxPYOR3yRm3ppAYGzw2ideEGoiSMHlgvKo-ZZa_16MoI0zADEd9cpHnunZO-B7vY5dsrbVIcNFCZAJCUiNSkiKAjib1bMRY9YLV6aMVOow"/>
-</div>
-</div>
-</div>
-</header>
-<section class="p-container-padding max-w-[1440px] mx-auto">
-<!-- Dashboard Title & Date -->
-<div class="mb-stack-lg flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-<div>
-<h2 class="font-display-lg text-display-lg text-primary mb-2">Flujo de Caja</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant opacity-80">Control consolidado de Ingresos y Egresos</p>
-</div>
-<div class="flex items-center gap-4 flex-wrap">
-    <input type="month" id="filter-period" class="h-12 border border-outline-variant bg-surface rounded-xl px-4 font-bold text-primary focus:border-primary focus:ring-0 outline-none" />
-    <button onclick="openEgresoModal()" class="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold font-label-lg text-label-lg rounded-xl hover:brightness-95 transition-all shadow-sm">
-        <span class="material-symbols-outlined">add</span>
-        + Registrar Nuevo Egreso
-    </button>
-    <button class="flex items-center gap-2 px-6 py-3 border-2 border-primary text-primary font-label-lg text-label-lg rounded-xl hover:bg-primary-container/10 transition-colors">
-        <span class="material-symbols-outlined">download</span>
-        Exportar Reporte
-    </button>
-</div>
-</div>
-<!-- Bento Grid - Financial Overview -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-stack-lg">
-<!-- Cash Card -->
-<div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-green-500 shadow-lg flex flex-col justify-between min-h-[220px]">
-<div class="flex justify-between items-start">
-<span class="font-label-lg text-label-lg text-on-surface-variant">Total Ingresos (S/)</span>
-<div class="bg-green-100 p-3 rounded-full">
-<span class="material-symbols-outlined text-green-600" style="font-variation-settings: 'FILL' 1;">trending_up</span>
-</div>
-</div>
-<div>
-<h3 id="kpi-ingresos" class="text-[40px] font-bold text-green-600">S/ 0.00</h3>
-<p class="text-on-surface-variant opacity-60 font-label-md">Ventas consolidadas aprobadas</p>
-</div>
-</div>
-<!-- Digital Card -->
-<div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-secondary-fixed shadow-lg flex flex-col justify-between min-h-[220px]">
-<div class="flex justify-between items-start">
-<span class="font-label-lg text-label-lg text-on-surface-variant">Total Egresos (S/)</span>
-<div class="bg-secondary-container/30 p-3 rounded-full">
-<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">trending_down</span>
-</div>
-</div>
-<div>
-<h3 id="kpi-egresos" class="text-[40px] font-bold text-secondary">S/ 0.00</h3>
-<p class="text-on-surface-variant opacity-60 font-label-md">Gastos y egresos del mes</p>
-</div>
-</div>
-<!-- Total Consolidation -->
-<div class="md:col-span-4 glass-card p-stack-lg rounded-[2rem] border-t-4 border-tertiary-container shadow-lg flex flex-col justify-between min-h-[220px]">
-<div class="flex justify-between items-start">
-<span class="font-label-lg text-label-lg text-on-surface-variant">Utilidad Neta / Balance (S/)</span>
-<div class="bg-tertiary-container/20 p-3 rounded-full">
-<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
-</div>
-</div>
-<div>
-<h3 id="kpi-utilidad" class="text-[40px] font-bold text-primary">S/ 0.00</h3>
-<p class="text-on-surface-variant opacity-60 font-label-md">Ingresos - Egresos del período</p>
-</div>
-</div>
-</div>
-<!-- Verification Section & Transactions -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-<!-- Yape Verification Panel -->
-<div class="lg:col-span-2 space-y-gutter">
-<div class="bg-white rounded-[2rem] p-stack-lg shadow-sm border border-outline-variant/30">
-<div class="flex justify-between items-center mb-stack-md">
-<h3 class="font-headline-md text-headline-md text-on-surface">Verificación de Yapes Pendientes</h3>
-<span class="bg-error-container text-on-error-container px-4 py-1 rounded-full font-label-md">Cargando...</span>
-</div>
-<!-- Verification List -->
-<div class="space-y-4">
-    <!-- Inyectado dinámicamente -->
-</div>
-</div>
-<!-- Flow Visualization / Movimientos Recientes -->
-<div class="bg-white rounded-[2rem] p-stack-lg shadow-sm border border-outline-variant/30">
-    <div class="flex justify-between items-center mb-stack-md">
-        <h3 class="font-headline-md text-headline-md text-on-surface">Movimientos Recientes (Ingresos vs Egresos)</h3>
-        <span class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">Historial del Período</span>
+<!-- Unified Top Bar Header -->
+<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto">
+  <!-- Lado Izquierdo: Tag / Badge de Rol -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">storefront</span>
+      <span class="text-xs font-bold text-primary">Administrador / Dueño</span>
     </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="border-b border-outline-variant/50 text-xs font-bold text-on-surface-variant uppercase">
-                    <th class="py-3 px-4">Fecha/Hora</th>
-                    <th class="py-3 px-4">Categoría</th>
-                    <th class="py-3 px-4">Concepto</th>
-                    <th class="py-3 px-4">Sede</th>
-                    <th class="py-3 px-4 text-right">Monto</th>
-                </tr>
-            </thead>
-            <tbody id="movements-table-body" class="divide-y divide-outline-variant/30 text-sm">
-                <!-- Inyectado dinámicamente -->
-            </tbody>
-        </table>
-        <div id="movements-empty" class="hidden text-center py-8 text-on-surface-variant font-medium">
-            No hay movimientos registrados en este período.
+  </div>
+
+  <!-- Centro: Input de Búsqueda Global Centrado -->
+  <div class="flex-1 max-w-md mx-6">
+    <div class="relative w-full">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">search</span>
+      </span>
+      <input type="text" placeholder="Buscar transacción, modelo, SKU o sede..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+    </div>
+  </div>
+
+  <!-- Lado Derecho: Acciones y Perfil -->
+  <div class="flex items-center gap-4">
+    <button aria-label="Notifications" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">notifications</span>
+    </button>
+    <button aria-label="Settings" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">settings</span>
+    </button>
+    <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+      <span class="text-xs font-bold text-on-surface">Administrador</span>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+        <img alt="Perfil Administrador" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+      </div>
+    </div>
+  </div>
+</header>
+<section class="px-6 py-4 max-w-[1440px] mx-auto space-y-4">
+<!-- Dashboard Title & Date & KPIs (Fila 1 & 2) -->
+<div class="space-y-4">
+    <!-- Fila 1: Título y Botones de Acción -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/30">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-black tracking-tight">Flujo de Caja</h2>
+                <p class="text-xs text-on-surface-variant">Control consolidado de Ingresos y Egresos</p>
+            </div>
+            <input type="month" id="filter-period" class="h-10 border border-outline-variant bg-surface rounded-lg px-2 text-sm font-bold text-black focus:ring-0 outline-none mt-1 sm:mt-0" />
+        </div>
+        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button class="flex items-center gap-1.5 px-4 py-2 border border-outline-variant bg-white text-on-surface-variant hover:bg-surface-container font-semibold text-sm rounded-lg transition-colors">
+                <span>📥 Exportar Excel</span>
+            </button>
+            <button onclick="openEgresoModal()" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white font-bold text-sm rounded-lg hover:brightness-95 transition-all shadow-sm">
+                <span class="material-symbols-outlined text-sm">add</span>
+                Registrar Gasto/Egreso
+            </button>
+        </div>
+    </div>
+
+    <!-- Fila 2: Tarjetas de Balance KPI -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Ingresos -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-28">
+            <span class="text-xs text-green-700 font-bold uppercase tracking-wider">Total Ingresos</span>
+            <span id="kpi-ingresos" class="text-3xl font-black text-green-600 mt-2">S/ 0.00</span>
+        </div>
+        <!-- Egresos -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-28">
+            <span class="text-xs text-red-700 font-bold uppercase tracking-wider">Total Egresos</span>
+            <span id="kpi-egresos" class="text-3xl font-black text-red-600 mt-2">S/ 0.00</span>
+        </div>
+        <!-- Balance Neto -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-28">
+            <span class="text-xs text-purple-700 font-bold uppercase tracking-wider">Balance Neto</span>
+            <span id="kpi-utilidad" class="text-3xl font-black text-primary mt-2">S/ 0.00</span>
         </div>
     </div>
 </div>
-</div>
-<!-- Right Side Information Column -->
-<div class="lg:col-span-1 space-y-gutter">
-<!-- Stores Summary -->
-<div class="bg-white rounded-[2rem] p-stack-lg shadow-sm border border-outline-variant/30">
-<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-md">Cierres de Tienda</h3>
-<div class="space-y-4">
-<div class="flex items-center justify-between p-4 bg-green-50 rounded-2xl">
-<div class="flex items-center gap-3">
-<div class="w-2 h-2 rounded-full bg-green-500"></div>
-<span class="font-label-lg">Santa Lucía</span>
-</div>
-<span class="font-bold">Cerrado</span>
-</div>
-<div class="flex items-center justify-between p-4 bg-tertiary-container/10 rounded-2xl">
-<div class="flex items-center gap-3">
-<div class="w-2 h-2 rounded-full bg-tertiary"></div>
-<span class="font-label-lg">Gen. Suplex</span>
-</div>
-<span class="font-bold text-tertiary">En Proceso</span>
-</div>
-<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-2xl">
-<div class="flex items-center gap-3">
-<div class="w-2 h-2 rounded-full bg-primary"></div>
-<span class="font-label-lg">Aviación</span>
-</div>
-<span class="font-bold opacity-40">Abierto</span>
-</div>
-</div>
-</div>
-<!-- Visual Accent Card -->
-<div class="relative overflow-hidden rounded-[2rem] aspect-square shadow-xl group">
-<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent z-10"></div>
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A beautiful, high-resolution aesthetic shot of folded premium textile fabrics in shades of lilac, soft pink, and white. The fabrics are stacked neatly in a sunlit boutique studio, creating a sense of luxury and professionalism that matches the ESCARLÚ brand identity. The lighting is ethereal and bright." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgL7yHxcetOra3qDnOQBbtE9NJT_U2xv8aWnd5kMwdrm0SRmDrDRjQDXFHzy6KnkzzgS6qNZQvEqCtI-3qf4FtgaWQjErjeT8tfQTgmPoJXPT2m0HyrfsNeZBwy3OgG9ttR4OGzbsqCW02JNZeIwV1clIrhwgMQx2Kya82T6GEHx0MVOPDCNF9YrZ4cAJljC3QWzM0iZNcyUM5xhVWilYr338F7c6sJH_XtMolaantbCyyF3dg4qs"/>
-<div class="absolute bottom-8 left-8 z-20 text-white">
-<p class="font-label-md opacity-80 uppercase tracking-widest mb-1">Stock de Temporada</p>
-<h4 class="font-headline-md text-white">Seda &amp; Lino Premium</h4>
-<button class="mt-4 px-6 py-2 bg-white/20 backdrop-blur-md rounded-full font-label-md border border-white/30 hover:bg-white/40 transition-colors">
-                                Gestionar Inventario
-                            </button>
-</div>
-</div>
-</div>
+
+<!-- Layout en 2 Columnas (Fila 2) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <!-- Columna Izquierda (65%): Últimos Movimientos -->
+    <div class="lg:col-span-8 bg-white rounded-2xl p-4 shadow-sm border border-outline-variant/30 flex flex-col justify-between min-h-[380px]">
+        <div>
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold text-black">Últimos Movimientos</h3>
+                <span class="text-xs text-on-surface-variant font-medium">Ingresos vs Egresos del Período</span>
+            </div>
+            <div class="overflow-x-auto max-h-[340px] overflow-y-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-outline-variant/50 text-[11px] font-bold text-on-surface-variant uppercase bg-slate-50 sticky top-0">
+                            <th class="py-2 px-3">Fecha/Hora</th>
+                            <th class="py-2 px-3">Sede</th>
+                            <th class="py-2 px-3">Concepto / Categoría</th>
+                            <th class="py-2 px-3 text-right">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="movements-table-body" class="divide-y divide-outline-variant/30 text-xs">
+                        <!-- Inyectado dinámicamente -->
+                    </tbody>
+                </table>
+                <div id="movements-empty" class="hidden text-center py-8 text-on-surface-variant font-medium text-xs">
+                    No hay movimientos registrados en este período.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna Derecha (35%): Yapes y Cierres -->
+    <div class="lg:col-span-4 space-y-4">
+        <!-- Bloque 1: Yapes Pendientes de Aprobar -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-outline-variant/30 flex flex-col justify-between min-h-[180px]">
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-bold text-black">Yapes Pendientes de Aprobar</h3>
+                    <span class="bg-error-container text-on-error-container text-[10px] px-2 py-0.5 rounded-full font-bold">Por verificar</span>
+                </div>
+                <div class="space-y-2 max-h-[140px] overflow-y-auto" id="yapes-list-container">
+                    <!-- Inyectado dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </section>
 </main>
-
-<!-- Floating Action Button -->
-<button onclick="openEgresoModal()" class="fixed bottom-10 right-10 w-20 h-20 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
-<span class="material-symbols-outlined text-4xl group-hover:rotate-90 transition-transform duration-300">add</span>
-<span class="absolute right-full mr-4 bg-white text-primary px-4 py-2 rounded-xl shadow-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Nuevo Egreso / Gasto</span>
-</button>
 
 <!-- Add Egreso Glassmorphism Modal -->
 <div id="egreso-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -414,9 +370,9 @@
         const kpiUtilidad = document.getElementById("kpi-utilidad");
         kpiUtilidad.textContent = `S/ ${utilidad.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         if (utilidad >= 0) {
-            kpiUtilidad.className = "text-[40px] font-bold text-primary";
+            kpiUtilidad.className = "text-3xl font-black text-primary mt-2";
         } else {
-            kpiUtilidad.className = "text-[40px] font-bold text-error";
+            kpiUtilidad.className = "text-3xl font-black text-error mt-2";
         }
 
         // 4. Render Yape Verification Panel
@@ -486,7 +442,7 @@
     }
 
     function renderPendingYapes() {
-        const pendingContainer = document.querySelector("#movements-empty").closest('.grid').querySelector('.space-y-4');
+        const pendingContainer = document.getElementById("yapes-list-container");
         if (!pendingContainer) return;
 
         const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
@@ -606,6 +562,10 @@
 
         allExpenses.push(newExpense);
         localStorage.setItem("escarlu_expenses", JSON.stringify(allExpenses));
+
+        // Cambiar el filtro de mes al periodo del egreso para mostrarlo al instante
+        const expenseMonth = fecha.substring(0, 7);
+        document.getElementById("filter-period").value = expenseMonth;
 
         closeEgresoModal();
         alert("Gasto/Egreso registrado correctamente.");

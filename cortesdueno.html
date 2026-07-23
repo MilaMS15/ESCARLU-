@@ -113,6 +113,15 @@
             box-shadow: 0 0 0 4px rgba(200, 162, 200, 0.4);
             outline: none;
         }
+        /* Aumentar legibilidad y contraste */
+        .text-xs { font-size: 14.5px !important; }
+        .text-sm { font-size: 16.5px !important; }
+        .text-[10px] { font-size: 12px !important; font-weight: 700 !important; color: #1c1b1b !important; }
+        .text-[9px] { font-size: 11.5px !important; font-weight: 700 !important; color: #1c1b1b !important; }
+        .text-on-surface-variant { color: #1c1b1b !important; }
+        label { font-size: 13.5px !important; font-weight: 700 !important; color: #1c1b1b !important; }
+        input, select { font-size: 13.5px !important; font-weight: 700 !important; color: #1c1b1b !important; }
+        #combinaciones-container span { font-size: 12.5px !important; padding: 4px 8px !important; font-weight: 700 !important; }
     </style>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen">
@@ -120,112 +129,373 @@
 <aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
 <!-- Main Content Area -->
 <main class="md:ml-72 min-h-screen bg-background">
-<!-- TopNavBar (Visible on all screens, adjusting layout) -->
-<header class="bg-surface sticky top-0 z-10 shadow-sm border-b-2 border-primary flex justify-between items-center w-full px-container-padding h-14 md:h-16 max-w-[1440px] mx-auto">
-<!-- Mobile Menu Toggle & Brand (Visible on Mobile) -->
-<div class="flex items-center md:hidden gap-4">
-<button class="text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors duration-200 rounded-full cursor-pointer active:scale-95 focus-ring-lilac">
-<span class="material-symbols-outlined">menu</span>
-</button>
-<span class="font-headline-lg text-headline-lg font-bold text-primary">ESCARLÚ</span>
-</div>
-<!-- Empty div to push trailing actions to the right on desktop, or search bar placeholder -->
-<div class="hidden md:flex items-center text-primary gap-2">
-<span class="font-label-lg text-label-lg font-bold">Simulación de Trazo y Corte</span>
-</div>
-<!-- Trailing Actions -->
-<div class="flex items-center gap-2">
-<button aria-label="Notifications" class="text-primary p-2 rounded-full hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac flex items-center justify-center min-h-[48px] min-w-[48px]">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-</button>
-<button aria-label="Settings" class="text-primary p-2 rounded-full hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac flex items-center justify-center min-h-[48px] min-w-[48px]">
-<span class="material-symbols-outlined" data-icon="settings">settings</span>
-</button>
-<div class="w-10 h-10 ml-2 rounded-full overflow-hidden border border-outline-variant bg-surface-container">
-<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a senior female administrator in a brightly lit modern studio setting. The lighting is soft and flattering, emphasizing a dignified and experienced persona. She wears a clean, tailored dark blazer over a light blouse. The background is a very subtle, out-of-focus pristine white studio wall, aligning with a high-end corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
-</div>
-</div>
+<!-- Unified Top Bar Header -->
+<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto">
+  <!-- Lado Izquierdo: Tag / Badge de Rol -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">storefront</span>
+      <span class="text-xs font-bold text-primary">Administrador / Dueño</span>
+    </div>
+  </div>
+
+  <!-- Centro: Input de Búsqueda Global Centrado -->
+  <div class="flex-1 max-w-md mx-6">
+    <div class="relative w-full">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">search</span>
+      </span>
+      <input type="text" placeholder="Buscar transacción, modelo, SKU o sede..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+    </div>
+  </div>
+
+  <!-- Lado Derecho: Acciones y Perfil -->
+  <div class="flex items-center gap-4">
+    <button aria-label="Notifications" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">notifications</span>
+    </button>
+    <button aria-label="Settings" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">settings</span>
+    </button>
+    <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+      <span class="text-xs font-bold text-on-surface">Administrador</span>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+        <img alt="Perfil Administrador" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+      </div>
+    </div>
+  </div>
 </header>
 <!-- Canvas Area -->
-<main class="flex-1 p-container-padding max-w-[1440px] mx-auto w-full flex flex-col gap-stack-md">
-<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4">
-<div>
-<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface mb-2">Simulación de Trazo y Corte</h2>
-<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Visualice la distribución óptima de piezas de polo sobre el rollo de tela seleccionado. Ajuste parámetros para maximizar el aprovechamiento del material.</p>
-</div>
-<button class="bg-primary text-on-primary font-label-lg text-label-lg px-8 py-4 rounded-lg min-h-[56px] flex items-center justify-center gap-2 shadow-sm hover:bg-on-primary-fixed-variant transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac w-full md:w-auto">
-<span class="material-symbols-outlined" data-weight="fill">play_circle</span>
-                    Ejecutar Optimización
-                </button>
-</div>
-<!-- Bento Grid Layout for Dashboard Elements -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter flex-1">
-<!-- Main Canvas (Visual Interactive Workspace) -->
-<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-6 flex flex-col active-top-border min-h-[500px]">
-<div class="flex justify-between items-center mb-6">
-<h3 class="font-label-lg text-label-lg text-on-surface">Lienzo de Trazo (Rollo: Algodón Pima 30/1)</h3>
-<div class="flex gap-2">
-<button class="text-on-surface-variant p-2 rounded hover:bg-surface-container transition-colors focus-ring-lilac" title="Zoom In"><span class="material-symbols-outlined">zoom_in</span></button>
-<button class="text-on-surface-variant p-2 rounded hover:bg-surface-container transition-colors focus-ring-lilac" title="Zoom Out"><span class="material-symbols-outlined">zoom_out</span></button>
-</div>
-</div>
-<!-- Decorative Representation of Fabric Roll and Cut Pieces -->
-<div class="flex-1 border-2 border-dashed border-outline-variant rounded bg-surface-container-low relative overflow-hidden flex items-center justify-center">
-<!-- Simulated Fabric Texture Background -->
-<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#745475_1px,transparent_1px)] [background-size:16px_16px]"></div>
-<!-- Simulated Pieces -->
-<div class="relative w-full max-w-2xl h-full py-8 flex flex-wrap gap-2 content-start justify-center p-4">
-<!-- Placeholder SVG shapes for pattern pieces, using primary-container for visibility -->
-<div class="w-32 h-48 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Delantero</div>
-<div class="w-32 h-48 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Espalda</div>
-<div class="w-20 h-32 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Manga D.</div>
-<div class="w-20 h-32 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Manga I.</div>
-<div class="w-40 h-16 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Cuello</div>
-<div class="w-32 h-48 bg-primary-container border border-primary rounded opacity-80 flex items-center justify-center text-on-primary-container font-label-md text-label-md">Delantero 2</div>
-</div>
-</div>
-</div>
-<!-- Metrics & Controls Sidebar -->
-<div class="lg:col-span-4 flex flex-col gap-gutter">
-<!-- Giant Numerical Indicators -->
-<div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-8 flex flex-col gap-6 active-top-border">
-<div>
-<p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider mb-2">% Tela Aprovechada</p>
-<div class="flex items-baseline gap-2 text-tertiary-container">
-<span class="font-display-lg text-display-lg font-bold">85.4</span>
-<span class="font-headline-md text-headline-md">%</span>
-</div>
-<!-- Simple Progress Bar -->
-<div class="w-full bg-surface-container h-3 rounded-full mt-4 overflow-hidden">
-<div class="bg-tertiary-container h-full rounded-full" style="width: 85.4%;"></div>
-</div>
-</div>
-<div class="border-t border-outline-variant pt-6">
-<p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider mb-2">% Merma / Desperdicio</p>
-<div class="flex items-baseline gap-2 text-error">
-<span class="font-display-lg text-display-lg font-bold">14.6</span>
-<span class="font-headline-md text-headline-md">%</span>
-</div>
-</div>
-</div>
-<!-- Configuration Parameters -->
-<div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-6 flex flex-col gap-4">
-<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Parámetros de Trazo</h3>
-<div class="flex flex-col gap-2">
-<label class="font-label-lg text-label-lg text-on-surface">Ancho de Tela (Metros)</label>
-<input aria-label="Ancho de Tela" class="border border-outline-variant rounded bg-surface p-3 font-body-lg text-body-lg text-on-surface focus-ring-lilac h-[56px]" type="text" value="1.60"/>
-</div>
-<div class="flex flex-col gap-2 mt-2">
-<label class="font-label-lg text-label-lg text-on-surface">Tallas a Trazar</label>
-<div class="flex flex-wrap gap-2">
-<span class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-md text-label-md flex items-center gap-1 cursor-pointer">S <span class="material-symbols-outlined text-sm">close</span></span>
-<span class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-md text-label-md flex items-center gap-1 cursor-pointer">M <span class="material-symbols-outlined text-sm">close</span></span>
-<span class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-md text-label-md flex items-center gap-1 cursor-pointer">L <span class="material-symbols-outlined text-sm">close</span></span>
-<button class="border border-dashed border-primary text-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors focus-ring-lilac">+ Añadir</button>
-</div>
-</div>
-</div>
-</div>
-</div>
+<main class="flex-1 p-4 max-w-[1440px] mx-auto w-full flex flex-col gap-3">
+
+  <!-- Main Layout Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+    <!-- SECCIÓN IZQUIERDA: Lienzo y Piezas -->
+    <div class="lg:col-span-8 flex flex-col gap-4">
+      <!-- Lienzo de Trazo -->
+      <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-4 flex flex-col active-top-border flex-1">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-sm text-on-surface">Lienzo de Trazo (Rollo: Algodón Pima 30/1)</h3>
+          <div class="flex gap-1">
+            <button id="zoom-in" class="text-on-surface-variant p-1 rounded hover:bg-surface-container transition-colors focus-ring-lilac" title="Acercar"><span class="material-symbols-outlined text-lg">zoom_in</span></button>
+            <button id="zoom-out" class="text-on-surface-variant p-1 rounded hover:bg-surface-container transition-colors focus-ring-lilac" title="Alejar"><span class="material-symbols-outlined text-lg">zoom_out</span></button>
+          </div>
+        </div>
+
+        <!-- Canvas Wrapper with Ruler/Cota tags -->
+        <div class="grid grid-cols-[auto_1fr] grid-rows-[1fr_auto] gap-2 items-center flex-1">
+          <!-- Eje Vertical (Ancho) -->
+          <div class="flex flex-col items-center justify-center text-[10px] font-bold text-outline uppercase tracking-wider select-none h-full border-r border-dashed border-outline-variant pr-2">
+            <span class="material-symbols-outlined text-xs">arrow_upward</span>
+            <span id="label-ancho" class="[writing-mode:vertical-lr] rotate-180 my-1">ANCHO (1.60m)</span>
+            <span class="material-symbols-outlined text-xs">arrow_downward</span>
+          </div>
+
+          <!-- Lienzo Box -->
+          <div class="flex-1 border-2 border-dashed border-outline-variant rounded bg-surface-container-low relative overflow-hidden flex items-center justify-center min-h-[280px]">
+            <!-- Simulated Fabric Texture Background -->
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#745475_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <!-- Simulated Pieces -->
+            <div id="canvas-pieces-container" class="relative w-full max-w-2xl h-full py-4 flex flex-wrap gap-2 content-start justify-center p-2 transition-transform duration-200 origin-center">
+              <div class="w-24 h-36 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Delantero</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 0°</span>
+              </div>
+              <div class="w-24 h-36 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Espalda</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 0°</span>
+              </div>
+              <div class="w-16 h-24 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Manga D.</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 90°</span>
+              </div>
+              <div class="w-16 h-24 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Manga I.</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 90°</span>
+              </div>
+              <div class="w-28 h-12 bg-primary-container border border-primary rounded opacity-80 flex flex-col items-center justify-center text-on-primary-container p-1 shadow-sm transition-transform hover:scale-105">
+                <span class="text-xs font-bold">Cuello</span>
+                <span class="text-[9px] opacity-75">Talla M | Rot: 0°</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Blank Corner -->
+          <div></div>
+
+          <!-- Eje Horizontal (Largo) -->
+          <div class="flex items-center justify-center gap-2 text-[10px] font-bold text-outline uppercase tracking-wider select-none pt-2 border-t border-dashed border-outline-variant">
+            <span class="material-symbols-outlined text-xs">arrow_back</span>
+            <span id="label-largo">LARGO (Eje Horizontal: 10.00m)</span>
+            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Piezas a utilizar -->
+      <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-4 active-top-border flex flex-col gap-2.5">
+        <h3 class="font-bold text-sm text-on-surface">Piezas a utilizar</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <!-- Card 1 -->
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface">Delantero</h4>
+                <p class="text-[9px] text-on-surface-variant">Molde Principal</p>
+              </div>
+              <div class="flex gap-0.5">
+                <button class="p-1 text-primary hover:bg-surface-container-high rounded transition-colors" title="Editar"><span class="material-symbols-outlined text-xs">edit</span></button>
+                <button class="p-1 text-error hover:bg-error-container rounded transition-colors" title="Eliminar"><span class="material-symbols-outlined text-xs">delete</span></button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-semibold text-on-surface-variant">Rotación máx (Grados):</label>
+              <input type="text" class="text-xs p-1 border border-outline-variant rounded bg-surface focus-ring-lilac text-on-surface w-full font-bold" value="360" placeholder="Ej: 0, 90, 180" />
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface">Espalda</h4>
+                <p class="text-[9px] text-on-surface-variant">Molde Principal</p>
+              </div>
+              <div class="flex gap-0.5">
+                <button class="p-1 text-primary hover:bg-surface-container-high rounded transition-colors" title="Editar"><span class="material-symbols-outlined text-xs">edit</span></button>
+                <button class="p-1 text-error hover:bg-error-container rounded transition-colors" title="Eliminar"><span class="material-symbols-outlined text-xs">delete</span></button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-semibold text-on-surface-variant">Rotación máx (Grados):</label>
+              <input type="text" class="text-xs p-1 border border-outline-variant rounded bg-surface focus-ring-lilac text-on-surface w-full font-bold" value="360" placeholder="Ej: 0, 90, 180" />
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface">Manga</h4>
+                <p class="text-[9px] text-on-surface-variant">Lateral x2</p>
+              </div>
+              <div class="flex gap-0.5">
+                <button class="p-1 text-primary hover:bg-surface-container-high rounded transition-colors" title="Editar"><span class="material-symbols-outlined text-xs">edit</span></button>
+                <button class="p-1 text-error hover:bg-error-container rounded transition-colors" title="Eliminar"><span class="material-symbols-outlined text-xs">delete</span></button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-semibold text-on-surface-variant">Rotación máx (Grados):</label>
+              <input type="text" class="text-xs p-1 border border-outline-variant rounded bg-surface focus-ring-lilac text-on-surface w-full font-bold" value="90" placeholder="Ej: 0, 90" />
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-bold text-xs text-on-surface">Cuello</h4>
+                <p class="text-[9px] text-on-surface-variant">Accesorio</p>
+              </div>
+              <div class="flex gap-0.5">
+                <button class="p-1 text-primary hover:bg-surface-container-high rounded transition-colors" title="Editar"><span class="material-symbols-outlined text-xs">edit</span></button>
+                <button class="p-1 text-error hover:bg-error-container rounded transition-colors" title="Eliminar"><span class="material-symbols-outlined text-xs">delete</span></button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-semibold text-on-surface-variant">Rotación máx (Grados):</label>
+              <input type="text" class="text-xs p-1 border border-outline-variant rounded bg-surface focus-ring-lilac text-on-surface w-full font-bold" value="0" placeholder="Ej: 0" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN DERECHA: Métricas y Controles -->
+    <div class="lg:col-span-4 flex flex-col gap-4">
+      <!-- Botón de Optimización Prominente -->
+      <button class="bg-primary text-on-primary font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-on-primary-fixed-variant transition-colors duration-200 cursor-pointer active:scale-95 focus-ring-lilac w-full">
+        <span class="material-symbols-outlined text-lg" data-weight="fill">play_circle</span>
+        Ejecutar Optimización
+      </button>
+
+      <!-- Métricas Horizontales Compactas -->
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Aprovechamiento -->
+        <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-3 border-t-2 border-tertiary-container flex flex-col justify-between min-h-[85px]">
+          <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">% Tela Aprovechada</span>
+          <div class="flex items-baseline gap-0.5 mt-1">
+            <span class="text-xl font-bold text-tertiary-container">85.4</span>
+            <span class="text-[10px] font-bold text-tertiary-container">%</span>
+          </div>
+          <div class="w-full bg-surface-container h-1.5 rounded-full mt-1.5 overflow-hidden">
+            <div class="bg-tertiary-container h-full rounded-full" style="width: 85.4%;"></div>
+          </div>
+        </div>
+        <!-- Desperdicio -->
+        <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-3 border-t-2 border-error flex flex-col justify-between min-h-[85px]">
+          <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">% Merma / Desperdicio</span>
+          <div class="flex items-baseline gap-0.5 mt-1">
+            <span class="text-xl font-bold text-error">14.6</span>
+            <span class="text-[10px] font-bold text-error">%</span>
+          </div>
+          <div class="w-full bg-surface-container h-1.5 rounded-full mt-1.5 overflow-hidden">
+            <div class="bg-error h-full rounded-full" style="width: 14.6%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parámetros de Trazo -->
+      <div class="bg-surface-container-lowest rounded-xl fabric-canvas-shadow p-4 flex flex-col gap-3 active-top-border">
+        <h3 class="font-bold text-sm text-on-surface">Parámetros de Trazo</h3>
+
+        <!-- Fila de Ancho y Largo -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-semibold text-on-surface">Ancho de Tela (m)</label>
+            <input id="ancho-tela" class="border border-outline-variant rounded bg-surface p-2 text-xs font-bold text-on-surface focus-ring-lilac h-9" type="number" min="0.5" max="3.0" step="0.05" value="1.60" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-semibold text-on-surface">Largo Máx de Tela (m)</label>
+            <input id="largo-tela" class="border border-outline-variant rounded bg-surface p-2 text-xs font-bold text-on-surface focus-ring-lilac h-9" type="number" placeholder="Largo" value="10.00" min="1" step="0.5" />
+          </div>
+        </div>
+
+        <!-- Selector Doblez -->
+        <div class="flex items-center justify-between border-t border-outline-variant pt-2">
+          <span class="text-xs font-bold text-on-surface">¿Utilizar doblez?</span>
+          <div class="inline-flex rounded-lg border border-outline-variant p-0.5 bg-surface-container-low" id="doblez-toggle-container">
+            <button id="btn-doblez-si" class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-primary text-on-primary transition-all">Sí</button>
+            <button id="btn-doblez-no" class="px-2.5 py-0.5 text-xs font-semibold rounded-md text-on-surface-variant hover:text-on-surface transition-all">No</button>
+          </div>
+        </div>
+
+        <!-- Fila/Grid de Combinación de Producción -->
+        <div class="border-t border-outline-variant pt-3 flex flex-col gap-2.5">
+          <span class="text-xs font-bold text-on-surface">Combinación de Producción</span>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[10px] text-on-surface-variant font-medium">Modelo</label>
+              <select id="model-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
+                <option>Polo Camisero</option>
+                <option>Polo Cuello V</option>
+                <option>Polo Box</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[10px] text-on-surface-variant font-medium">Talla</label>
+              <select id="size-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
+                <option>S</option>
+                <option>M</option>
+                <option>L</option>
+                <option>XL</option>
+                <option>St</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 items-end">
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[10px] text-on-surface-variant font-medium">Cantidad</label>
+              <input id="qty-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8" type="number" value="12" min="1" />
+            </div>
+            <button id="btn-add-combinacion" type="button" class="bg-primary text-on-primary font-bold text-xs h-8 rounded-lg flex items-center justify-center gap-1 hover:bg-on-primary-fixed-variant transition-colors focus-ring-lilac">
+              + Añadir combinación
+            </button>
+          </div>
+        </div>
+
+        <!-- Listado de combinaciones agregadas -->
+        <div id="combinaciones-container" class="flex flex-wrap gap-1.5 mt-1 border-t border-outline-variant pt-2">
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer">Polo Camisero (S) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer">Polo Camisero (M) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer">Polo Camisero (L) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const anchoInput = document.getElementById('ancho-tela');
+    const largoInput = document.getElementById('largo-tela');
+    const labelAncho = document.getElementById('label-ancho');
+    const labelLargo = document.getElementById('label-largo');
+
+    // 1. Actualizar ancho y largo del lienzo
+    function updateCanvasAxes() {
+        if (anchoInput && labelAncho) {
+            labelAncho.innerText = `ANCHO (${parseFloat(anchoInput.value).toFixed(2)}m)`;
+        }
+        if (largoInput && labelLargo) {
+            labelLargo.innerText = `LARGO (Eje Horizontal: ${parseFloat(largoInput.value).toFixed(2)}m)`;
+        }
+    }
+    anchoInput.addEventListener('input', updateCanvasAxes);
+    largoInput.addEventListener('input', updateCanvasAxes);
+
+    // 2. Doblez Toggle Interactivity
+    const btnSi = document.getElementById('btn-doblez-si');
+    const btnNo = document.getElementById('btn-doblez-no');
+    if (btnSi && btnNo) {
+        btnSi.addEventListener('click', () => {
+            btnSi.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-primary text-on-primary transition-all";
+            btnNo.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md text-on-surface-variant hover:text-on-surface transition-all";
+        });
+        btnNo.addEventListener('click', () => {
+            btnNo.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-primary text-on-primary transition-all";
+            btnSi.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md text-on-surface-variant hover:text-on-surface transition-all";
+        });
+    }
+
+    // 3. Añadir combinación a la lista
+    const btnAddComb = document.getElementById('btn-add-combinacion');
+    const combContainer = document.getElementById('combinaciones-container');
+    const modelSel = document.getElementById('model-comb');
+    const sizeSel = document.getElementById('size-comb');
+    const qtyInput = document.getElementById('qty-comb');
+
+    if (btnAddComb && combContainer) {
+        btnAddComb.addEventListener('click', () => {
+            const model = modelSel.value;
+            const size = sizeSel.value;
+            const qty = qtyInput.value;
+
+            if (!qty || qty <= 0) return;
+
+            const pill = document.createElement('span');
+            pill.className = "bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer";
+            pill.innerHTML = `${model} (${size}) x${qty} <span class="material-symbols-outlined text-[10px] remove-comb">close</span>`;
+            
+            // Delete combination listener on pill click
+            pill.addEventListener('click', () => {
+                pill.remove();
+            });
+
+            combContainer.appendChild(pill);
+        });
+
+        // Setup delete listener for initial default pills
+        document.querySelectorAll('.remove-comb').forEach(btn => {
+            btn.parentElement.addEventListener('click', () => {
+                btn.parentElement.remove();
+            });
+        });
+    }
+
+    // 4. Zoom in and zoom out logic
+    let zoomLevel = 1.0;
+    const btnZoomIn = document.getElementById('zoom-in');
+    const btnZoomOut = document.getElementById('zoom-out');
+    const canvasContainer = document.getElementById('canvas-pieces-container');
+    
+    if (btnZoomIn && btnZoomOut && canvasContainer) {
+        btnZoomIn.addEventListener('click', () => {
+            zoomLevel = Math.min(1.5, zoomLevel + 0.1);
+            canvasContainer.style.transform = `scale(${zoomLevel})`;
+        });
+        btnZoomOut.addEventListener('click', () => {
+            zoomLevel = Math.max(0.5, zoomLevel - 0.1);
+            canvasContainer.style.transform = `scale(${zoomLevel})`;
+        });
+    }
+});
+</script>
 </body></html>

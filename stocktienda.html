@@ -123,6 +123,14 @@
         ::-webkit-scrollbar { width: 12px; }
         ::-webkit-scrollbar-track { background: #f0eded; }
         ::-webkit-scrollbar-thumb { background: #c8a2c8; border-radius: 10px; border: 3px solid #f0eded; }
+
+        /* POS Layout constraints */
+        html, body { height: 100vh; overflow: hidden; }
+        main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .dashboard-content { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 12px !important; gap: 12px !important; }
+        .stats-section { shrink-0; }
+        .table-section { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+        .table-container { flex: 1; overflow-y: auto; max-height: calc(100vh - 350px); }
     </style>
 </head>
 <body class="font-body-md text-body-md">
@@ -162,110 +170,135 @@
 </div>
 </aside>
 <!-- Main Content Area -->
-<main class="ml-64 md:ml-72 min-h-screen">
-<!-- Top Navigation -->
-<header class="flex justify-between items-center w-full px-container-padding h-14 md:h-16 bg-surface border-b-2 border-primary shadow-sm sticky top-0 z-40">
-<div class="flex items-center gap-4">
-<span class="material-symbols-outlined text-primary">search</span>
-<input class="bg-transparent border-none focus:ring-0 w-64 font-body-md text-on-surface-variant" placeholder="Buscar producto o sede..." type="text"/>
-</div>
-<div class="flex items-center gap-6">
-<button class="relative hover:bg-surface-container-high p-2 rounded-full transition-colors active:scale-95">
-<span class="material-symbols-outlined text-primary">notifications</span>
-<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
-</button>
-<button class="hover:bg-surface-container-high p-2 rounded-full transition-colors active:scale-95">
-<span class="material-symbols-outlined text-primary">settings</span>
-</button>
-</div>
-</header>
-<!-- Dashboard Content -->
-<div class="p-container-padding max-w-[1440px] mx-auto space-y-stack-lg">
-<!-- Welcome & Selector -->
-<section class="space-y-stack-sm">
-<div class="flex justify-between items-end">
-<div>
-<h2 id="page-title" class="font-headline-lg text-headline-lg text-primary">Inventario de Tienda</h2>
-<p id="page-desc" class="text-body-lg text-on-surface-variant">Consulta el stock disponible y gestiona reposiciones de mercadería.</p>
-</div>
-</div>
-</section>
+<main class="ml-64 md:ml-72 flex flex-col h-screen overflow-hidden">
+  <!-- Unified Top Bar Header (Tienda) -->
+  <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
+    <!-- Lado Izquierdo: Badge de Sede -->
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+        <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
+        <span class="text-xs font-bold text-primary">🏪 Tienda Santa Lucía</span>
+      </div>
+    </div>
+
+    <!-- Centro: Input de Búsqueda Global Centrado -->
+    <div class="flex-1 max-w-md mx-6">
+      <div class="relative w-full">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+          <span class="material-symbols-outlined text-sm">search</span>
+        </span>
+        <input type="text" placeholder="🔍 Buscar producto, modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+      </div>
+    </div>
+
+    <!-- Lado Derecho: Indicador y Usuario -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span class="text-[11px] font-bold text-green-700">🟢 Caja Abierta</span>
+      </div>
+      <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+        <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
+        <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+          <img alt="Vendedora Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content max-w-[1440px] mx-auto w-full">
+    <!-- Welcome & Selector -->
+    <section class="shrink-0 mt-1">
+      <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mb-1">
+        <div class="flex items-center gap-3">
+          <h2 id="page-title" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Inventario de Tienda</h2>
+          <span class="text-xs text-on-surface-variant font-semibold">| Fecha: <span id="current-date-label">23 de Julio, 2026</span></span>
+        </div>
+        <div class="hidden">
+          <p id="page-desc"></p>
+        </div>
+      </div>
+    </section>
 <!-- Quick Stats -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-<div class="glass-card gold-accent p-6 rounded-xl shadow-sm flex items-center gap-6">
-<div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-primary-container">store</span>
+<div class="stats-section grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="glass-card gold-accent p-3.5 rounded-xl shadow-sm flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-sm">store</span>
 </div>
 <div>
-<p id="stat-total-label" class="text-body-sm text-on-surface-variant font-semibold">Stock en esta Sucursal</p>
-<p id="stat-total-stock" class="text-headline-md font-bold">0 Unidades</p>
+<p id="stat-total-label" class="text-[11px] text-on-surface-variant font-bold">Stock Local</p>
+<p id="stat-total-stock" class="text-sm font-black">0 Unidades</p>
 </div>
 </div>
-<div class="glass-card p-6 rounded-xl shadow-sm flex items-center gap-6 border-t-3 border-transparent">
-<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-secondary-container">category</span>
-</div>
-<div>
-<p class="text-body-sm text-on-surface-variant font-semibold">Variaciones de Productos</p>
-<p id="stat-diff-models" class="text-headline-md font-bold">16 Variaciones</p>
-</div>
-</div>
-<div class="glass-card p-6 rounded-xl shadow-sm flex items-center gap-6 border-t-3 border-transparent">
-<div class="w-14 h-14 rounded-full bg-tertiary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-tertiary-container">priority_high</span>
+<div class="glass-card p-3.5 rounded-xl shadow-sm flex items-center gap-4 border-t-3 border-transparent">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-sm">category</span>
 </div>
 <div>
-<p class="text-body-sm text-on-surface-variant font-semibold">Alertas Stock Bajo (<5)</p>
-<p id="stat-alerts" class="text-headline-md font-bold text-error">0 Modelos</p>
+<p class="text-[11px] text-on-surface-variant font-bold">Variaciones de Productos</p>
+<p id="stat-diff-models" class="text-sm font-black">16 Variaciones</p>
+</div>
+</div>
+<div class="glass-card p-3.5 rounded-xl shadow-sm flex items-center gap-4 border-t-3 border-transparent">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-container text-sm">priority_high</span>
+</div>
+<div>
+<p class="text-[11px] text-on-surface-variant font-bold">Alertas Stock Bajo (<5)</p>
+<p id="stat-alerts" class="text-sm font-black text-error">0 Modelos</p>
 </div>
 </div>
 </div>
+
 <!-- Main Inventory Grid -->
-<section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
+<section class="table-section glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
 <!-- Tabs Navigation -->
-<div class="flex border-b border-outline-variant bg-surface-container-low px-6 pt-4 gap-4">
-    <button id="tab-local" onclick="switchTab('local')" class="px-6 py-3 font-bold border-b-4 border-primary text-primary transition-all">
+<div class="flex border-b border-outline-variant bg-surface-container-low px-4 pt-2 gap-2 shrink-0">
+    <button id="tab-local" onclick="switchTab('local')" class="px-4 py-2 font-bold border-b-4 border-primary text-primary transition-all text-xs">
         Mi Stock Local
     </button>
-    <button id="tab-central" onclick="switchTab('central')" class="px-6 py-3 font-semibold text-on-surface-variant hover:text-primary transition-all">
+    <button id="tab-central" onclick="switchTab('central')" class="px-4 py-2 font-semibold text-on-surface-variant hover:text-primary transition-all text-xs">
         Consulta Almacén Central
     </button>
 </div>
-<div class="p-6 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
-<h3 id="table-header-title" class="font-headline-md text-primary flex items-center gap-3 font-bold">
-<span class="material-symbols-outlined">checkroom</span>
+<div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center shrink-0">
+<h3 id="table-header-title" class="text-xs text-primary flex items-center gap-2 font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">checkroom</span>
                         Stock de Polos
                     </h3>
-<div class="flex gap-2">
-<a href="solitienda.html" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant text-primary font-bold transition-colors">
-<span class="material-symbols-outlined text-sm">swap_horiz</span>
-<span class="font-label-md">Ir a Pedir Stock</span>
-</a>
-<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
-<span class="material-symbols-outlined text-sm">filter_list</span>
-<span class="font-label-md">Filtrar</span>
-</button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
-<span class="material-symbols-outlined text-sm">download</span>
-<span class="font-label-md">Exportar</span>
-</button>
+<div class="flex items-center gap-3">
+  <!-- Buscador compacto de tabla -->
+  <input type="text" id="inventory-search-table" placeholder="Buscar por modelo o SKU..." class="h-8 border border-outline-variant bg-surface rounded px-2 text-[11px] font-bold text-on-surface focus:ring-0 outline-none w-48" />
+  
+  <!-- Paginación compacta -->
+  <div class="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant bg-surface border border-outline-variant p-0.5 rounded">
+    <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_left</span></button>
+    <span class="px-1.5">1/3</span>
+    <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_right</span></button>
+  </div>
+
+  <a href="solitienda.html" class="flex items-center gap-1 px-3 h-8 rounded bg-surface hover:bg-surface-container-high border border-outline-variant text-primary text-[11px] font-bold transition-colors">
+    <span class="material-symbols-outlined text-xs">swap_horiz</span>
+    Ir a Pedir Stock
+  </a>
 </div>
 </div>
-<div class="overflow-x-auto">
+<div class="table-container overflow-auto flex-1">
 <table class="w-full text-left border-collapse">
 <thead>
-<tr class="bg-surface-container text-on-surface-variant font-label-md uppercase tracking-wider">
-<th class="px-8 py-5 border-b border-outline-variant">Producto / Modelo</th>
-<th class="px-4 py-5 border-b border-outline-variant">Color</th>
-<th class="px-4 py-5 border-b border-outline-variant text-center">S</th>
-<th class="px-4 py-5 border-b border-outline-variant text-center">M</th>
-<th class="px-4 py-5 border-b border-outline-variant text-center">L</th>
-<th class="px-4 py-5 border-b border-outline-variant text-center">XL</th>
-<th class="px-4 py-5 border-b border-outline-variant">Estado</th>
-<th id="action-col-header" class="px-8 py-5 border-b border-outline-variant text-right">Acción</th>
+<tr class="bg-surface-container text-on-surface-variant text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10">
+<th class="px-4 py-3 border-b border-outline-variant">Producto / Modelo</th>
+<th class="px-2 py-3 border-b border-outline-variant">Color</th>
+<th class="px-2 py-3 border-b border-outline-variant text-center">S</th>
+<th class="px-2 py-3 border-b border-outline-variant text-center">M</th>
+<th class="px-2 py-3 border-b border-outline-variant text-center">L</th>
+<th class="px-2 py-3 border-b border-outline-variant text-center">XL</th>
+<th class="px-2 py-3 border-b border-outline-variant">Estado</th>
+<th id="action-col-header" class="px-4 py-3 border-b border-outline-variant text-right">Acción</th>
 </tr>
 </thead>
-<tbody id="inventory-table-body" class="divide-y divide-outline-variant">
+<tbody id="inventory-table-body" class="divide-y divide-outline-variant text-xs">
     <!-- Inyectado dinámicamente -->
 </tbody>
 </table>
@@ -305,6 +338,14 @@
         renderFinanceStats();
         renderInventoryTable();
         renderPendingTransfers();
+
+        // Bind table search input
+        const tableSearchInput = document.getElementById("inventory-search-table");
+        if (tableSearchInput) {
+            tableSearchInput.addEventListener('input', () => {
+                renderInventoryTable();
+            });
+        }
 
         // Listen for storage updates
         window.addEventListener('storage', (e) => {
@@ -377,6 +418,8 @@
             actionColHeader.classList.add("hidden");
         }
 
+        const query = (document.getElementById("inventory-search-table")?.value || "").toLowerCase();
+
         const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
         const targetStore = activeTab === 'local' ? user.storeId : 'central';
         const storeStock = inventory[targetStore] || {};
@@ -386,29 +429,33 @@
         // Iterate through all model names and color names to keep list unified
         for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
             for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
+                if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
+                    continue;
+                }
+
                 const sizes = storeStock[modelKey]?.[colorKey] || { S: 0, M: 0, L: 0, XL: 0 };
                 const totalStock = Object.values(sizes).reduce((sum, v) => sum + v, 0);
 
                 let statusBadge = "";
                 if (totalStock > 15) {
                     statusBadge = `
-                        <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded-full bg-[#4CAF50]"></div>
-                            <span class="text-sm font-medium text-green-700">Stock Óptimo</span>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+                            <span class="text-[11px] font-semibold text-green-700">Óptimo</span>
                         </div>
                     `;
                 } else if (totalStock >= 5) {
                     statusBadge = `
-                        <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded-full bg-tertiary-container"></div>
-                            <span class="text-sm font-medium text-yellow-700">Stock Moderado</span>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-tertiary-container"></div>
+                            <span class="text-[11px] font-semibold text-yellow-700">Moderado</span>
                         </div>
                     `;
                 } else {
                     statusBadge = `
-                        <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded-full bg-error animate-pulse"></div>
-                            <span class="text-sm font-bold text-error">Stock Crítico</span>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+                            <span class="text-[11px] font-bold text-error">Crítico</span>
                         </div>
                     `;
                 }
@@ -416,9 +463,9 @@
                 let actionTd = "";
                 if (activeTab === 'local') {
                     actionTd = `
-                        <td class="px-8 py-6 text-right">
-                            <button onclick="adjustStock('${modelKey}', '${colorKey}')" class="bg-primary text-on-primary px-5 py-2.5 rounded-xl font-label-lg shadow-sm hover:brightness-95 transition-all active:scale-95 text-xs font-bold uppercase">
-                                Ajustar Stock
+                        <td class="px-4 py-2 text-right">
+                            <button onclick="adjustStock('${modelKey}', '${colorKey}')" class="bg-primary text-on-primary px-3 py-1.5 rounded-lg shadow-sm hover:brightness-95 transition-all active:scale-95 text-[10px] font-bold uppercase">
+                                Ajustar
                             </button>
                         </td>
                     `;
@@ -427,25 +474,25 @@
                 const tr = document.createElement("tr");
                 tr.className = "hover:bg-surface-container-low transition-colors group";
                 tr.innerHTML = `
-                    <td class="px-8 py-6">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-primary-fixed rounded-lg flex items-center justify-center">
-                                <span class="material-symbols-outlined text-primary">apparel</span>
+                    <td class="px-4 py-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-primary-fixed rounded flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-primary text-sm">apparel</span>
                             </div>
                             <div>
-                                <p class="font-bold text-lg text-on-surface">${modelName}</p>
-                                <p class="text-sm text-on-surface-variant">REF: ESC-2026-${modelKey.toUpperCase()}</p>
+                                <p class="font-bold text-xs text-on-surface">${modelName}</p>
+                                <p class="text-[10px] text-on-surface-variant">REF: ESC-2026-${modelKey.toUpperCase()}</p>
                             </div>
                         </div>
                     </td>
-                    <td class="px-4 py-6">
-                        <span class="px-3 py-1 bg-surface-container-high text-on-surface rounded-full text-sm font-semibold">${colorName}</span>
+                    <td class="px-2 py-2">
+                        <span class="px-2 py-0.5 bg-surface-container-high text-on-surface rounded-full text-[10px] font-semibold">${colorName}</span>
                     </td>
-                    <td class="px-4 py-6 text-center font-bold ${sizes.S < 5 ? 'text-error font-extrabold' : ''}">${sizes.S}</td>
-                    <td class="px-4 py-6 text-center font-bold ${sizes.M < 5 ? 'text-error font-extrabold' : ''}">${sizes.M}</td>
-                    <td class="px-4 py-6 text-center font-bold ${sizes.L < 5 ? 'text-error font-extrabold' : ''}">${sizes.L}</td>
-                    <td class="px-4 py-6 text-center font-bold ${sizes.XL < 5 ? 'text-error font-extrabold' : ''}">${sizes.XL}</td>
-                    <td class="px-4 py-6">${statusBadge}</td>
+                    <td class="px-2 py-2 text-center font-bold ${sizes.S < 5 ? 'text-error font-extrabold' : ''}">${sizes.S}</td>
+                    <td class="px-2 py-2 text-center font-bold ${sizes.M < 5 ? 'text-error font-extrabold' : ''}">${sizes.M}</td>
+                    <td class="px-2 py-2 text-center font-bold ${sizes.L < 5 ? 'text-error font-extrabold' : ''}">${sizes.L}</td>
+                    <td class="px-2 py-2 text-center font-bold ${sizes.XL < 5 ? 'text-error font-extrabold' : ''}">${sizes.XL}</td>
+                    <td class="px-2 py-2">${statusBadge}</td>
                     ${actionTd}
                 `;
                 tbody.appendChild(tr);

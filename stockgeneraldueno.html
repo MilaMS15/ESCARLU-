@@ -114,6 +114,11 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+        /* Aumentar legibilidad */
+        .text-xs { font-size: 13.5px !important; }
+        .text-sm { font-size: 15.5px !important; }
+        .text-[10px] { font-size: 11px !important; }
+        .text-[9px] { font-size: 10px !important; }
     </style>
 </head>
 <body class="bg-background text-on-background font-body-md antialiased min-h-screen">
@@ -122,33 +127,51 @@
 
 <!-- Main Content Area -->
 <main class="md:ml-72 min-h-screen bg-background">
-<!-- Top Navigation Header -->
-<header class="flex justify-between items-center w-full px-container-padding h-16 bg-surface border-b-2 border-primary shadow-sm sticky top-0 z-40">
-<div class="flex items-center gap-4">
-<span class="material-symbols-outlined text-primary text-[24px]">search</span>
-<input class="bg-transparent border-none focus:ring-0 w-64 md:w-80 font-body-md text-on-surface outline-none" id="inventory-search-input" placeholder="Buscar por modelo, color o SKU..." type="text"/>
-</div>
-<div class="flex items-center gap-6">
-<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
-<div class="text-right">
-<p class="font-label-lg text-sm text-primary font-bold leading-tight">Administrador / Dueño</p>
-<p class="text-xs text-on-surface-variant font-medium">Control Multisede</p>
-</div>
-<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden bg-white flex items-center justify-center shadow-sm">
-<img alt="Logo ESCARLÚ" class="w-full h-full object-contain p-0.5" src="logo.jpeg"/>
-</div>
-</div>
-</div>
+<!-- Unified Top Bar Header -->
+<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto">
+  <!-- Lado Izquierdo: Tag / Badge de Rol -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">storefront</span>
+      <span class="text-xs font-bold text-primary">Administrador / Dueño</span>
+    </div>
+  </div>
+
+  <!-- Centro: Input de Búsqueda Global Centrado -->
+  <div class="flex-1 max-w-md mx-6">
+    <div class="relative w-full">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">search</span>
+      </span>
+      <input type="text" placeholder="Buscar transacción, modelo, SKU o sede..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="global-search-input" />
+    </div>
+  </div>
+
+  <!-- Lado Derecho: Acciones y Perfil -->
+  <div class="flex items-center gap-4">
+    <button aria-label="Notifications" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">notifications</span>
+    </button>
+    <button aria-label="Settings" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+      <span class="material-symbols-outlined text-xl">settings</span>
+    </button>
+    <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+      <span class="text-xs font-bold text-on-surface">Administrador</span>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+        <img alt="Perfil Administrador" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+      </div>
+    </div>
+  </div>
 </header>
 
 <!-- Dashboard Content -->
-<div class="p-container-padding max-w-[1440px] mx-auto space-y-stack-lg">
+<div class="p-4 max-w-[1440px] mx-auto space-y-4">
 <!-- Welcome & Filter Header -->
-<section class="space-y-stack-sm">
+<section class="space-y-2">
 <div class="flex flex-col md:flex-row justify-between md:items-end gap-4">
 <div>
-<h2 class="font-headline-lg text-headline-lg text-primary font-bold">Stock General Consolidado</h2>
-<p class="text-body-lg text-on-surface-variant">Visión global de inventario en Almacén Central y las 4 Tiendas.</p>
+<h2 class="text-2xl font-bold text-black tracking-tight">Stock General Consolidado</h2>
+<p class="text-xs text-on-surface-variant">Visión global de inventario en Almacén Central y las 4 Tiendas.</p>
 </div>
 <div class="flex flex-wrap gap-4 items-center">
 <div class="flex flex-col gap-1">
@@ -167,7 +190,7 @@
 </section>
 
 <!-- KPI Stats Grid -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mt-6">
 <div class="glass-card gold-accent p-6 rounded-2xl shadow-sm flex items-center gap-5">
 <div class="w-14 h-14 rounded-2xl bg-primary-container flex items-center justify-center shrink-0">
 <span class="material-symbols-outlined text-on-primary-container text-[28px]">inventory_2</span>
@@ -248,73 +271,6 @@
 <!-- Rows rendered by script -->
 </tbody>
 </table>
-</div>
-</section>
-
-<!-- Solicitudes de Reposición entre Tiendas y Almacén -->
-<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-<!-- Resumen por Sede Cards -->
-<div class="lg:col-span-2 glass-card rounded-2xl p-6 shadow-sm border border-outline-variant">
-<h3 class="font-headline-md text-primary font-bold mb-4 flex items-center gap-2">
-<span class="material-symbols-outlined">store</span>
-                    Resumen de Existencias por Tienda
-                </h3>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60">
-<div class="flex justify-between items-center mb-2">
-<span class="font-bold text-on-surface">Tienda Santa Lucía</span>
-<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-container text-on-primary-container">Tienda 1</span>
-</div>
-<p class="text-2xl font-bold text-primary">164 unids</p>
-<p class="text-xs text-on-surface-variant mt-1">4 modelos disponibles en S, M, L, XL</p>
-</div>
-
-<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60">
-<div class="flex justify-between items-center mb-2">
-<span class="font-bold text-on-surface">Tienda Generales Suplex</span>
-<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary-container text-on-secondary-container">Tienda 2</span>
-</div>
-<p class="text-2xl font-bold text-primary">152 unids</p>
-<p class="text-xs text-on-surface-variant mt-1">4 modelos disponibles en S, M, L, XL</p>
-</div>
-
-<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60">
-<div class="flex justify-between items-center mb-2">
-<span class="font-bold text-on-surface">Tienda Generales pasadizo</span>
-<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary-container text-on-tertiary-container">Tienda 3</span>
-</div>
-<p class="text-2xl font-bold text-primary">170 unids</p>
-<p class="text-xs text-on-surface-variant mt-1">4 modelos disponibles en S, M, L, XL</p>
-</div>
-
-<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60">
-<div class="flex justify-between items-center mb-2">
-<span class="font-bold text-on-surface">Tienda Aviación</span>
-<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed">Tienda 4</span>
-</div>
-<p class="text-2xl font-bold text-primary">182 unids</p>
-<p class="text-xs text-on-surface-variant mt-1">4 modelos disponibles en S, M, L, XL</p>
-</div>
-</div>
-</div>
-
-<!-- Quick Help Info -->
-<div class="glass-card rounded-2xl p-6 shadow-sm border border-outline-variant flex flex-col justify-between">
-<div>
-<div class="flex items-center gap-3 text-secondary mb-3">
-<span class="material-symbols-outlined text-[28px]">shield</span>
-<h4 class="font-headline-md text-headline-md m-0 font-bold">Control del Dueño</h4>
-</div>
-<p class="text-sm text-on-surface-variant leading-relaxed">
-                    Como administrador general, este panel consolidado le permite inspeccionar el stock en tiempo real de todas las sucursales, prevenir quiebres de inventario y supervisar los movimientos entre Almacén Central y Tiendas.
-                </p>
-</div>
-<div class="mt-6 pt-4 border-t border-outline-variant">
-<a class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-on-primary font-bold rounded-xl text-sm shadow-sm hover:bg-primary/90 transition-colors" href="cajadueno.html">
-<span class="material-symbols-outlined">payments</span>
-                    Ir a Flujo de Caja
-                </a>
-</div>
 </div>
 </section>
 </div>
