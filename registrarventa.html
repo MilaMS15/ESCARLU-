@@ -200,19 +200,49 @@
             <div class="md:col-span-4">
                 <label class="block font-label-md text-sm mb-1.5" for="select-model">Modelo de Polo</label>
                 <select id="select-model" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0">
-                    <option value="classic">Polo Clásico Piqué</option>
-                    <option value="slim">Polo Slim Fit Mercerizado</option>
-                    <option value="sport">Polo Técnico Deportivo</option>
-                    <option value="premium">Polo Premium Seda/Algodón</option>
+                    <option value="MOD-001">Camisero MC</option>
+                    <option value="MOD-002">Camisero ML</option>
+                    <option value="MOD-003">Girasol MC</option>
+                    <option value="MOD-004">Girasol ML</option>
+                    <option value="MOD-005">Redondo MC</option>
+                    <option value="MOD-006">Redondo ML</option>
+                    <option value="MOD-007">Cuadrado MC</option>
+                    <option value="MOD-008">Cuadrado ML</option>
+                    <option value="MOD-009">Tania MC</option>
+                    <option value="MOD-010">Tania ML</option>
+                    <option value="MOD-011">Noemi MC</option>
+                    <option value="MOD-012">Noemi ML</option>
+                    <option value="MOD-013">Boton MC</option>
+                    <option value="MOD-014">Boton ML</option>
+                    <option value="MOD-015">Short Pinza</option>
+                    <option value="MOD-016">Short Boton</option>
+                    <option value="MOD-017">Chompa Redondo</option>
+                    <option value="MOD-018">Chompa V</option>
+                    <option value="MOD-019">Buzo Normal</option>
                 </select>
             </div>
             <div class="md:col-span-2">
                 <label class="block font-label-md text-sm mb-1.5" for="select-color">Color</label>
                 <select id="select-color" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0">
-                    <option value="blanco">Blanco</option>
-                    <option value="marino">Azul Marino</option>
-                    <option value="rosa">Rosa Pastel</option>
-                    <option value="lila">Lila Pastel</option>
+                    <option value="COL-01">Negro</option>
+                    <option value="COL-02">Perla</option>
+                    <option value="COL-03">Beige</option>
+                    <option value="COL-04">Botella</option>
+                    <option value="COL-05">Marron</option>
+                    <option value="COL-06">Acero</option>
+                    <option value="COL-07">Camello</option>
+                    <option value="COL-08">Rojo</option>
+                    <option value="COL-09">Fucsia</option>
+                    <option value="COL-10">Lacre</option>
+                    <option value="COL-11">Azul noche</option>
+                    <option value="COL-12">Amarillo</option>
+                    <option value="COL-13">Naranja</option>
+                    <option value="COL-14">Palo rosa</option>
+                    <option value="COL-15">Topo</option>
+                    <option value="COL-16">Italiano</option>
+                    <option value="COL-17">Celeste</option>
+                    <option value="COL-18">Lila</option>
+                    <option value="COL-19">Melange</option>
                 </select>
             </div>
             <div class="md:col-span-2">
@@ -342,7 +372,15 @@
 <script>
     const user = getCurrentUser();
     let cart = [];
-    const MODEL_PRICES = { classic: 60.00, slim: 70.00, sport: 65.00, premium: 95.00 };
+    const MODEL_PRICES = {
+        "MOD-001": 60.00, "MOD-002": 60.00, "MOD-003": 55.00,
+        "MOD-004": 55.00, "MOD-005": 58.00, "MOD-006": 58.00,
+        "MOD-007": 62.00, "MOD-008": 62.00, "MOD-009": 57.00,
+        "MOD-010": 57.00, "MOD-011": 65.00, "MOD-012": 65.00,
+        "MOD-013": 63.00, "MOD-014": 63.00, "MOD-015": 45.00,
+        "MOD-016": 45.00, "MOD-017": 85.00, "MOD-018": 85.00,
+        "MOD-019": 75.00
+    };
     const OWNER_PHONE = "51936197969";
 
     document.addEventListener('DOMContentLoaded', () => {

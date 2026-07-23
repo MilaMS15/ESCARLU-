@@ -374,19 +374,35 @@
             <div class="flex flex-col gap-0.5">
               <label class="text-[10px] text-on-surface-variant font-medium">Modelo</label>
               <select id="model-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
-                <option>Polo Camisero</option>
-                <option>Polo Cuello V</option>
-                <option>Polo Box</option>
+                <option value="MOD-001">Camisero MC</option>
+                <option value="MOD-002">Camisero ML</option>
+                <option value="MOD-003">Girasol MC</option>
+                <option value="MOD-004">Girasol ML</option>
+                <option value="MOD-005">Redondo MC</option>
+                <option value="MOD-006">Redondo ML</option>
+                <option value="MOD-007">Cuadrado MC</option>
+                <option value="MOD-008">Cuadrado ML</option>
+                <option value="MOD-009">Tania MC</option>
+                <option value="MOD-010">Tania ML</option>
+                <option value="MOD-011">Noemi MC</option>
+                <option value="MOD-012">Noemi ML</option>
+                <option value="MOD-013">Boton MC</option>
+                <option value="MOD-014">Boton ML</option>
+                <option value="MOD-015">Short Pinza</option>
+                <option value="MOD-016">Short Boton</option>
+                <option value="MOD-017">Chompa Redondo</option>
+                <option value="MOD-018">Chompa V</option>
+                <option value="MOD-019">Buzo Normal</option>
               </select>
             </div>
             <div class="flex flex-col gap-0.5">
               <label class="text-[10px] text-on-surface-variant font-medium">Talla</label>
               <select id="size-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
-                <option>S</option>
-                <option>M</option>
-                <option>L</option>
-                <option>XL</option>
-                <option>St</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="St">St</option>
               </select>
             </div>
           </div>
@@ -403,9 +419,9 @@
 
         <!-- Listado de combinaciones agregadas -->
         <div id="combinaciones-container" class="flex flex-wrap gap-1.5 mt-1 border-t border-outline-variant pt-2">
-          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer">Polo Camisero (S) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
-          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer">Polo Camisero (M) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
-          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer">Polo Camisero (L) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer" data-model="MOD-001" data-size="S" data-qty="12">Camisero MC (S) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer" data-model="MOD-001" data-size="M" data-qty="12">Camisero MC (M) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer" data-model="MOD-001" data-size="L" data-qty="12">Camisero MC (L) x12 <span class="material-symbols-outlined text-[10px] remove-comb">close</span></span>
         </div>
       </div>
     </div>
@@ -414,6 +430,9 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar renderizado del menú lateral
+    if (typeof renderSideNav === 'function') renderSideNav("cortesdueno");
+
     const anchoInput = document.getElementById('ancho-tela');
     const largoInput = document.getElementById('largo-tela');
     const labelAncho = document.getElementById('label-ancho');
@@ -434,12 +453,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Doblez Toggle Interactivity
     const btnSi = document.getElementById('btn-doblez-si');
     const btnNo = document.getElementById('btn-doblez-no');
+    let utilizarDoblez = false;
+
     if (btnSi && btnNo) {
         btnSi.addEventListener('click', () => {
+            utilizarDoblez = true;
             btnSi.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-primary text-on-primary transition-all";
             btnNo.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md text-on-surface-variant hover:text-on-surface transition-all";
         });
         btnNo.addEventListener('click', () => {
+            utilizarDoblez = false;
             btnNo.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-primary text-on-primary transition-all";
             btnSi.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md text-on-surface-variant hover:text-on-surface transition-all";
         });
@@ -454,7 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnAddComb && combContainer) {
         btnAddComb.addEventListener('click', () => {
-            const model = modelSel.value;
+            const modelVal = modelSel.value;
+            const modelText = modelSel.options[modelSel.selectedIndex].text;
             const size = sizeSel.value;
             const qty = qtyInput.value;
 
@@ -462,7 +486,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const pill = document.createElement('span');
             pill.className = "bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer";
-            pill.innerHTML = `${model} (${size}) x${qty} <span class="material-symbols-outlined text-[10px] remove-comb">close</span>`;
+            pill.setAttribute("data-model", modelVal);
+            pill.setAttribute("data-size", size);
+            pill.setAttribute("data-qty", qty);
+            pill.innerHTML = `${modelText} (${size}) x${qty} <span class="material-symbols-outlined text-[10px] remove-comb">close</span>`;
             
             // Delete combination listener on pill click
             pill.addEventListener('click', () => {

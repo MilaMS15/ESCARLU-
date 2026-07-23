@@ -53,7 +53,7 @@ async function syncInventoryToSupabase(localInv) {
                 for (const [sizeName, qty] of Object.entries(sizes)) {
                     const tallaId = TALLA_KEYS[sizeName];
                     if (!tallaId) continue;
-                    const stockId = `STK-${storeId}-${modelId}-${colorId}-${tallaId}`.slice(0, 15);
+                    const stockId = `STK-${storeId}-${modelId}-${colorId}-${tallaId}`;
                     await client.from('stock').upsert({
                         id_stock: stockId,
                         id_sede: storeId,
@@ -95,6 +95,7 @@ async function syncSalesToSupabase(localSales) {
     const user = getCurrentUser();
     for (const sale of localSales) {
         const userId = user ? user.id_usuario : 'USR-03';
+        // Sync sale header
         await client.from('ventas').upsert({
             id_venta: sale.id,
             id_sede: sale.storeId,
@@ -103,8 +104,26 @@ async function syncSalesToSupabase(localSales) {
             monto_total: sale.amount,
             metodo_pago: sale.method,
             estado: sale.status,
-            referencia: sale.reference
+            referencia: sale.reference || null
         });
+        // Sync sale line items to detalle_venta
+        if (sale.items && sale.items.length > 0) {
+            for (let i = 0; i < sale.items.length; i++) {
+                const item = sale.items[i];
+                const tallaId = TALLA_KEYS[item.size] || 'TAL-03';
+                const subtotal = (item.price || 0) * (item.qty || 1);
+                await client.from('detalle_venta').upsert({
+                    id_detalle: `DV-${sale.id}-${i + 1}`,
+                    id_venta: sale.id,
+                    id_modelo: item.model,
+                    id_color: item.color,
+                    id_talla: tallaId,
+                    cantidad: item.qty,
+                    precio_unitario: item.price || 0,
+                    subtotal: subtotal
+                });
+            }
+        }
     }
 }
 
@@ -201,23 +220,73 @@ async function downloadFromSupabase() {
 const DEFAULT_INVENTORY = {
     // Almacén Central
     "ALM-01": {
-        "MOD-001": { "COL-01": { "S": 35, "M": 0, "L": 0, "XL": 0 } }
+        "MOD-001": {
+            "COL-01": { "S": 40, "M": 45, "L": 35, "XL": 20 },
+            "COL-02": { "S": 30, "M": 35, "L": 25, "XL": 0  },
+            "COL-14": { "S": 20, "M": 25, "L": 0,  "XL": 0  }
+        },
+        "MOD-002": {
+            "COL-01": { "S": 30, "M": 35, "L": 20, "XL": 0  },
+            "COL-14": { "S": 20, "M": 25, "L": 0,  "XL": 0  }
+        },
+        "MOD-003": {
+            "COL-09": { "S": 25, "M": 30, "L": 0,  "XL": 0  },
+            "COL-18": { "S": 20, "M": 25, "L": 0,  "XL": 0  }
+        },
+        "MOD-005": {
+            "COL-05": { "S": 20, "M": 25, "L": 15, "XL": 0  }
+        }
     },
     // Tienda Santa Lucía
     "TDA-01": {
-        "MOD-002": { "COL-02": { "S": 0, "M": 0, "L": 0, "XL": 0 } }
+        "MOD-001": {
+            "COL-01": { "S": 8,  "M": 10, "L": 6, "XL": 0 },
+            "COL-02": { "S": 5,  "M": 8,  "L": 0, "XL": 0 },
+            "COL-14": { "S": 4,  "M": 6,  "L": 0, "XL": 0 }
+        },
+        "MOD-002": {
+            "COL-01": { "S": 0,  "M": 6,  "L": 0, "XL": 0 },
+            "COL-14": { "S": 5,  "M": 7,  "L": 0, "XL": 0 }
+        },
+        "MOD-003": {
+            "COL-09": { "S": 4,  "M": 6,  "L": 0, "XL": 0 },
+            "COL-18": { "S": 4,  "M": 5,  "L": 0, "XL": 0 }
+        }
     },
     // Tienda Generales Suplex
     "TDA-02": {
-        "MOD-003": { "COL-03": { "S": 0, "M": 50, "L": 0, "XL": 0 } }
+        "MOD-001": {
+            "COL-01": { "S": 6, "M": 8, "L": 0, "XL": 0 },
+            "COL-03": { "S": 5, "M": 7, "L": 0, "XL": 0 }
+        },
+        "MOD-002": {
+            "COL-01": { "S": 0, "M": 5, "L": 4, "XL": 0 }
+        },
+        "MOD-003": {
+            "COL-09": { "S": 0, "M": 5, "L": 0, "XL": 0 }
+        }
     },
     // Tienda Generales Pasadizo
     "TDA-03": {
-        "MOD-004": { "COL-04": { "S": 0, "M": 0, "L": 40, "XL": 0 } }
+        "MOD-001": {
+            "COL-01": { "S": 5, "M": 7, "L": 0, "XL": 0 },
+            "COL-04": { "S": 4, "M": 6, "L": 0, "XL": 0 }
+        },
+        "MOD-002": {
+            "COL-14": { "S": 4, "M": 5, "L": 0, "XL": 0 }
+        }
     },
     // Tienda Aviación
     "TDA-04": {
-        "MOD-005": { "COL-05": { "S": 0, "M": 0, "L": 0, "XL": 45 } }
+        "MOD-001": {
+            "COL-05": { "S": 6, "M": 8, "L": 5, "XL": 0 }
+        },
+        "MOD-002": {
+            "COL-05": { "S": 4, "M": 6, "L": 0, "XL": 0 }
+        },
+        "MOD-005": {
+            "COL-05": { "S": 0, "M": 4, "L": 0, "XL": 0 }
+        }
     }
 };
 
