@@ -1,0 +1,29 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create config.js from Secrets
+        run: |
+          echo "const SUPABASE_URL = \"${{ secrets.SUPABASE_URL }}\";" > config.js
+          echo "const SUPABASE_KEY = \"${{ secrets.SUPABASE_ANON_KEY }}\";" >> config.js
+          echo "if (window.supabase) { window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); }" >> config.js
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: .
