@@ -73,11 +73,11 @@
             },
             "spacing": {
                 "stack-sm": "12px",
-                "stack-md": "24px",
-                "gutter": "24px",
-                "stack-lg": "48px",
+                "stack-md": "16px",
+                "gutter": "16px",
+                "stack-lg": "32px",
                 "unit": "8px",
-                "container-padding": "40px"
+                "container-padding": "20px"
             },
             "fontFamily": {
                 "body-sm": ["Source Sans 3"],
@@ -90,14 +90,14 @@
                 "label-md": ["Source Sans 3"]
             },
             "fontSize": {
-                "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
-                "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
-                "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}],
-                "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
-                "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}]
+                "body-sm": ["13px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                "label-lg": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                "headline-md": ["18px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "body-lg": ["15px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                "display-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "body-md": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                "headline-lg": ["22px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "label-md": ["13px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}]
             }
           },
         },
@@ -127,8 +127,8 @@
 </head>
 <body class="font-body-md text-body-md">
 <!-- Sidebar Navigation -->
-<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md docked left-0 h-full w-64 md:w-72 z-50">
-<div class="px-4 mb-8">
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md docked left-0 h-full w-60 md:w-64 z-50">
+<div class="px-4 mb-4">
 <h1 class="font-headline-md text-headline-md text-primary">ESCARLÚ</h1>
 <p class="text-on-surface-variant font-label-md opacity-70">Management Dashboard</p>
 </div>
@@ -162,9 +162,9 @@
 </div>
 </aside>
 <!-- Main Content Area -->
-<main class="ml-64 md:ml-72 min-h-screen">
+<main class="ml-60 md:ml-64 min-h-screen">
 <!-- Top Navigation -->
-<header class="flex justify-between items-center w-full px-container-padding h-14 md:h-16 bg-surface border-b-2 border-primary shadow-sm sticky top-0 z-40">
+<header class="flex justify-between items-center w-full px-container-padding h-10 md:h-16 bg-surface border-b-2 border-primary shadow-sm sticky top-0 z-40">
 <div class="flex items-center gap-4">
 <span class="material-symbols-outlined text-primary">search</span>
 <input class="bg-transparent border-none focus:ring-0 w-64 font-body-md text-on-surface-variant" placeholder="Buscar producto o sede..." type="text"/>
@@ -187,7 +187,7 @@
 </div>
 </header>
 <!-- Dashboard Content -->
-<div class="p-container-padding max-w-[1440px] mx-auto space-y-stack-lg">
+<div class="p-container-padding max-w-[1440px] mx-auto space-y-6">
 <!-- Welcome & Selector -->
 <section class="space-y-stack-sm">
 <div class="flex justify-between items-end">
@@ -198,14 +198,14 @@
 <div class="flex gap-4">
 <div class="flex flex-col gap-1">
 <label class="font-label-md text-on-surface ml-1">Sede Origen</label>
-<div class="flex items-center gap-2 px-6 h-14 bg-surface-container-low border-2 border-primary-container rounded-xl">
+<div class="flex items-center gap-2 px-6 h-10 bg-surface-container-low border-2 border-primary-container rounded-xl">
 <span class="material-symbols-outlined text-primary">location_on</span>
 <span class="font-label-lg">Tienda Principal</span>
 </div>
 </div>
 <div class="flex flex-col gap-1">
 <label class="font-label-md text-on-surface ml-1">Consultar En:</label>
-<select id="store-select" class="h-14 min-w-[240px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
+<select id="store-select" class="h-10 min-w-[240px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
 <option value="ALM-01">Almacén Central</option>
 <option value="TDA-01" selected="">Tienda Santa Lucía</option>
 <option value="TDA-02">Tienda Generales Suplex</option>
@@ -217,9 +217,9 @@
 </div>
 </section>
 <!-- Quick Stats -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-<div class="glass-card gold-accent p-6 rounded-xl shadow-sm flex items-center gap-6">
-<div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="glass-card gold-accent p-4 rounded-xl shadow-sm flex items-center gap-4">
+<div class="w-14 h-10 rounded-full bg-primary-container flex items-center justify-center">
 <span class="material-symbols-outlined text-on-primary-container">store</span>
 </div>
 <div>
@@ -227,8 +227,8 @@
 <p id="stat-selected-stock" class="text-headline-md font-bold">0 Unidades</p>
 </div>
 </div>
-<div class="glass-card p-6 rounded-xl shadow-sm flex items-center gap-6 border-t-3 border-transparent">
-<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center">
+<div class="glass-card p-4 rounded-xl shadow-sm flex items-center gap-4 border-t-3 border-transparent">
+<div class="w-14 h-10 rounded-full bg-secondary-container flex items-center justify-center">
 <span class="material-symbols-outlined text-on-secondary-container">trending_up</span>
 </div>
 <div>
@@ -236,8 +236,8 @@
 <p id="stat-rotation" class="text-headline-md font-bold">Alta (84%)</p>
 </div>
 </div>
-<div class="glass-card p-6 rounded-xl shadow-sm flex items-center gap-6 border-t-3 border-transparent">
-<div class="w-14 h-14 rounded-full bg-tertiary-container flex items-center justify-center">
+<div class="glass-card p-4 rounded-xl shadow-sm flex items-center gap-4 border-t-3 border-transparent">
+<div class="w-14 h-10 rounded-full bg-tertiary-container flex items-center justify-center">
 <span class="material-symbols-outlined text-on-tertiary-container">priority_high</span>
 </div>
 <div>
@@ -248,7 +248,7 @@
 </div>
 <!-- Main Inventory Grid -->
 <section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
-<div class="p-6 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+<div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
 <h3 id="table-header-title" class="font-headline-md text-primary flex items-center gap-3">
 <span class="material-symbols-outlined">checkroom</span>
                         Stock de Polos - Sede
@@ -379,7 +379,7 @@
 </table>
 </div>
 <!-- Pagination / Footer -->
-<div class="p-6 bg-surface-container flex justify-between items-center">
+<div class="p-4 bg-surface-container flex justify-between items-center">
 <p class="text-body-sm text-on-surface-variant italic">Mostrando 3 de 145 modelos de polos disponibles.</p>
 <div class="flex gap-2">
 <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
@@ -391,8 +391,8 @@
 </div>
 </section>
 <!-- Stock Movement History Preview (Bento Style) -->
-<div class="grid grid-cols-1 gap-gutter">
-<section class="glass-card p-8 rounded-2xl space-y-4">
+<div class="grid grid-cols-1 gap-4">
+<section class="glass-card p-5 rounded-2xl space-y-4">
 <div class="flex justify-between items-start">
 <h4 class="font-headline-md text-primary">Solicitudes Pendientes</h4>
 <span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-xs font-bold uppercase">5 En Camino</span>

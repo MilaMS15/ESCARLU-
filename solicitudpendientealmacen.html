@@ -77,10 +77,10 @@
             "spacing": {
                     "unit": "8px",
                     "stack-sm": "12px",
-                    "gutter": "24px",
-                    "stack-lg": "48px",
-                    "stack-md": "24px",
-                    "container-padding": "40px"
+                    "gutter": "16px",
+                    "stack-lg": "32px",
+                    "stack-md": "16px",
+                    "container-padding": "20px"
             },
             "fontFamily": {
                     "headline-lg": [
@@ -211,7 +211,7 @@
 </head>
 <body class="text-on-surface font-body-md antialiased overflow-hidden h-screen flex">
 <!-- SideNavBar -->
-<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md docked left-0 h-full w-64 md:w-72 z-40">
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md docked left-0 h-full w-60 md:w-64 z-40">
 <!-- Header -->
 <div class="mb-stack-lg px-4 pt-4 flex flex-col items-center">
 <!-- Avatar/Logo representation -->
@@ -268,16 +268,16 @@
 </button>
 <h2 class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">Inventario y Solicitudes</h2>
 </div>
-<div class="flex items-center gap-gutter">
+<div class="flex items-center gap-4">
 <div class="relative hidden sm:block">
 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-<input class="w-64 h-14 pl-12 pr-4 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary-container transition-all" placeholder="Buscar modelos..." type="text"/>
+<input class="w-64 h-10 pl-12 pr-4 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary-container transition-all" placeholder="Buscar modelos..." type="text"/>
 </div>
 <button class="relative p-3 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors min-h-[56px] min-w-[56px] flex items-center justify-center">
 <span class="material-symbols-outlined text-3xl" data-icon="notifications">notifications</span>
 <span class="absolute top-2 right-2 w-3 h-3 bg-tertiary-container rounded-full border-2 border-surface"></span>
 </button>
-<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden shadow-sm cursor-pointer border border-outline-variant hover:border-primary transition-colors">
+<div class="w-14 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden shadow-sm cursor-pointer border border-outline-variant hover:border-primary transition-colors">
 <span class="material-symbols-outlined text-on-secondary-container">person</span>
 </div>
 </div>
@@ -286,9 +286,9 @@
 <!-- Métricas Section (Bento Grid approach) -->
 <section aria-labelledby="metrics-heading">
 <h3 class="sr-only" id="metrics-heading">Métricas Clave</h3>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 <!-- Card 1: Total Stock -->
-<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-tertiary-container relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-tertiary-container relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
 <div class="flex justify-between items-start mb-4">
 <div>
 <p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Total Prendas Stock</p>
@@ -306,7 +306,7 @@
 <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl group-hover:bg-primary-container/20 transition-colors"></div>
 </div>
 <!-- Card 2: Pending Requests -->
-<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-tertiary-container relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-tertiary-container relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
 <div class="flex justify-between items-start mb-4">
 <div>
 <p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Solicitudes Pendientes</p>
@@ -322,7 +322,7 @@
 </div>
 </div>
 <!-- Card 3: Low Stock Alerts -->
-<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-error/80 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-error/80 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
 <div class="flex justify-between items-start mb-4">
 <div>
 <p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Alertas Stock Bajo</p>
@@ -340,7 +340,7 @@
 </div>
 </section>
 <!-- Main Content Area: Split Layout -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 <!-- Inventario Section (Takes 7 cols on large screens) -->
 <section aria-labelledby="inventory-heading" class="lg:col-span-7 space-y-6">
 <div class="flex justify-between items-end border-b border-outline-variant pb-4">
@@ -356,7 +356,7 @@
 <!-- Inventory List (High row height, clear dividers) -->
 <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(200,162,200,0.15)] overflow-hidden">
 <!-- Row 1 -->
-<div class="min-h-[80px] p-6 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="min-h-[60px] p-4 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
 <div class="flex items-center gap-6">
 <div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
 <span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
@@ -394,7 +394,7 @@
 </div>
 </div>
 <!-- Row 2 -->
-<div class="min-h-[80px] p-6 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="min-h-[60px] p-4 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
 <div class="flex items-center gap-6">
 <div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
 <span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
@@ -432,7 +432,7 @@
 </div>
 </div>
 <!-- Row 3 -->
-<div class="min-h-[80px] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="min-h-[60px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
 <div class="flex items-center gap-6">
 <div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
 <span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
@@ -513,11 +513,11 @@
         // Sort by date descending
         pending.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        container.innerHTML = "";
+        container.innerHTML = "";;
 
         if (pending.length === 0) {
             container.innerHTML = `
-                <div class="bg-surface-container-lowest rounded-xl p-8 text-center border border-outline-variant/50">
+                <div class="bg-surface-container-lowest rounded-xl p-5 text-center border border-outline-variant/50">
                     <p class="font-medium text-on-surface-variant">No hay solicitudes pendientes de almacén.</p>
                 </div>
             `;
@@ -534,7 +534,7 @@
             const hasEnoughStock = centralStock >= req.qty;
 
             const card = document.createElement("div");
-            card.className = "bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border border-outline-variant/50 relative";
+            card.className = "bg-surface-container-lowest rounded-xl p-4 shadow-[0_4px_20px_rgba(200,162,200,0.10)] border border-outline-variant/50 relative";
             
             let warningHtml = "";
             let disabledAttr = "";

@@ -772,6 +772,239 @@ document.addEventListener("DOMContentLoaded", () => {
         injectSimulatorBar();
         renderSideNav(pageName);
         setupMobileMenu(pageName);
+        setupHeaderProfile();
+        setupNotifications();
     }
 });
+
+function setupHeaderProfile() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    // Replace Admin_Escarlu or Administrador in the top bar profile text
+    const lgSpans = document.querySelectorAll('header span.text-label-lg, header .text-label-lg, header span');
+    lgSpans.forEach(span => {
+        const text = span.textContent.trim();
+        if (text === 'Admin_Escarlu' || text === 'Administrador' || text === 'Vendedora - Santa Lucía') {
+            span.textContent = user.label;
+        }
+    });
+
+    const leadParas = document.querySelectorAll('header p.font-label-lg.leading-tight, header p');
+    leadParas.forEach(p => {
+        const text = p.textContent.trim();
+        if (text === 'Administrador' || text === 'Vendedora - Santa Lucía') {
+            p.textContent = user.label;
+        }
+    });
+
+    const storeParas = document.querySelectorAll('header p.text-xs.text-on-surface-variant');
+    storeParas.forEach(p => {
+        const text = p.textContent.trim();
+        if (text === 'Tienda Principal' || text === 'Almacén Central') {
+            const storeLabel = STORE_NAMES[user.storeId] || user.storeId;
+            p.textContent = storeLabel;
+        }
+    });
+}
+
+// Dynamic Notification System
+function setupNotifications() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    // 1. Find or create the bell button
+    let bellBtn = document.getElementById('notification-bell-btn');
+    if (!bellBtn) {
+        // Try finding standard notification button by icon text
+        const materialIcons = document.querySelectorAll('.material-symbols-outlined');
+        for (const icon of materialIcons) {
+            if (icon.textContent.trim() === 'notifications') {
+                bellBtn = icon.closest('button') || icon.closest('.cursor-pointer');
+                if (bellBtn) {
+                    bellBtn.id = 'notification-bell-btn';
+                    bellBtn.classList.add('relative');
+                    // Remove static red dots
+                    const staticDots = bellBtn.querySelectorAll('.bg-error, .bg-red-600, span.absolute');
+                    staticDots.forEach(dot => {
+                        if (!dot.classList.contains('bell-badge')) {
+                            dot.remove();
+                        }
+                    });
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!bellBtn) {
+        // If still not found, search for the user profile container
+        const headers = document.querySelectorAll('header');
+        headers.forEach(header => {
+            const profileContainer = header.querySelector('.flex.items-center.gap-4');
+            if (profileContainer) {
+                bellBtn = document.createElement('button');
+                bellBtn.id = 'notification-bell-btn';
+                bellBtn.className = 'relative text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]';
+                bellBtn.innerHTML = '<span class="material-symbols-outlined text-xl">notifications</span>';
+                
+                profileContainer.insertBefore(bellBtn, profileContainer.firstChild);
+            }
+        });
+    }
+
+    if (!bellBtn) return;
+
+    const parent = bellBtn.parentElement;
+    if (parent) {
+        parent.classList.add('relative');
+    }
+
+    // 2. Load notifications and render badge
+    function updateNotifications() {
+        const sales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
+        const reqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
+        
+        let list = [];
+
+        if (user.role === 'admin') {
+            // Pending Yapes
+            const pendingSales = sales.filter(s => s.status === 'pendiente');
+            pendingSales.forEach(s => {
+                const storeName = STORE_NAMES[s.storeId] || s.storeId;
+                list.push({
+                    text: `Yape por confirmar: S/ ${parseFloat(s.amount).toFixed(2)} de ${storeName}`,
+                    url: 'cajadueno.html',
+                    icon: 'payments'
+                });
+            });
+
+            // Pending Transfer Requests
+            const pendingReqs = reqs.filter(r => r.status === 'pendiente');
+            pendingReqs.forEach(r => {
+                const destName = STORE_NAMES[r.destination] || r.destination;
+                list.push({
+                    text: `Pedido pendiente: ${destName} pide ${r.qty} uds de ${MODEL_NAMES[r.model] || r.model}`,
+                    url: 'stockgeneraldueno.html',
+                    icon: 'swap_horiz'
+                });
+            });
+        } else if (user.role === 'almacen') {
+            // Pending requests directed to Almacén Central
+            const pendingReqs = reqs.filter(r => r.status === 'pendiente' && r.origin === 'ALM-01');
+            pendingReqs.forEach(r => {
+                const destName = STORE_NAMES[r.destination] || r.destination;
+                list.push({
+                    text: `${destName} solicita ${r.qty} uds de ${MODEL_NAMES[r.model] || r.model}`,
+                    url: 'ingresoprendalmacen.html',
+                    icon: 'warehouse'
+                });
+            });
+        } else if (user.role === 'tienda') {
+            // Pending incoming transfer requests from other stores
+            const pendingReqs = reqs.filter(r => r.status === 'pendiente' && r.origin === user.storeId);
+            pendingReqs.forEach(r => {
+                const destName = STORE_NAMES[r.destination] || r.destination;
+                list.push({
+                    text: `Traspaso: ${destName} te pide ${r.qty} uds de ${MODEL_NAMES[r.model] || r.model}`,
+                    url: 'atenderpedidos.html',
+                    icon: 'swap_horiz'
+                });
+            });
+
+            // Approved requests sent by this store
+            const approvedReqs = reqs.filter(r => r.status === 'aprobado' && r.destination === user.storeId);
+            approvedReqs.forEach(r => {
+                const origName = STORE_NAMES[r.origin] || r.origin;
+                list.push({
+                    text: `Aprobado: ${origName} despachó tu pedido de ${r.qty} uds`,
+                    url: 'stocktienda.html',
+                    icon: 'done_all'
+                });
+            });
+        }
+
+        // Render badge
+        let badge = bellBtn.querySelector('.bell-badge');
+        if (list.length > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'bell-badge absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-white';
+                bellBtn.appendChild(badge);
+            }
+        } else {
+            if (badge) badge.remove();
+        }
+
+        // Store notification list on button for rendering on click
+        bellBtn.dataset.notifications = JSON.stringify(list);
+    }
+
+    // Toggle popover dropdown card
+    bellBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        let popover = document.getElementById('notification-popover');
+        if (popover) {
+            popover.remove();
+            return;
+        }
+
+        const list = JSON.parse(bellBtn.dataset.notifications || "[]");
+
+        popover = document.createElement('div');
+        popover.id = 'notification-popover';
+        popover.className = 'absolute right-0 mt-2 w-80 bg-white border border-outline-variant/60 rounded-2xl shadow-2xl z-[100] p-4 flex flex-col gap-3 transition-all duration-200 transform scale-100 top-12';
+        
+        let itemsHtml = "";
+        if (list.length === 0) {
+            itemsHtml = `
+                <div class="text-center py-6 text-on-surface-variant font-medium text-xs">
+                    No tienes notificaciones pendientes.
+                </div>
+            `;
+        } else {
+            list.forEach(item => {
+                itemsHtml += `
+                    <a href="${item.url}" class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-surface-container transition-colors border border-outline-variant/20">
+                        <div class="w-8 h-8 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-base">${item.icon}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-on-surface font-medium leading-tight">${item.text}</p>
+                        </div>
+                    </a>
+                `;
+            });
+        }
+
+        popover.innerHTML = `
+            <div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+                <span class="font-bold text-xs uppercase tracking-wider text-primary">Notificaciones</span>
+                <span class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-bold">${list.length}</span>
+            </div>
+            <div class="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
+                ${itemsHtml}
+            </div>
+        `;
+
+        parent.appendChild(popover);
+    });
+
+    document.addEventListener('click', () => {
+        const popover = document.getElementById('notification-popover');
+        if (popover) popover.remove();
+    });
+
+    updateNotifications();
+
+    window.addEventListener('storage', (e) => {
+        if (!e.key || e.key === 'escarlu_sales' || e.key === 'escarlu_requests') {
+            updateNotifications();
+        }
+    });
+
+    // Check periodically for backend sync updates
+    setInterval(updateNotifications, 4000);
+}
 

@@ -360,7 +360,7 @@ Agregar a la Lista
         if (selectOriginStore && user) {
             selectOriginStore.innerHTML = "";
             for (const [storeId, storeName] of Object.entries(STORE_NAMES)) {
-                if (storeId !== user.storeId && storeId !== 'ALM-01') {
+                if (storeId !== user.storeId && storeId !== 'ALM-01' && storeId !== 'CTR-01') {
                     const opt = document.createElement('option');
                     opt.value = storeId;
                     opt.textContent = storeName;
