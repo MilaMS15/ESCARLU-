@@ -305,199 +305,185 @@
 <section aria-labelledby="metrics-heading">
 <h3 class="sr-only" id="metrics-heading">Métricas Clave</h3>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<!-- Card 1: Total Stock -->
-<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-tertiary-container relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-<div class="flex justify-between items-start mb-4">
-<div>
-<p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Total Prendas Stock</p>
-<p class="font-display-lg text-display-lg text-primary font-bold">14,250</p>
-</div>
-<div class="w-16 h-16 rounded-full bg-primary-container/30 flex items-center justify-center">
-<span class="material-symbols-outlined text-4xl text-primary">checkroom</span>
-</div>
-</div>
-<div class="flex items-center gap-2 text-secondary">
-<span class="material-symbols-outlined text-xl">trending_up</span>
-<span class="font-body-md text-body-md">+5% vs mes anterior</span>
-</div>
-<!-- Decorative bg -->
-<div class="absolute -bottom-4 -right-4 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl group-hover:bg-primary-container/20 transition-colors"></div>
-</div>
-<!-- Card 2: Pending Requests -->
-<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-tertiary-container relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-<div class="flex justify-between items-start mb-4">
-<div>
-<p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Solicitudes Pendientes</p>
-<p class="font-display-lg text-display-lg text-on-surface font-bold">24</p>
-</div>
-<div class="w-16 h-16 rounded-full bg-secondary-container/50 flex items-center justify-center">
-<span class="material-symbols-outlined text-4xl text-secondary">pending_actions</span>
-</div>
-</div>
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-xl">local_shipping</span>
-<span class="font-body-md text-body-md">Para despacho hoy: 12</span>
-</div>
-</div>
-<!-- Card 3: Low Stock Alerts -->
-<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_20px_rgba(200,162,200,0.15)] border-t-2 border-error/80 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-<div class="flex justify-between items-start mb-4">
-<div>
-<p class="font-label-lg text-label-lg text-on-surface-variant mb-2">Alertas Stock Bajo</p>
-<p class="font-display-lg text-display-lg text-error font-bold">8</p>
-</div>
-<div class="w-16 h-16 rounded-full bg-error-container flex items-center justify-center animate-pulse">
-<span class="material-symbols-outlined text-4xl text-on-error-container">warning</span>
-</div>
-</div>
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-xl">inventory</span>
-<span class="font-body-md text-body-md">Requieren atención urgente</span>
-</div>
-</div>
+  <!-- Card 1: Total Stock -->
+  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest animate-fade-in">
+    <div class="w-12 h-12 rounded-full bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">checkroom</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Total Stock Prendas</p>
+      <p class="text-2xl font-headline-md font-bold text-primary">14,250</p>
+    </div>
+  </div>
+  
+  <!-- Card 2: Pending Requests -->
+  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest animate-fade-in">
+    <div class="w-12 h-12 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Solicitudes Pendientes</p>
+      <p class="text-2xl font-headline-md font-bold text-on-surface">24</p>
+    </div>
+  </div>
+  
+  <!-- Card 3: Low Stock Alerts -->
+  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest animate-fade-in">
+    <div class="w-12 h-12 rounded-full bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Alertas Stock Bajo</p>
+      <p class="text-2xl font-headline-md font-bold text-error">8 Modelos</p>
+    </div>
+  </div>
 </div>
 </section>
 <!-- Main Content Area: Split Layout -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 <!-- Inventario Section (Takes 7 cols on large screens) -->
 <section aria-labelledby="inventory-heading" class="lg:col-span-7 space-y-6">
-<div class="flex justify-between items-end border-b border-outline-variant pb-4">
+<div class="flex justify-between items-end border-b border-outline-variant pb-3">
 <div>
-<h3 class="font-headline-md text-headline-md text-primary font-bold" id="inventory-heading">Inventario de Prendas</h3>
-<p class="font-body-md text-body-md text-on-surface-variant mt-1">Vista detallada por modelo y talla</p>
+<h3 class="font-headline-md text-primary font-bold flex items-center gap-2" id="inventory-heading">
+  <span class="material-symbols-outlined text-xl">inventory_2</span> Inventario de Prendas
+</h3>
+<p class="text-xs text-on-surface-variant mt-0.5">Vista detallada por modelo y talla</p>
 </div>
-<button class="min-h-[56px] px-6 rounded-full border-2 border-primary-container text-on-surface font-label-lg text-label-lg hover:bg-surface-container-high transition-colors flex items-center gap-2">
-<span class="material-symbols-outlined">filter_list</span>
+<button class="h-9 px-4 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors flex items-center gap-2 font-label-md text-xs font-bold">
+<span class="material-symbols-outlined text-sm">filter_list</span>
                             Filtrar
                         </button>
 </div>
 <!-- Inventory List (High row height, clear dividers) -->
 <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(200,162,200,0.15)] overflow-hidden">
 <!-- Row 1 -->
-<div class="min-h-[60px] p-4 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
-<div class="flex items-center gap-6">
-<div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
-<span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
+<div class="p-3.5 px-4 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-xl text-on-surface-variant">apparel</span>
 </div>
 <div>
-<h4 class="font-label-lg text-label-lg text-on-surface">Polo Piqué Clásico</h4>
-<div class="flex items-center gap-3 mt-2">
-<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">Azul Marino</span>
-<span class="inline-flex items-center gap-1 text-tertiary-container font-label-md text-label-md">
-<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Stock Óptimo
+<h4 class="font-bold text-sm text-on-surface">Polo Piqué Clásico</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[11px] font-semibold">Azul Marino</span>
+<span class="inline-flex items-center gap-1 text-tertiary font-semibold text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Stock Óptimo
                                         </span>
 </div>
 </div>
 </div>
 <div class="flex gap-4 items-center">
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">S</div>
-<div class="font-body-lg text-body-lg text-on-surface">150</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">S</div>
+<div class="text-sm font-semibold text-on-surface">150</div>
 </div>
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">M</div>
-<div class="font-body-lg text-body-lg text-on-surface font-bold">320</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">M</div>
+<div class="text-sm font-semibold text-on-surface">320</div>
 </div>
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">L</div>
-<div class="font-body-lg text-body-lg text-on-surface">210</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">L</div>
+<div class="text-sm font-semibold text-on-surface">210</div>
 </div>
 <div class="text-center px-3">
-<div class="font-label-md text-label-md text-on-surface-variant">XL</div>
-<div class="font-body-lg text-body-lg text-on-surface">80</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">XL</div>
+<div class="text-sm font-semibold text-on-surface">80</div>
 </div>
-<button aria-label="Ver detalles" class="ml-4 w-12 h-12 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
-<span class="material-symbols-outlined text-3xl">chevron_right</span>
+<button aria-label="Ver detalles" class="ml-2 w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
 </button>
 </div>
 </div>
 <!-- Row 2 -->
-<div class="min-h-[60px] p-4 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
-<div class="flex items-center gap-6">
-<div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
-<span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
+<div class="p-3.5 px-4 border-b border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-xl text-on-surface-variant">apparel</span>
 </div>
 <div>
-<h4 class="font-label-lg text-label-lg text-on-surface">Polo Algodón Premium</h4>
-<div class="flex items-center gap-3 mt-2">
-<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">Blanco</span>
-<span class="inline-flex items-center gap-1 text-error font-label-md text-label-md">
-<span class="w-2 h-2 rounded-full bg-error"></span> Stock Bajo
+<h4 class="font-bold text-sm text-on-surface">Polo Algodón Premium</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[11px] font-semibold">Blanco</span>
+<span class="inline-flex items-center gap-1 text-error text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Stock Bajo
                                         </span>
 </div>
 </div>
 </div>
 <div class="flex gap-4 items-center">
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">S</div>
-<div class="font-body-lg text-body-lg text-on-surface">45</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">S</div>
+<div class="text-sm font-semibold text-on-surface">45</div>
 </div>
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">M</div>
-<div class="font-body-lg text-body-lg text-error font-bold">12</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">M</div>
+<div class="text-sm font-semibold text-error">12</div>
 </div>
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">L</div>
-<div class="font-body-lg text-body-lg text-on-surface">85</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">L</div>
+<div class="text-sm font-semibold text-on-surface">85</div>
 </div>
 <div class="text-center px-3">
-<div class="font-label-md text-label-md text-on-surface-variant">XL</div>
-<div class="font-body-lg text-body-lg text-on-surface">30</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">XL</div>
+<div class="text-sm font-semibold text-on-surface">30</div>
 </div>
-<button aria-label="Ver detalles" class="ml-4 w-12 h-12 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
-<span class="material-symbols-outlined text-3xl">chevron_right</span>
+<button aria-label="Ver detalles" class="ml-2 w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
 </button>
 </div>
 </div>
 <!-- Row 3 -->
-<div class="min-h-[60px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
-<div class="flex items-center gap-6">
-<div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
-<span class="material-symbols-outlined text-3xl text-on-surface-variant">apparel</span>
+<div class="p-3.5 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-xl text-on-surface-variant">apparel</span>
 </div>
 <div>
-<h4 class="font-label-lg text-label-lg text-on-surface">Camisa Oxford</h4>
-<div class="flex items-center gap-3 mt-2">
-<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">Celeste</span>
-<span class="inline-flex items-center gap-1 text-tertiary-container font-label-md text-label-md">
-<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Stock Óptimo
+<h4 class="font-bold text-sm text-on-surface">Camisa Oxford</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[11px] font-semibold">Celeste</span>
+<span class="inline-flex items-center gap-1 text-tertiary font-semibold text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Stock Óptimo
                                         </span>
 </div>
 </div>
 </div>
 <div class="flex gap-4 items-center">
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">S</div>
-<div class="font-body-lg text-body-lg text-on-surface">90</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">S</div>
+<div class="text-sm font-semibold text-on-surface">90</div>
 </div>
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">M</div>
-<div class="font-body-lg text-body-lg text-on-surface">180</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">M</div>
+<div class="text-sm font-semibold text-on-surface">180</div>
 </div>
 <div class="text-center px-3 border-r border-outline-variant">
-<div class="font-label-md text-label-md text-on-surface-variant">L</div>
-<div class="font-body-lg text-body-lg text-on-surface">140</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">L</div>
+<div class="text-sm font-semibold text-on-surface">140</div>
 </div>
 <div class="text-center px-3">
-<div class="font-label-md text-label-md text-on-surface-variant">XL</div>
-<div class="font-body-lg text-body-lg text-on-surface">60</div>
+<div class="text-[11px] font-bold text-on-surface-variant uppercase">XL</div>
+<div class="text-sm font-semibold text-on-surface">60</div>
 </div>
-<button aria-label="Ver detalles" class="ml-4 w-12 h-12 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
-<span class="material-symbols-outlined text-3xl">chevron_right</span>
+<button aria-label="Ver detalles" class="ml-2 w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
 </button>
 </div>
 </div>
-<div class="bg-surface-container-low p-4 text-center border-t border-outline-variant">
-<button class="font-label-lg text-label-lg text-primary hover:underline underline-offset-4">Ver Catálogo Completo</button>
+<div class="bg-surface-container-low p-3 text-center border-t border-outline-variant">
+<button class="text-xs font-bold text-primary hover:underline underline-offset-4">Ver Catálogo Completo</button>
 </div>
 </div>
 </section>
 <!-- Solicitudes Section (Takes 5 cols, sticky layout for easy access) -->
 <section aria-labelledby="requests-heading" class="lg:col-span-5 space-y-6">
-<div class="flex justify-between items-end border-b border-outline-variant pb-4">
+<div class="flex justify-between items-end border-b border-outline-variant pb-3">
 <div>
-<h3 class="font-headline-md text-headline-md text-primary font-bold" id="requests-heading">Gestión de Solicitudes</h3>
-<p class="font-body-md text-body-md text-on-surface-variant mt-1">Atención requerida</p>
+<h3 class="font-headline-md text-primary font-bold flex items-center gap-2" id="requests-heading">
+  <span class="material-symbols-outlined text-xl">pending_actions</span> Gestión de Solicitudes
+</h3>
+<p class="text-xs text-on-surface-variant mt-0.5">Atención requerida</p>
 </div>
 </div>
 <div class="space-y-4" id="requests-list-container">
@@ -576,33 +562,33 @@
             }
 
             card.innerHTML = `
-                <div class="absolute -top-3 left-6 bg-primary text-on-primary px-4 py-1 rounded-full font-label-md text-xs font-bold shadow-sm uppercase">
+                <div class="absolute -top-2.5 left-4 bg-primary text-on-primary px-3 py-0.5 rounded-full text-[10px] font-bold shadow-sm uppercase">
                     ${storeName}
                 </div>
-                <div class="mt-4 mb-6">
-                    <p class="font-body-md text-xs text-on-surface-variant mb-2">Solicita:</p>
-                    <div class="flex items-center gap-4 bg-surface-container-low p-4 rounded-lg">
-                        <div class="w-12 h-12 bg-surface rounded flex items-center justify-center border border-outline-variant shrink-0">
-                            <span class="material-symbols-outlined text-on-surface-variant">shopping_bag</span>
+                <div class="mt-3 mb-4">
+                    <p class="text-[10px] font-bold text-on-surface-variant mb-1.5">Solicita:</p>
+                    <div class="flex items-center gap-3 bg-surface-container-low p-2.5 rounded-lg">
+                        <div class="w-9 h-9 bg-surface rounded flex items-center justify-center border border-outline-variant shrink-0">
+                            <span class="material-symbols-outlined text-on-surface-variant text-base">shopping_bag</span>
                         </div>
-                        <div class="flex-1">
-                            <p class="font-label-lg font-bold text-sm text-on-surface">${modelLabel}</p>
-                            <p class="font-body-sm text-xs text-on-surface-variant">${colorLabel} • Talla ${req.size}</p>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-xs text-on-surface truncate">${modelLabel}</p>
+                            <p class="text-[10px] text-on-surface-variant truncate">${colorLabel} • Talla ${req.size}</p>
                         </div>
-                        <div class="text-right">
-                            <p class="font-display-lg text-primary text-2xl font-bold leading-none">${req.qty}</p>
-                            <p class="font-label-md text-[10px] text-on-surface-variant uppercase font-bold">unidades</p>
+                        <div class="text-right shrink-0">
+                            <p class="font-headline-md text-primary text-lg font-bold leading-none">${req.qty}</p>
+                            <p class="text-[9px] text-on-surface-variant uppercase font-bold">unidades</p>
                         </div>
                     </div>
                     ${warningHtml}
                 </div>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button onclick="approveRequest('${req.id}')" ${disabledAttr} class="flex-1 min-h-[50px] rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-sm ${opacityClass}">
-                        <span class="material-symbols-outlined text-lg">check_circle</span>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="approveRequest('${req.id}')" ${disabledAttr} class="flex-1 h-9 rounded-xl bg-green-600 text-white font-bold text-xs hover:bg-green-700 transition-colors flex items-center justify-center gap-1.5 shadow-sm ${opacityClass}">
+                        <span class="material-symbols-outlined text-sm">check_circle</span>
                         Aprobar y Despachar
                     </button>
-                    <button onclick="rejectRequest('${req.id}')" class="flex-1 min-h-[50px] rounded-lg bg-error text-on-error font-bold text-sm hover:brightness-95 transition-colors flex items-center justify-center gap-2 shadow-sm">
-                        <span class="material-symbols-outlined text-lg">cancel</span>
+                    <button onclick="rejectRequest('${req.id}')" class="flex-1 h-9 rounded-xl bg-error text-on-error font-bold text-xs hover:brightness-95 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">cancel</span>
                         Rechazar
                     </button>
                 </div>

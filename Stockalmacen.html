@@ -229,33 +229,38 @@
 </section>
 <!-- Quick Stats -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<div class="glass-card gold-accent p-4 rounded-xl shadow-sm flex items-center gap-4">
-<div class="w-14 h-10 rounded-full bg-primary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-primary-container">store</span>
-</div>
-<div>
-<p class="text-body-sm text-on-surface-variant font-semibold">Stock en Sede Seleccionada</p>
-<p id="stat-selected-stock" class="text-headline-md font-bold">0 Unidades</p>
-</div>
-</div>
-<div class="glass-card p-4 rounded-xl shadow-sm flex items-center gap-4 border-t-3 border-transparent">
-<div class="w-14 h-10 rounded-full bg-secondary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-secondary-container">trending_up</span>
-</div>
-<div>
-<p class="text-body-sm text-on-surface-variant font-semibold">Nivel de Rotación</p>
-<p id="stat-rotation" class="text-headline-md font-bold">Alta (84%)</p>
-</div>
-</div>
-<div class="glass-card p-4 rounded-xl shadow-sm flex items-center gap-4 border-t-3 border-transparent">
-<div class="w-14 h-10 rounded-full bg-tertiary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-tertiary-container">priority_high</span>
-</div>
-<div>
-<p class="text-body-sm text-on-surface-variant font-semibold">Alertas de Reposición</p>
-<p id="stat-alerts" class="text-headline-md font-bold text-error">0 Modelos</p>
-</div>
-</div>
+  <!-- Card 1 -->
+  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
+    <div class="w-12 h-12 rounded-full bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">store</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Stock en Sede Seleccionada</p>
+      <p id="stat-selected-stock" class="text-2xl font-headline-md font-bold text-primary">0 Unidades</p>
+    </div>
+  </div>
+  
+  <!-- Card 2 -->
+  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
+    <div class="w-12 h-12 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Nivel de Rotación</p>
+      <p id="stat-rotation" class="text-2xl font-headline-md font-bold text-on-surface">Alta (84%)</p>
+    </div>
+  </div>
+  
+  <!-- Card 3 -->
+  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
+    <div class="w-12 h-12 rounded-full bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">priority_high</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Alertas de Reposición</p>
+      <p id="stat-alerts" class="text-2xl font-headline-md font-bold text-error">0 Modelos</p>
+    </div>
+  </div>
 </div>
 <!-- Main Inventory Grid -->
 <section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
@@ -265,29 +270,31 @@
                         Stock de Polos - Sede
                     </h3>
 <div class="flex gap-2">
-<button id="btn-toggle-filter" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
-<span class="material-symbols-outlined text-sm">filter_list</span>
-<span class="font-label-md">Filtrar</span>
-</button>
 <button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
 <span class="material-symbols-outlined text-sm">download</span>
 <span class="font-label-md">Exportar</span>
 </button>
 </div>
 </div>
-<!-- Collapsible Filter Panel -->
-<div id="filter-panel" class="hidden p-4 bg-surface-container-low border-b border-outline-variant flex flex-col sm:flex-row gap-4">
-  <div class="flex-1 flex flex-col gap-1">
-    <label class="font-label-md text-on-surface ml-1 text-xs">Modelo</label>
-    <select id="filter-model" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
-      <option value="">Todos los modelos</option>
-    </select>
+<!-- Filter Bar (Always Visible with Custom Searchable Dropdowns) -->
+<div class="p-4 bg-surface-container-low border-b border-outline-variant flex flex-col sm:flex-row gap-4">
+  <div class="flex-1 flex flex-col gap-1 relative">
+    <label class="font-label-md text-on-surface ml-1 text-xs font-bold">Filtrar por Modelo</label>
+    <div class="relative w-full">
+      <input type="text" id="filter-model" placeholder="Todos los modelos (escribe para buscar...)" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none" autocomplete="off" />
+      <ul id="models-list" class="hidden absolute left-0 right-0 mt-1 bg-white border border-outline-variant rounded-xl shadow-lg max-h-60 overflow-y-auto z-30 font-body-sm py-1">
+        <!-- populated dynamically -->
+      </ul>
+    </div>
   </div>
-  <div class="flex-1 flex flex-col gap-1">
-    <label class="font-label-md text-on-surface ml-1 text-xs">Color</label>
-    <select id="filter-color" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
-      <option value="">Todos los colores</option>
-    </select>
+  <div class="flex-1 flex flex-col gap-1 relative">
+    <label class="font-label-md text-on-surface ml-1 text-xs font-bold">Filtrar por Color</label>
+    <div class="relative w-full">
+      <input type="text" id="filter-color" placeholder="Todos los colores (escribe para buscar...)" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none" autocomplete="off" />
+      <ul id="colors-list" class="hidden absolute left-0 right-0 mt-1 bg-white border border-outline-variant rounded-xl shadow-lg max-h-60 overflow-y-auto z-30 font-body-sm py-1">
+        <!-- populated dynamically -->
+      </ul>
+    </div>
   </div>
 </div>
 <div class="overflow-x-auto overflow-y-auto max-h-[620px] scrollbar-thin">
@@ -416,39 +423,46 @@
 </div>
 </div>
 </section>
-<!-- Stock Movement History Preview (Bento Style) -->
-<div class="grid grid-cols-1 gap-4">
-<section class="glass-card p-5 rounded-2xl space-y-4">
-<div class="flex justify-between items-start">
-<h4 class="font-headline-md text-primary">Solicitudes Pendientes</h4>
-<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-xs font-bold uppercase">5 En Camino</span>
+
 </div>
-<div class="space-y-4">
-<div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-outline-variant">
-<div class="flex gap-3">
-<span class="material-symbols-outlined text-primary">local_shipping</span>
-<div>
-<p class="font-bold">Traspaso #4582</p>
-<p class="text-xs text-on-surface-variant">Desde: Almacén Central</p>
+<!-- Custom Transfer Modal -->
+<div id="transfer-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] opacity-0 transition-opacity duration-200 pointer-events-none">
+  <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200 flex flex-col gap-4">
+    <div class="flex items-center gap-3 text-primary">
+      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">swap_horiz</span>
+      <h4 class="font-headline-md text-base font-bold">Solicitar Traspaso</h4>
+    </div>
+    
+    <p id="transfer-modal-desc" class="text-xs font-body-sm text-on-surface-variant leading-relaxed"></p>
+    
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-bold text-on-surface-variant ml-1" for="transfer-size">Talla</label>
+        <select id="transfer-size" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer text-sm">
+          <option value="S">S</option>
+          <option value="M" selected>M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+        </select>
+      </div>
+      
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-bold text-on-surface-variant ml-1" for="transfer-qty">Cantidad</label>
+        <input type="number" id="transfer-qty" min="1" value="5" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none text-sm" />
+      </div>
+    </div>
+    
+    <div class="flex justify-end gap-2 mt-2">
+      <button id="transfer-cancel-btn" class="bg-surface hover:bg-surface-container-high text-on-surface px-4 py-2 rounded-xl font-label-lg text-xs uppercase font-bold border border-outline-variant transition-all active:scale-95">
+        Cancelar
+      </button>
+      <button id="transfer-confirm-btn" class="bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container px-4 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-95">
+        Solicitar
+      </button>
+    </div>
+  </div>
 </div>
-</div>
-<span class="text-sm font-semibold">Hoy, 10:30 AM</span>
-</div>
-<div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-outline-variant">
-<div class="flex gap-3">
-<span class="material-symbols-outlined text-primary">local_shipping</span>
-<div>
-<p class="font-bold">Traspaso #4580</p>
-<p class="text-xs text-on-surface-variant">Desde: Tienda Santa Lucía</p>
-</div>
-</div>
-<span class="text-sm font-semibold">Ayer, 04:15 PM</span>
-</div>
-</div>
-<button class="w-full text-primary font-label-lg hover:underline transition-all">Ver todo el historial</button>
-</section>
-</div>
-</div>
+
 <!-- Notification Toast (Simulation) -->
 <div class="fixed bottom-8 right-8 bg-inverse-surface text-inverse-on-surface px-8 py-4 rounded-xl shadow-2xl flex items-center gap-4 translate-y-24 transition-transform duration-300 z-50" id="toast">
 <span class="material-symbols-outlined text-primary-fixed">check_circle</span>
@@ -488,13 +502,13 @@
 
             const targetInventory = invData[selectedStore] || {};
 
-            const selectedModel = document.getElementById("filter-model").value;
-            const selectedColor = document.getElementById("filter-color").value;
+            const selectedModelText = document.getElementById("filter-model").value.toLowerCase().trim();
+            const selectedColorText = document.getElementById("filter-color").value.toLowerCase().trim();
 
             for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
-                if (selectedModel && modelKey !== selectedModel) continue;
+                if (selectedModelText && !modelName.toLowerCase().includes(selectedModelText) && !modelKey.toLowerCase().includes(selectedModelText)) continue;
                 for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
-                    if (selectedColor && colorKey !== selectedColor) continue;
+                    if (selectedColorText && !colorName.toLowerCase().includes(selectedColorText) && !colorKey.toLowerCase().includes(selectedColorText)) continue;
                     if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
                         continue;
                     }
@@ -585,61 +599,23 @@
             return Object.values(sizes).some(v => v < 5);
         }
 
+        let activeTransferData = null;
+
         window.requestTransfer = function(modelKey, colorKey, originStoreId) {
             const modelName = MODEL_NAMES[modelKey];
             const colorName = COLOR_NAMES[colorKey];
             const storeName = STORE_NAMES[originStoreId];
 
-            const input = prompt(`Solicitar traspaso de [${modelName} - ${colorName}] desde [${storeName}].\nEscribe la talla y cantidad deseada (ejemplo: M=5):`);
-            if (!input) return;
+            activeTransferData = { modelKey, colorKey, originStoreId };
 
-            const parts = input.toUpperCase().trim().split('=');
-            if (parts.length !== 2) {
-                alert("Formato incorrecto. Use: TALLA=CANTIDAD (ejemplo: M=5)");
-                return;
-            }
+            document.getElementById("transfer-modal-desc").innerHTML = `Solicitar traspaso de <strong>${modelName} - ${colorName}</strong> desde la sede <strong>${storeName}</strong>.`;
+            document.getElementById("transfer-qty").value = "5";
 
-            const size = parts[0].trim();
-            const qty = parseInt(parts[1].trim());
-
-            if (!['S', 'M', 'L', 'XL'].includes(size)) {
-                alert("Talla inválida. Permitidas: S, M, L, XL");
-                return;
-            }
-
-            if (isNaN(qty) || qty <= 0) {
-                alert("Cantidad inválida. Debe ser mayor a 0.");
-                return;
-            }
-
-            // Verify origin store has enough stock
-            const originStock = invData[originStoreId]?.[modelKey]?.[colorKey]?.[size] || 0;
-            if (originStock < qty) {
-                alert(`Stock insuficiente en la tienda origen. Solo tienen ${originStock} unidades disponibles de la talla ${size}.`);
-                return;
-            }
-
-            // Create request
-            const orderId = `REQ-${Math.floor(1000 + Math.random() * 9000)}`;
-            const destStoreId = user?.storeId || 'TDA-01';
-
-            reqsData.push({
-                id: orderId,
-                type: "traspaso",
-                origin: originStoreId,
-                destination: destStoreId,
-                model: modelKey,
-                color: colorKey,
-                size: size,
-                qty: qty,
-                status: "pendiente",
-                date: new Date().toISOString()
-            });
-
-            localStorage.setItem("escarlu_requests", JSON.stringify(reqsData));
-
-            showToast(`Solicitud de traspaso ${orderId} enviada correctamente.`);
-            renderInventory();
+            const modal = document.getElementById("transfer-modal");
+            modal.classList.remove("hidden", "opacity-0", "pointer-events-none");
+            setTimeout(() => {
+                modal.firstElementChild.classList.remove("scale-95");
+            }, 10);
         };
 
         function showToast(text) {
@@ -651,35 +627,156 @@
             }, 3000);
         }
 
+        function populateModelDropdown(filterText = "") {
+            const list = document.getElementById("models-list");
+            list.innerHTML = "";
+            
+            // Add "Todos los modelos" option at the top
+            const allOpt = document.createElement("li");
+            allOpt.className = "p-2.5 px-4 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors text-xs font-semibold border-b border-outline-variant/30";
+            allOpt.textContent = "Todos los modelos";
+            allOpt.addEventListener("mousedown", () => {
+                document.getElementById("filter-model").value = "";
+                list.classList.add("hidden");
+                renderInventory();
+            });
+            list.appendChild(allOpt);
+
+            const lowerText = filterText.toLowerCase();
+            for (const [key, name] of Object.entries(MODEL_NAMES)) {
+                if (lowerText && !name.toLowerCase().includes(lowerText)) continue;
+                const item = document.createElement("li");
+                item.className = "p-2.5 px-4 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors text-xs";
+                item.textContent = name;
+                item.addEventListener("mousedown", () => {
+                    document.getElementById("filter-model").value = name;
+                    list.classList.add("hidden");
+                    renderInventory();
+                });
+                list.appendChild(item);
+            }
+        }
+
+        function populateColorDropdown(filterText = "") {
+            const list = document.getElementById("colors-list");
+            list.innerHTML = "";
+            
+            // Add "Todos los colores" option at the top
+            const allOpt = document.createElement("li");
+            allOpt.className = "p-2.5 px-4 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors text-xs font-semibold border-b border-outline-variant/30";
+            allOpt.textContent = "Todos los colores";
+            allOpt.addEventListener("mousedown", () => {
+                document.getElementById("filter-color").value = "";
+                list.classList.add("hidden");
+                renderInventory();
+            });
+            list.appendChild(allOpt);
+
+            const lowerText = filterText.toLowerCase();
+            for (const [key, name] of Object.entries(COLOR_NAMES)) {
+                if (lowerText && !name.toLowerCase().includes(lowerText)) continue;
+                const item = document.createElement("li");
+                item.className = "p-2.5 px-4 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors text-xs";
+                item.textContent = name;
+                item.addEventListener("mousedown", () => {
+                    document.getElementById("filter-color").value = name;
+                    list.classList.add("hidden");
+                    renderInventory();
+                });
+                list.appendChild(item);
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             loadData();
 
-            // Populate filters
             const modelFilter = document.getElementById("filter-model");
             const colorFilter = document.getElementById("filter-color");
-            const filterPanel = document.getElementById("filter-panel");
-            const btnToggleFilter = document.getElementById("btn-toggle-filter");
+            const modelsList = document.getElementById("models-list");
+            const colorsList = document.getElementById("colors-list");
 
-            for (const [key, name] of Object.entries(MODEL_NAMES)) {
-                const opt = document.createElement("option");
-                opt.value = key;
-                opt.textContent = name;
-                modelFilter.appendChild(opt);
-            }
+            // Populate initially
+            populateModelDropdown();
+            populateColorDropdown();
 
-            for (const [key, name] of Object.entries(COLOR_NAMES)) {
-                const opt = document.createElement("option");
-                opt.value = key;
-                opt.textContent = name;
-                colorFilter.appendChild(opt);
-            }
-
-            btnToggleFilter.addEventListener("click", () => {
-                filterPanel.classList.toggle("hidden");
+            // Set up search / filter autocomplete events
+            modelFilter.addEventListener("focus", () => {
+                populateModelDropdown(modelFilter.value);
+                modelsList.classList.remove("hidden");
+            });
+            modelFilter.addEventListener("blur", () => {
+                setTimeout(() => modelsList.classList.add("hidden"), 200);
+            });
+            modelFilter.addEventListener("input", () => {
+                populateModelDropdown(modelFilter.value);
+                renderInventory();
             });
 
-            modelFilter.addEventListener("change", renderInventory);
-            colorFilter.addEventListener("change", renderInventory);
+            colorFilter.addEventListener("focus", () => {
+                populateColorDropdown(colorFilter.value);
+                colorsList.classList.remove("hidden");
+            });
+            colorFilter.addEventListener("blur", () => {
+                setTimeout(() => colorsList.classList.add("hidden"), 200);
+            });
+            colorFilter.addEventListener("input", () => {
+                populateColorDropdown(colorFilter.value);
+                renderInventory();
+            });
+
+            // Set up transfer modal buttons
+            const transferModal = document.getElementById("transfer-modal");
+            document.getElementById("transfer-cancel-btn").addEventListener("click", () => {
+                transferModal.classList.add("opacity-0", "pointer-events-none");
+                transferModal.firstElementChild.classList.add("scale-95");
+                setTimeout(() => transferModal.classList.add("hidden"), 200);
+            });
+
+            document.getElementById("transfer-confirm-btn").addEventListener("click", () => {
+                if (!activeTransferData) return;
+                const { modelKey, colorKey, originStoreId } = activeTransferData;
+                const size = document.getElementById("transfer-size").value;
+                const qty = parseInt(document.getElementById("transfer-qty").value);
+
+                if (isNaN(qty) || qty <= 0) {
+                    alert("Cantidad inválida. Debe ser mayor a 0.");
+                    return;
+                }
+
+                // Verify origin store has enough stock
+                const originStock = invData[originStoreId]?.[modelKey]?.[colorKey]?.[size] || 0;
+                if (originStock < qty) {
+                    alert(`Stock insuficiente en la tienda origen. Solo tienen ${originStock} unidades disponibles de la talla ${size}.`);
+                    return;
+                }
+
+                // Create request
+                const orderId = `REQ-${Math.floor(1000 + Math.random() * 9000)}`;
+                const destStoreId = user?.storeId || 'TDA-01';
+
+                reqsData.push({
+                    id: orderId,
+                    type: "traspaso",
+                    origin: originStoreId,
+                    destination: destStoreId,
+                    model: modelKey,
+                    color: colorKey,
+                    size: size,
+                    qty: qty,
+                    status: "pendiente",
+                    date: new Date().toISOString()
+                });
+
+                localStorage.setItem("escarlu_requests", JSON.stringify(reqsData));
+
+                // Hide modal
+                transferModal.classList.add("opacity-0", "pointer-events-none");
+                transferModal.firstElementChild.classList.add("scale-95");
+                setTimeout(() => transferModal.classList.add("hidden"), 200);
+
+                showToast(`Solicitud de traspaso ${orderId} enviada correctamente.`);
+                renderInventory();
+            });
 
             renderInventory();
 
