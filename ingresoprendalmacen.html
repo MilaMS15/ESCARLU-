@@ -165,50 +165,53 @@
 </aside>
 <!-- Main Content Area -->
 <main class="flex-1 md:ml-72 bg-surface">
-<!-- TopNavBar (Shared Component) -->
-<header class="flex justify-between items-center w-full px-container-padding h-10 md:h-16 max-w-[1440px] mx-auto border-b-2 border-primary dark:border-primary-fixed-dim bg-surface shadow-sm sticky top-0 z-40">
-<div class="flex items-center gap-6">
-<button class="md:hidden text-primary">
-<span class="material-symbols-outlined">menu</span>
-</button>
-<div class="hidden md:flex relative group w-64 lg:w-96">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-<input class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 h-10 text-body-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Buscar por modelo o SKU..." type="text"/>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<div class="flex items-center gap-4">
-<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors">
-<span class="material-symbols-outlined">notifications</span>
-</button>
-<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors">
-<span class="material-symbols-outlined">settings</span>
-</button>
-</div>
-<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
-<div class="text-right hidden sm:block">
-<p class="font-label-lg text-label-lg leading-tight">Admin Escarlú</p>
-<p class="text-body-sm text-on-surface-variant/70">Jefe de Almacén</p>
-</div>
-<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border-2 border-primary/20">
-<img class="w-full h-full object-cover" data-alt="A professional headshot of a senior administrator in a high-end textile studio, soft studio lighting, bright airy background, wearing sophisticated business casual attire in tones of lilac and slate. The composition is a clean, medium close-up shot emphasizing expertise and approachability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA92KfKf4q_X8C0sAkGljB_hwHxhhW_BuGdweYfrPprEnlHhofaQurvC6XJZ-3LvLVjTnozVg4QLfhcAmNxmHJRByxaJu62VlylZELunrErk3IgWXNO7n1bGjkX9Zq3FK8xogYEj47DV2xFQSTZ4tzu2uokQXeCIzES3RYMdJuYfNqe1bm4l5nLXpDp13_CHq18M4bgVpXnwC3QRnDLQbm1-ir3Hhn219PUBaNb5KhpGPE_3xDl1zU"/>
-</div>
-</div>
-</div>
+<!-- Top Bar Header -->
+<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
+  <!-- Lado Izquierdo: Badge de Sede -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">warehouse</span>
+      <span class="text-xs font-bold text-primary font-body-md">Almacén Central</span>
+    </div>
+  </div>
+
+  <!-- Centro: Búsqueda Global Centrada -->
+  <div class="flex-1 max-w-md mx-6">
+    <div class="relative w-full">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">search</span>
+      </span>
+      <input type="text" placeholder="Buscar por modelo o SKU..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none font-body-md" id="global-search-input" />
+    </div>
+  </div>
+
+  <!-- Lado Derecho: Indicador y Usuario -->
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+      <span class="text-[11px] font-bold text-primary font-body-md">Almacén Activo</span>
+    </div>
+    <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+      <span class="text-xs font-bold text-on-surface font-body-md">Encargado de Almacén</span>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+        <img alt="Almacenero Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGWD6xK5vb8NZc5g9ADvQTdt4cs1gEe114evk9R65-086cCeFOZBkYxxm6OrsnYYYT3DBrHfsqyNCvkK15CUSvTDXbCCapLJQVA2nzFj8QQHckE5xEfT7SFuNHeHcLbEIuh7GbbtjrmCrkzKtEyULAo0nzM0txvbDFjR8JtjtHSqlAQl7zSNwVbdll4PTWi3KvEfbpxJiMEvKSQWUeBbYxguOwGHvBM70qPPl6Pb8AXfJ57nwqxiA"/>
+      </div>
+    </div>
+  </div>
 </header>
 <!-- Dashboard Canvas -->
 <div class="max-w-[1440px] mx-auto p-gutter lg:p-container-padding space-y-6">
 <!-- Welcome Section -->
-<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-<div class="space-y-1">
-<h1 class="font-headline-lg text-headline-lg text-primary">Ingreso de Prendas</h1>
-<p class="text-body-lg text-on-surface-variant max-w-2xl">Registre los nuevos lotes que ingresan al Almacén Central para actualizar el inventario global.</p>
+<div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mt-1 mb-4">
+    <div class="flex items-center gap-3">
+        <h1 class="font-headline-lg text-[1.4rem] font-bold text-primary leading-tight">Ingreso de Prendas</h1>
+        <span class="text-xs text-on-surface-variant font-semibold">| Registre los nuevos lotes que ingresan al Almacén Central para actualizar el inventario global.</span>
+    </div>
+    <div class="flex items-center gap-3 text-on-surface-variant bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant/20">
+        <span class="material-symbols-outlined text-primary">calendar_today</span>
+        <span id="current-date-label" class="font-label-lg">24 Octubre, 2026</span>
+    </div>
 </div>
-<div class="flex items-center gap-3 text-on-surface-variant bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant/20">
-<span class="material-symbols-outlined text-primary">calendar_today</span>
-<span id="current-date-label" class="font-label-lg">24 Octubre, 2026</span>
-</div>
-</section>
 <!-- Main Grid Layout (Bento Style) -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 <!-- Left Column: Entry Form -->
