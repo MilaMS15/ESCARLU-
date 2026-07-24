@@ -265,7 +265,7 @@
                         Stock de Polos - Sede
                     </h3>
 <div class="flex gap-2">
-<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
+<button id="btn-toggle-filter" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
 <span class="material-symbols-outlined text-sm">filter_list</span>
 <span class="font-label-md">Filtrar</span>
 </button>
@@ -275,9 +275,24 @@
 </button>
 </div>
 </div>
-<div class="overflow-x-auto">
+<!-- Collapsible Filter Panel -->
+<div id="filter-panel" class="hidden p-4 bg-surface-container-low border-b border-outline-variant flex flex-col sm:flex-row gap-4">
+  <div class="flex-1 flex flex-col gap-1">
+    <label class="font-label-md text-on-surface ml-1 text-xs">Modelo</label>
+    <select id="filter-model" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
+      <option value="">Todos los modelos</option>
+    </select>
+  </div>
+  <div class="flex-1 flex flex-col gap-1">
+    <label class="font-label-md text-on-surface ml-1 text-xs">Color</label>
+    <select id="filter-color" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
+      <option value="">Todos los colores</option>
+    </select>
+  </div>
+</div>
+<div class="overflow-x-auto overflow-y-auto max-h-[620px] scrollbar-thin">
 <table class="w-full text-left border-collapse">
-<thead>
+<thead class="sticky top-0 bg-surface-container z-10 shadow-sm">
 <tr class="bg-surface-container text-on-surface-variant font-label-md uppercase tracking-wider">
 <th class="px-8 py-5 border-b border-outline-variant">Producto / Modelo</th>
 <th class="px-4 py-5 border-b border-outline-variant">Color</th>
@@ -473,8 +488,13 @@
 
             const targetInventory = invData[selectedStore] || {};
 
+            const selectedModel = document.getElementById("filter-model").value;
+            const selectedColor = document.getElementById("filter-color").value;
+
             for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+                if (selectedModel && modelKey !== selectedModel) continue;
                 for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
+                    if (selectedColor && colorKey !== selectedColor) continue;
                     if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
                         continue;
                     }
@@ -633,6 +653,34 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             loadData();
+
+            // Populate filters
+            const modelFilter = document.getElementById("filter-model");
+            const colorFilter = document.getElementById("filter-color");
+            const filterPanel = document.getElementById("filter-panel");
+            const btnToggleFilter = document.getElementById("btn-toggle-filter");
+
+            for (const [key, name] of Object.entries(MODEL_NAMES)) {
+                const opt = document.createElement("option");
+                opt.value = key;
+                opt.textContent = name;
+                modelFilter.appendChild(opt);
+            }
+
+            for (const [key, name] of Object.entries(COLOR_NAMES)) {
+                const opt = document.createElement("option");
+                opt.value = key;
+                opt.textContent = name;
+                colorFilter.appendChild(opt);
+            }
+
+            btnToggleFilter.addEventListener("click", () => {
+                filterPanel.classList.toggle("hidden");
+            });
+
+            modelFilter.addEventListener("change", renderInventory);
+            colorFilter.addEventListener("change", renderInventory);
+
             renderInventory();
 
             if (storeSelect) {
