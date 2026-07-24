@@ -168,31 +168,49 @@
 </div>
 </aside>
 <!-- Main Content Area -->
-<main class="ml-60 md:ml-64 min-h-screen bg-background">
-<!-- Top Bar with Role Simulator -->
-<header class="flex justify-between items-center w-full px-container-padding h-10 md:h-16 border-b-2 border-primary sticky top-0 bg-surface z-40 shadow-sm">
-<div class="flex items-center gap-4">
-<h1 class="text-lg font-bold text-black">Almacén Central</h1>
-</div>
-<div class="flex items-center gap-6">
-<div class="relative group cursor-pointer">
-<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-<span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
-</div>
-<div class="flex items-center gap-3 cursor-pointer group">
-<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container group-hover:border-primary transition-all">
-<img class="w-full h-full object-cover" data-alt="A sophisticated professional portrait of a senior textile administrator in a brightly lit, modern office environment. She has a warm smile, wearing an elegant neutral-toned blazer. The background is slightly blurred showing rolls of high-quality fabrics and a clean design studio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGWD6xK5vb8NZc5g9ADvQTdt4cs1gEe114evk9R65-086cCeFOZBkYxxm6OrsnYYYT3DBrHfsqyNCvkK15CUSvTDXbCCapLJQVA2nzFj8QQHckE5xEfT7SFuNHeHcLbEIuh7GbbtjrmCrkzKtEyULAo0nzM0txvbDFjR8JtjtHSqlAQl7zSNwVbdll4PTWi3KvEfbpxJiMEvKSQWUeBbYxguOwGHvBM70qPPl6Pb8AXfJ57nwqxiA"/>
-</div>
-<span class="font-label-lg text-label-lg hidden lg:inline">Admin_Escarlu</span>
-</div>
-</div>
+<main class="ml-0 md:ml-72 min-h-screen bg-background">
+<!-- Top Bar Header -->
+<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
+  <!-- Lado Izquierdo: Badge de Sede -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">warehouse</span>
+      <span class="text-xs font-bold text-primary font-body-md">Almacén Central</span>
+    </div>
+  </div>
+
+  <!-- Centro: Búsqueda Global Centrada -->
+  <div class="flex-1 max-w-md mx-6">
+    <div class="relative w-full">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+        <span class="material-symbols-outlined text-sm">search</span>
+      </span>
+      <input type="text" placeholder="Buscar movimientos..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none font-body-md" id="global-search-input" />
+    </div>
+  </div>
+
+  <!-- Lado Derecho: Indicador y Usuario -->
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+      <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+      <span class="text-[11px] font-bold text-primary font-body-md">Almacén Activo</span>
+    </div>
+    <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+      <span class="text-xs font-bold text-on-surface font-body-md">Encargado de Almacén</span>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+        <img alt="Almacenero Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGWD6xK5vb8NZc5g9ADvQTdt4cs1gEe114evk9R65-086cCeFOZBkYxxm6OrsnYYYT3DBrHfsqyNCvkK15CUSvTDXbCCapLJQVA2nzFj8QQHckE5xEfT7SFuNHeHcLbEIuh7GbbtjrmCrkzKtEyULAo0nzM0txvbDFjR8JtjtHSqlAQl7zSNwVbdll4PTWi3KvEfbpxJiMEvKSQWUeBbYxguOwGHvBM70qPPl6Pb8AXfJ57nwqxiA"/>
+      </div>
+    </div>
+  </div>
 </header>
 <!-- Content Canvas -->
 <div class="p-container-padding max-w-[1440px] mx-auto">
-<!-- Page Header -->
-<div class="mb-4">
-<h2 class="text-2xl font-bold text-black mb-1">Historial de Movimientos de Almacén</h2>
-<p class="text-xs text-on-surface-variant">Seguimiento detallado de ingresos y egresos de productos textiles.</p>
+<!-- Page Header (Compact) -->
+<div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mt-1 mb-4">
+    <div class="flex items-center gap-3">
+        <h2 class="font-headline-lg text-[1.4rem] font-bold text-primary leading-tight">Historial de Movimientos de Almacén</h2>
+        <span class="text-xs text-on-surface-variant font-semibold">| Seguimiento detallado de ingresos y egresos de productos textiles.</span>
+    </div>
 </div>
 <!-- Summary Cards -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
