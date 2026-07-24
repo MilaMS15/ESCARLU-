@@ -251,6 +251,18 @@ async function downloadFromSupabase() {
         originalSetItem.call(localStorage, 'escarlu_expenses', expStr);
         triggerStorageUpdate('escarlu_expenses', expStr);
     }
+
+    // 5. Download Models (public.modelos)
+    try {
+        const { data: modelsData } = await client.from('modelos').select('*');
+        if (modelsData && modelsData.length > 0) {
+            originalSetItem.call(localStorage, 'escarlu_modelos', JSON.stringify(modelsData));
+            updateModelNamesFromLocalStorage();
+            triggerStorageUpdate('escarlu_modelos', JSON.stringify(modelsData));
+        }
+    } catch (e) {
+        console.error("Error downloading models from Supabase:", e);
+    }
 }
 
 const DEFAULT_INVENTORY = {
@@ -367,7 +379,9 @@ const MODEL_NAMES = {
     "MOD-016": "Short Boton",
     "MOD-017": "Chompa Redondo",
     "MOD-018": "Chompa V",
-    "MOD-019": "Buzo Normal"
+    "MOD-019": "Buzo Normal",
+    "MOD-020": "Corazon MC",
+    "MOD-021": "Corazon ML"
 };
 
 const COLOR_NAMES = {
@@ -1096,4 +1110,110 @@ window.alert = function(message) {
         modal.firstElementChild.classList.remove('scale-95');
     }, 10);
 };
+
+// Helper functions for garment types and dynamic models support
+function getModelos() {
+    const local = localStorage.getItem("escarlu_modelos");
+    if (local) {
+        try {
+            return JSON.parse(local);
+        } catch(e) {
+            console.error("Error parsing escarlu_modelos", e);
+        }
+    }
+    // Fallback static models with tipo
+    return [
+        { id_modelo: "MOD-001", tipo: "Polo", nombre: "Camisero MC", activo: true },
+        { id_modelo: "MOD-002", tipo: "Polo", nombre: "Camisero ML", activo: true },
+        { id_modelo: "MOD-003", tipo: "Polo", nombre: "Girasol MC", activo: true },
+        { id_modelo: "MOD-004", tipo: "Polo", nombre: "Girasol ML", activo: true },
+        { id_modelo: "MOD-005", tipo: "Polo", nombre: "Redondo MC", activo: true },
+        { id_modelo: "MOD-006", tipo: "Polo", nombre: "Redondo ML", activo: true },
+        { id_modelo: "MOD-007", tipo: "Polo", nombre: "Cuadrado MC", activo: true },
+        { id_modelo: "MOD-008", tipo: "Polo", nombre: "Cuadrado ML", activo: true },
+        { id_modelo: "MOD-009", tipo: "Polo", nombre: "Tania MC", activo: true },
+        { id_modelo: "MOD-010", tipo: "Polo", nombre: "Tania ML", activo: true },
+        { id_modelo: "MOD-011", tipo: "Polo", nombre: "Noemi MC", activo: true },
+        { id_modelo: "MOD-012", tipo: "Polo", nombre: "Noemi ML", activo: true },
+        { id_modelo: "MOD-013", tipo: "Polo", nombre: "Boton MC", activo: true },
+        { id_modelo: "MOD-014", tipo: "Polo", nombre: "Boton ML", activo: true },
+        { id_modelo: "MOD-015", tipo: "Short", nombre: "Short Pinza", activo: true },
+        { id_modelo: "MOD-016", tipo: "Short", nombre: "Short Boton", activo: true },
+        { id_modelo: "MOD-017", tipo: "Chompa", nombre: "Chompa Redondo", activo: true },
+        { id_modelo: "MOD-018", tipo: "Chompa", nombre: "Chompa V", activo: true },
+        { id_modelo: "MOD-019", tipo: "Buzo", nombre: "Buzo Normal", activo: true },
+        { id_modelo: "MOD-020", tipo: "Polo", nombre: "Corazon MC", activo: true },
+        { id_modelo: "MOD-021", tipo: "Polo", nombre: "Corazon ML", activo: true }
+    ];
+}
+
+function updateModelNamesFromLocalStorage() {
+    const local = localStorage.getItem("escarlu_modelos");
+    if (local) {
+        try {
+            const models = JSON.parse(local);
+            models.forEach(m => {
+                MODEL_NAMES[m.id_modelo] = m.nombre;
+            });
+        } catch(e) {}
+    }
+}
+
+// Initial call to sync MODEL_NAMES with localStorage cache
+updateModelNamesFromLocalStorage();
+
+// Helper to fetch stock for a model, color, and store from Supabase (with localStorage fallback)
+async function getStockForProduct(model, color, storeId) {
+    const client = getSupabaseClient();
+    if (client) {
+        try {
+            let { data, error } = await client
+                .from('stock')
+                .select('cantidad, id_talla, tallas (nombre, orden)')
+                .eq('id_modelo', model)
+                .eq('id_color', color)
+                .eq('id_sede', storeId);
+            
+            if (error) {
+                // Fallback query without relationship in case of schema discrepancy
+                const fallbackQuery = await client
+                    .from('stock')
+                    .select('cantidad, id_talla')
+                    .eq('id_modelo', model)
+                    .eq('id_color', color)
+                    .eq('id_sede', storeId);
+                data = fallbackQuery.data;
+                error = fallbackQuery.error;
+            }
+            
+            if (!error && data) {
+                const result = data.map(row => ({
+                    size: row.tallas?.nombre || TALLA_NAMES[row.id_talla] || 'M',
+                    qty: row.cantidad,
+                    order: row.tallas?.orden || { 'St': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5 }[row.tallas?.nombre || TALLA_NAMES[row.id_talla]] || 99
+                }));
+                result.sort((a, b) => a.order - b.order);
+                return result;
+            }
+        } catch (e) {
+            console.error("Error fetching stock from Supabase:", e);
+        }
+    }
+    
+    // Fallback to localStorage
+    const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+    const stockObj = inventory[storeId]?.[model]?.[color] || {};
+    const result = Object.entries(stockObj).map(([size, qty]) => {
+        const order = { 'St': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5 }[size] || 99;
+        return {
+            size: size,
+            qty: qty,
+            order: order
+        };
+    });
+    result.sort((a, b) => a.order - b.order);
+    return result;
+}
+
+
 
