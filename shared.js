@@ -72,6 +72,8 @@ async function syncInventoryToSupabase(localInv) {
 async function syncRequestsToSupabase(localReqs) {
     const client = getSupabaseClient();
     if (!client) return;
+    
+    // 1. Upsert current requests
     for (const req of localReqs) {
         const tallaId = TALLA_KEYS[req.size] || 'TAL-03';
         await client.from('solicitudes_traspaso').upsert({
@@ -86,6 +88,28 @@ async function syncRequestsToSupabase(localReqs) {
             estado: req.status,
             fecha_solicitud: req.date
         });
+    }
+
+    // 2. Delete requests in Supabase that are no longer present locally for this store destination
+    const user = getCurrentUser();
+    const storeId = user ? user.storeId : null;
+    if (storeId) {
+        const { data: dbReqs } = await client.from('solicitudes_traspaso')
+            .select('id_solicitud')
+            .eq('id_sede_destino', storeId);
+            
+        if (dbReqs) {
+            const localIds = localReqs.map(r => r.id);
+            const idsToDelete = dbReqs
+                .map(r => r.id_solicitud)
+                .filter(id => !localIds.includes(id));
+                
+            if (idsToDelete.length > 0) {
+                await client.from('solicitudes_traspaso')
+                    .delete()
+                    .in('id_solicitud', idsToDelete);
+            }
+        }
     }
 }
 
