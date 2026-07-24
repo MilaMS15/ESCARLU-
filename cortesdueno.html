@@ -393,6 +393,8 @@
                 <option value="MOD-017">Chompa Redondo</option>
                 <option value="MOD-018">Chompa V</option>
                 <option value="MOD-019">Buzo Normal</option>
+                <option value="MOD-020">Corazon MC</option>
+                <option value="MOD-021">Corazon ML</option>
               </select>
             </div>
             <div class="flex flex-col gap-0.5">
@@ -683,27 +685,75 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!data || data.length === 0) {
                 console.log("Seeding default moldes to Supabase...");
                 const defaultMoldes = [];
-                const modelKeys = ["MOD-001", "MOD-002", "MOD-003", "MOD-005"];
-                const sizes = ["S", "M", "L", "XL"];
-                const pieces = [
-                    { nombre: "Delantero", url: "pieces/delantero.dxf", rot: 360 },
-                    { nombre: "Espalda", url: "pieces/espalda.dxf", rot: 360 },
-                    { nombre: "Manga", url: "pieces/manga.dxf", rot: 90 },
-                    { nombre: "Cuello", url: "pieces/cuello.dxf", rot: 0 }
+                const modelsList = [
+                    { code: "MOD-001", name: "Camisero", mc: true, ml: false },
+                    { code: "MOD-002", name: "Camisero", mc: false, ml: true },
+                    { code: "MOD-020", name: "Corazon", mc: true, ml: false },
+                    { code: "MOD-021", name: "Corazon", mc: false, ml: true },
+                    { code: "MOD-007", name: "Cuadrado", mc: true, ml: false },
+                    { code: "MOD-008", name: "Cuadrado", mc: false, ml: true },
+                    { code: "MOD-003", name: "Girasol", mc: true, ml: false },
+                    { code: "MOD-004", name: "Girasol", mc: false, ml: true },
+                    { code: "MOD-011", name: "Noemi", mc: true, ml: false },
+                    { code: "MOD-012", name: "Noemi", mc: false, ml: true },
+                    { code: "MOD-005", name: "Redondo MC", mc: true, ml: false },
+                    { code: "MOD-006", name: "Redondo ML", mc: false, ml: true },
+                    { code: "MOD-009", name: "Tania", mc: true, ml: false },
+                    { code: "MOD-010", name: "Tania", mc: false, ml: true }
                 ];
+                const sizes = ["St", "L"];
 
-                modelKeys.forEach(model => {
+                modelsList.forEach(m => {
                     sizes.forEach(size => {
-                        pieces.forEach(p => {
+                        // Delantero
+                        let delanteroName = `Delantero ${m.name} ${size}`;
+                        if (m.code === "MOD-005") delanteroName = `Delantero Redondo MC ${size}`;
+                        if (m.code === "MOD-006") delanteroName = `Delantero Redondo ML ${size}`;
+                        defaultMoldes.push({
+                            tipo: "polo",
+                            modelo: m.code,
+                            talla: size,
+                            nombre_pieza: "Delantero",
+                            dxf_url: `https://pbqplcasneqkhwywqnf.supabase.co/storage/v1/object/public/moldes-dxf/${encodeURIComponent(delanteroName)}.dxf`,
+                            rotacion_maxima: 360
+                        });
+
+                        // Espalda
+                        let espaldaName = `Espalda ${m.name} ${size}`;
+                        if (m.code === "MOD-005" || m.code === "MOD-006") espaldaName = `Espalda Redondo ${size}`;
+                        defaultMoldes.push({
+                            tipo: "polo",
+                            modelo: m.code,
+                            talla: size,
+                            nombre_pieza: "Espalda",
+                            dxf_url: `https://pbqplcasneqkhwywqnf.supabase.co/storage/v1/object/public/moldes-dxf/${encodeURIComponent(espaldaName)}.dxf`,
+                            rotacion_maxima: 360
+                        });
+
+                        // Manga
+                        if (m.mc) {
+                            let mangaName = `Manga Corta ${size}`;
+                            if (m.code === "MOD-009") mangaName = `Manga Corta Tania ${size}`;
                             defaultMoldes.push({
                                 tipo: "polo",
-                                modelo: model,
+                                modelo: m.code,
                                 talla: size,
-                                nombre_pieza: p.nombre,
-                                dxf_url: p.url,
-                                rotacion_maxima: p.rot
+                                nombre_pieza: "Manga Corta",
+                                dxf_url: `https://pbqplcasneqkhwywqnf.supabase.co/storage/v1/object/public/moldes-dxf/${encodeURIComponent(mangaName)}.dxf`,
+                                rotacion_maxima: 90
                             });
-                        });
+                        } else if (m.ml) {
+                            let mangaName = `Manga Larga ${size}`;
+                            if (m.code === "MOD-010") mangaName = `Manga Larga Tania ${size}`;
+                            defaultMoldes.push({
+                                tipo: "polo",
+                                modelo: m.code,
+                                talla: size,
+                                nombre_pieza: "Manga Larga",
+                                dxf_url: `https://pbqplcasneqkhwywqnf.supabase.co/storage/v1/object/public/moldes-dxf/${encodeURIComponent(mangaName)}.dxf`,
+                                rotacion_maxima: 90
+                            });
+                        }
                     });
                 });
 
