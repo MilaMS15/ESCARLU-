@@ -595,9 +595,9 @@
                 if (activeTab === 'local') {
                     actionTd = `
                         <td class="px-4 py-2 text-right">
-                            <button onclick="adjustStock('${modelKey}', '${colorKey}')" class="bg-primary text-on-primary px-3 py-1.5 rounded-lg shadow-sm hover:brightness-95 transition-all active:scale-95 text-[10px] font-bold uppercase">
-                                Ajustar
-                            </button>
+                            <a href="solitienda.html?tipo=${modelType}&model=${modelKey}&color=${colorKey}" class="inline-flex items-center justify-center bg-primary text-on-primary px-3 py-1.5 rounded-lg shadow-sm hover:brightness-95 transition-all active:scale-95 text-[10px] font-bold uppercase no-underline">
+                                Pedir Stock
+                            </a>
                         </td>
                     `;
                 }

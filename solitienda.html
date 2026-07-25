@@ -496,6 +496,25 @@ Agregar a la Lista
         if (selectColor) selectColor.addEventListener('change', updateSelectedStock);
         if (selectOriginStore) selectOriginStore.addEventListener('change', updateSelectedStock);
 
+        // Read URL query parameters for pre-selection
+        const urlParams = new URLSearchParams(window.location.search);
+        const preType = urlParams.get('tipo');
+        const preModel = urlParams.get('model');
+        const preColor = urlParams.get('color');
+
+        if (preType && selectTipo) {
+            selectTipo.value = preType;
+            updateModelsDropdown();
+        }
+        if (preModel && selectModel) {
+            selectModel.value = preModel;
+            updateTallaButtons();
+        }
+        if (preColor && selectColor) {
+            selectColor.value = preColor;
+            updateSelectedStock();
+        }
+
         // Bind origin toggle
         const btnAlmacen = document.getElementById('btn-almacen');
         const btnTraspaso = document.getElementById('btn-traspaso');
