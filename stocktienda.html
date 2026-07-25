@@ -252,7 +252,7 @@
 </div><!-- Main Inventory Grid (Side-by-side columns: Stock left, Solicitudes right) -->
 <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden">
   
-  <!-- Columna Izquierda (8/12): Stock de Polos -->
+  <!-- Columna Izquierda (8/12): Existencias de Prendas -->
   <section class="lg:col-span-8 flex flex-col min-h-0 glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
     <!-- Tabs Navigation -->
     <div class="flex border-b border-outline-variant bg-surface-container-low px-4 pt-2 gap-2 shrink-0">
@@ -266,7 +266,7 @@
     <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center shrink-0">
       <h3 id="table-header-title" class="text-xs text-primary flex items-center gap-2 font-bold uppercase tracking-wider">
         <span class="material-symbols-outlined text-sm">checkroom</span>
-        Stock de Polos
+        Existencias de Prendas
       </h3>
       <div class="flex items-center gap-3">
         <!-- Paginación compacta -->
@@ -468,12 +468,12 @@
         if (tab === 'local') {
             btnLocal.className = "px-6 py-3 font-bold border-b-4 border-primary text-primary transition-all";
             btnCentral.className = "px-6 py-3 font-semibold text-on-surface-variant hover:text-primary transition-all";
-            headerTitle.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Stock de Polos - Sucursal Local`;
+            headerTitle.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Existencias de Prendas - Sucursal Local`;
             document.getElementById("stat-total-label").textContent = "Stock en esta Sucursal";
         } else {
             btnCentral.className = "px-6 py-3 font-bold border-b-4 border-primary text-primary transition-all";
             btnLocal.className = "px-6 py-3 font-semibold text-on-surface-variant hover:text-primary transition-all";
-            headerTitle.innerHTML = `<span class="material-symbols-outlined">warehouse</span> Stock de Polos - Almacén Central`;
+            headerTitle.innerHTML = `<span class="material-symbols-outlined">warehouse</span> Existencias de Prendas - Almacén Central`;
             document.getElementById("stat-total-label").textContent = "Stock en Almacén Central";
         }
 

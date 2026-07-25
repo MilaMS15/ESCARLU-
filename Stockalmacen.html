@@ -267,7 +267,7 @@
 <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
 <h3 id="table-header-title" class="font-headline-md text-primary flex items-center gap-3">
 <span class="material-symbols-outlined">checkroom</span>
-                        Stock de Polos - Sede
+                        Existencias de Prendas - Sede
                     </h3>
 <div class="flex gap-2">
 <button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
@@ -276,25 +276,33 @@
 </button>
 </div>
 </div>
-<!-- Filter Bar (Always Visible with Custom Searchable Dropdowns) -->
-<div class="p-4 bg-surface-container-low border-b border-outline-variant flex flex-col sm:flex-row gap-4">
-  <div class="flex-1 flex flex-col gap-1 relative">
-    <label class="font-label-md text-on-surface ml-1 text-xs font-bold">Filtrar por Modelo</label>
-    <div class="relative w-full">
-      <input type="text" id="filter-model" placeholder="Todos los modelos (escribe para buscar...)" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none" autocomplete="off" />
-      <ul id="models-list" class="hidden absolute left-0 right-0 mt-1 bg-white border border-outline-variant rounded-xl shadow-lg max-h-60 overflow-y-auto z-30 font-body-sm py-1">
-        <!-- populated dynamically -->
-      </ul>
-    </div>
+<!-- Barra de Filtros en Cascada -->
+<div class="p-4 bg-surface-container-low border-b border-outline-variant grid grid-cols-1 sm:grid-cols-4 gap-4 shrink-0">
+  <div class="flex flex-col gap-1">
+    <label class="font-label-md text-on-surface ml-1 text-xs font-bold uppercase tracking-wider">Filtrar por Tipo</label>
+    <select id="select-filter-tipo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+      <option value="all">Todos los tipos</option>
+      <option value="Polo">Polo</option>
+      <option value="Short">Short</option>
+      <option value="Chompa">Chompa</option>
+      <option value="Buzo">Buzo</option>
+    </select>
   </div>
-  <div class="flex-1 flex flex-col gap-1 relative">
-    <label class="font-label-md text-on-surface ml-1 text-xs font-bold">Filtrar por Color</label>
-    <div class="relative w-full">
-      <input type="text" id="filter-color" placeholder="Todos los colores (escribe para buscar...)" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none" autocomplete="off" />
-      <ul id="colors-list" class="hidden absolute left-0 right-0 mt-1 bg-white border border-outline-variant rounded-xl shadow-lg max-h-60 overflow-y-auto z-30 font-body-sm py-1">
-        <!-- populated dynamically -->
-      </ul>
-    </div>
+  <div class="flex flex-col gap-1">
+    <label class="font-label-md text-on-surface ml-1 text-xs font-bold uppercase tracking-wider">Filtrar por Modelo</label>
+    <select id="select-filter-modelo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+      <option value="all">Todos los modelos</option>
+    </select>
+  </div>
+  <div class="flex flex-col gap-1">
+    <label class="font-label-md text-on-surface ml-1 text-xs font-bold uppercase tracking-wider">Filtrar por Color</label>
+    <select id="select-filter-color" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+      <option value="all">Todos los colores</option>
+    </select>
+  </div>
+  <div class="flex flex-col gap-1">
+    <label class="font-label-md text-on-surface ml-1 text-xs font-bold uppercase tracking-wider">Buscar Texto</label>
+    <input type="text" id="inventory-search-table" placeholder="Buscar por palabra clave..." class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none text-sm" />
   </div>
 </div>
 <div class="overflow-x-auto overflow-y-auto max-h-[620px] scrollbar-thin">
@@ -498,9 +506,12 @@
 
             const selectedStore = storeSelect.value;
             const storeName = STORE_NAMES[selectedStore] || selectedStore;
-            tableTitle.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Stock de Polos - ${storeName}`;
+            tableTitle.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Existencias de Prendas - ${storeName}`;
 
-            const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+            const query = (document.getElementById("inventory-search-table")?.value || "").toLowerCase().trim();
+            const selectedTipo = document.getElementById("select-filter-tipo")?.value || "all";
+            const selectedModelo = document.getElementById("select-filter-modelo")?.value || "all";
+            const selectedColor = document.getElementById("select-filter-color")?.value || "all";
 
             tbody.innerHTML = "";
             let selectedStoreTotal = 0;
@@ -508,13 +519,20 @@
 
             const targetInventory = invData[selectedStore] || {};
 
-            const selectedModelText = document.getElementById("filter-model").value.toLowerCase().trim();
-            const selectedColorText = document.getElementById("filter-color").value.toLowerCase().trim();
-
             for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
-                if (selectedModelText && !modelName.toLowerCase().includes(selectedModelText) && !modelKey.toLowerCase().includes(selectedModelText)) continue;
+                // Filter by selected model
+                if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
+
+                // Filter by type
+                let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+                const modelObj = modelsList.find(m => m.id_modelo === modelKey);
+                const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
+                if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
+
                 for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
-                    if (selectedColorText && !colorName.toLowerCase().includes(selectedColorText) && !colorKey.toLowerCase().includes(selectedColorText)) continue;
+                    // Filter by color
+                    if (selectedColor !== "all" && colorKey !== selectedColor) continue;
+
                     if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
                         continue;
                     }
@@ -688,102 +706,84 @@
             }, 3000);
         }
 
-        function populateModelDropdown(filterText = "") {
-            const list = document.getElementById("models-list");
-            list.innerHTML = "";
-            
-            // Add "Todos los modelos" option at the top
-            const allOpt = document.createElement("li");
-            allOpt.className = "p-2.5 px-4 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors text-xs font-semibold border-b border-outline-variant/30";
-            allOpt.textContent = "Todos los modelos";
-            allOpt.addEventListener("mousedown", () => {
-                document.getElementById("filter-model").value = "";
-                list.classList.add("hidden");
-                renderInventory();
-            });
-            list.appendChild(allOpt);
-
-            const lowerText = filterText.toLowerCase();
-            for (const [key, name] of Object.entries(MODEL_NAMES)) {
-                if (lowerText && !name.toLowerCase().includes(lowerText)) continue;
-                const item = document.createElement("li");
-                item.className = "p-2.5 px-4 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors text-xs";
-                item.textContent = name;
-                item.addEventListener("mousedown", () => {
-                    document.getElementById("filter-model").value = name;
-                    list.classList.add("hidden");
-                    renderInventory();
-                });
-                list.appendChild(item);
-            }
-        }
-
-        function populateColorDropdown(filterText = "") {
-            const list = document.getElementById("colors-list");
-            list.innerHTML = "";
-            
-            // Add "Todos los colores" option at the top
-            const allOpt = document.createElement("li");
-            allOpt.className = "p-2.5 px-4 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors text-xs font-semibold border-b border-outline-variant/30";
-            allOpt.textContent = "Todos los colores";
-            allOpt.addEventListener("mousedown", () => {
-                document.getElementById("filter-color").value = "";
-                list.classList.add("hidden");
-                renderInventory();
-            });
-            list.appendChild(allOpt);
-
-            const lowerText = filterText.toLowerCase();
-            for (const [key, name] of Object.entries(COLOR_NAMES)) {
-                if (lowerText && !name.toLowerCase().includes(lowerText)) continue;
-                const item = document.createElement("li");
-                item.className = "p-2.5 px-4 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors text-xs";
-                item.textContent = name;
-                item.addEventListener("mousedown", () => {
-                    document.getElementById("filter-color").value = name;
-                    list.classList.add("hidden");
-                    renderInventory();
-                });
-                list.appendChild(item);
-            }
-        }
-
         document.addEventListener("DOMContentLoaded", () => {
             loadData();
 
-            const modelFilter = document.getElementById("filter-model");
-            const colorFilter = document.getElementById("filter-color");
-            const modelsList = document.getElementById("models-list");
-            const colorsList = document.getElementById("colors-list");
+            // Populate color filter dropdown
+            const filterColor = document.getElementById("select-filter-color");
+            if (filterColor) {
+                filterColor.innerHTML = '<option value="all">Todos los colores</option>';
+                for (const [colorId, colorName] of Object.entries(COLOR_NAMES)) {
+                    const opt = document.createElement("option");
+                    opt.value = colorId;
+                    opt.textContent = colorName;
+                    filterColor.appendChild(opt);
+                }
+            }
 
-            // Populate initially
-            populateModelDropdown();
-            populateColorDropdown();
+            const filterTipo = document.getElementById("select-filter-tipo");
+            const filterModelo = document.getElementById("select-filter-modelo");
 
-            // Set up search / filter autocomplete events
-            modelFilter.addEventListener("focus", () => {
-                populateModelDropdown(modelFilter.value);
-                modelsList.classList.remove("hidden");
-            });
-            modelFilter.addEventListener("blur", () => {
-                setTimeout(() => modelsList.classList.add("hidden"), 200);
-            });
-            modelFilter.addEventListener("input", () => {
-                populateModelDropdown(modelFilter.value);
+            function updateFilterModels() {
+                if (!filterTipo || !filterModelo) return;
+                const selectedType = filterTipo.value;
+                let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+                
+                if (modelsList.length === 0) {
+                    modelsList = [
+                        { id_modelo: "MOD-001", tipo: "Polo", nombre: "Camisero MC" },
+                        { id_modelo: "MOD-002", tipo: "Polo", nombre: "Camisero ML" },
+                        { id_modelo: "MOD-003", tipo: "Polo", nombre: "Girasol MC" },
+                        { id_modelo: "MOD-004", tipo: "Polo", nombre: "Girasol ML" },
+                        { id_modelo: "MOD-005", tipo: "Polo", nombre: "Redondo MC" },
+                        { id_modelo: "MOD-006", tipo: "Polo", nombre: "Redondo ML" },
+                        { id_modelo: "MOD-007", tipo: "Polo", nombre: "Cuadrado MC" },
+                        { id_modelo: "MOD-008", tipo: "Polo", nombre: "Cuadrado ML" },
+                        { id_modelo: "MOD-009", tipo: "Polo", nombre: "Tania MC" },
+                        { id_modelo: "MOD-010", tipo: "Polo", nombre: "Tania ML" },
+                        { id_modelo: "MOD-011", tipo: "Polo", nombre: "Noemi MC" },
+                        { id_modelo: "MOD-012", tipo: "Polo", nombre: "Noemi ML" },
+                        { id_modelo: "MOD-013", tipo: "Polo", nombre: "Boton MC" },
+                        { id_modelo: "MOD-014", tipo: "Polo", nombre: "Boton ML" },
+                        { id_modelo: "MOD-015", tipo: "Short", nombre: "Short Pinza" },
+                        { id_modelo: "MOD-016", tipo: "Short", nombre: "Short Boton" },
+                        { id_modelo: "MOD-017", tipo: "Chompa", nombre: "Chompa Redondo" },
+                        { id_modelo: "MOD-018", tipo: "Chompa", nombre: "Chompa V" },
+                        { id_modelo: "MOD-019", tipo: "Buzo", nombre: "Buzo Normal" },
+                        { id_modelo: "MOD-020", tipo: "Polo", nombre: "Corazon MC" },
+                        { id_modelo: "MOD-021", tipo: "Polo", fontName: "Corazon ML", nombre: "Corazon ML" }
+                    ];
+                }
+                
+                filterModelo.innerHTML = '<option value="all">Todos los modelos</option>';
+                const filtered = selectedType === "all" ? modelsList : modelsList.filter(m => m.tipo.toLowerCase() === selectedType.toLowerCase());
+                filtered.forEach(m => {
+                    const opt = document.createElement("option");
+                    opt.value = m.id_modelo;
+                    opt.textContent = m.nombre;
+                    filterModelo.appendChild(opt);
+                });
                 renderInventory();
-            });
+            }
 
-            colorFilter.addEventListener("focus", () => {
-                populateColorDropdown(colorFilter.value);
-                colorsList.classList.remove("hidden");
-            });
-            colorFilter.addEventListener("blur", () => {
-                setTimeout(() => colorsList.classList.add("hidden"), 200);
-            });
-            colorFilter.addEventListener("input", () => {
-                populateColorDropdown(colorFilter.value);
-                renderInventory();
-            });
+            if (filterTipo) {
+                filterTipo.addEventListener("change", updateFilterModels);
+            }
+            if (filterModelo) {
+                filterModelo.addEventListener("change", renderInventory);
+            }
+            if (filterColor) {
+                filterColor.addEventListener("change", renderInventory);
+            }
+
+            const tableSearchInput = document.getElementById("inventory-search-table");
+            if (tableSearchInput) {
+                tableSearchInput.addEventListener('input', () => {
+                    renderInventory();
+                });
+            }
+
+            updateFilterModels(); // init models dropdown
 
             // Set up transfer modal buttons
             const transferModal = document.getElementById("transfer-modal");
@@ -859,20 +859,8 @@
             if (storeSelect) {
                 storeSelect.addEventListener("change", renderInventory);
             }
-            if (searchInput) {
-                searchInput.addEventListener("input", renderInventory);
-            }
         });
 
-        // Simulating search responsiveness
-        if (searchInput) {
-            searchInput.addEventListener('focus', () => {
-                searchInput.parentElement.classList.add('scale-105', 'transition-transform');
-            });
-            searchInput.addEventListener('blur', () => {
-                searchInput.parentElement.classList.remove('scale-105');
-            });
-        }
 
         // Real-time updates
         window.addEventListener('storage', (e) => {
