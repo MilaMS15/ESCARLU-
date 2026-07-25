@@ -291,6 +291,7 @@
           <tr class="bg-surface-container text-on-surface-variant text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10">
             <th class="px-4 py-3 border-b border-outline-variant">Producto / Modelo</th>
             <th class="px-2 py-3 border-b border-outline-variant">Color</th>
+            <th class="px-2 py-3 border-b border-outline-variant text-center">St</th>
             <th class="px-2 py-3 border-b border-outline-variant text-center">S</th>
             <th class="px-2 py-3 border-b border-outline-variant text-center">M</th>
             <th class="px-2 py-3 border-b border-outline-variant text-center">L</th>
@@ -440,8 +441,22 @@
                     continue;
                 }
 
-                const sizes = storeStock[modelKey]?.[colorKey] || { S: 0, M: 0, L: 0, XL: 0 };
-                const totalStock = Object.values(sizes).reduce((sum, v) => sum + v, 0);
+                const allowedSizes = getAllowedSizesForModel(modelKey);
+                const sizes = storeStock[modelKey]?.[colorKey] || {};
+                
+                let totalStock = 0;
+                allowedSizes.forEach(sz => {
+                    totalStock += (sizes[sz] || 0);
+                });
+
+                function renderSizeCell(sz) {
+                    if (!allowedSizes.includes(sz)) {
+                        return `<td class="px-2 py-2 text-center text-on-surface/20 font-medium">-</td>`;
+                    }
+                    const val = sizes[sz] || 0;
+                    const isLow = val < 5;
+                    return `<td class="px-2 py-2 text-center font-bold ${isLow ? 'text-error font-extrabold' : ''}">${val}</td>`;
+                }
 
                 let statusBadge = "";
                 if (totalStock > 15) {
@@ -495,10 +510,11 @@
                     <td class="px-2 py-2">
                         <span class="px-2 py-0.5 bg-surface-container-high text-on-surface rounded-full text-[10px] font-semibold">${colorName}</span>
                     </td>
-                    <td class="px-2 py-2 text-center font-bold ${sizes.S < 5 ? 'text-error font-extrabold' : ''}">${sizes.S}</td>
-                    <td class="px-2 py-2 text-center font-bold ${sizes.M < 5 ? 'text-error font-extrabold' : ''}">${sizes.M}</td>
-                    <td class="px-2 py-2 text-center font-bold ${sizes.L < 5 ? 'text-error font-extrabold' : ''}">${sizes.L}</td>
-                    <td class="px-2 py-2 text-center font-bold ${sizes.XL < 5 ? 'text-error font-extrabold' : ''}">${sizes.XL}</td>
+                    ${renderSizeCell("St")}
+                    ${renderSizeCell("S")}
+                    ${renderSizeCell("M")}
+                    ${renderSizeCell("L")}
+                    ${renderSizeCell("XL")}
                     <td class="px-2 py-2">${statusBadge}</td>
                     ${actionTd}
                 `;

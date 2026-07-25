@@ -258,6 +258,7 @@
 <tr class="bg-surface-container text-on-surface-variant font-label-md text-xs uppercase tracking-wider">
 <th class="px-6 py-4 border-b border-outline-variant">Modelo / Tipo</th>
 <th class="px-4 py-4 border-b border-outline-variant">Color</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">St</th>
 <th class="px-4 py-4 border-b border-outline-variant text-center">S</th>
 <th class="px-4 py-4 border-b border-outline-variant text-center">M</th>
 <th class="px-4 py-4 border-b border-outline-variant text-center">L</th>
@@ -320,24 +321,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         models.forEach(m => {
+            const allowedSizes = getAllowedSizesForModel(m.key);
             colors.forEach(c => {
-                let sSum = 0, mSum = 0, lSum = 0, xlSum = 0;
+                let stSum = 0, sSum = 0, mSum = 0, lSum = 0, xlSum = 0;
 
                 // Sumar según filtro de sede
                 Object.keys(invData).forEach(sKey => {
                     const storeInv = invData[sKey];
                     if (storeInv && storeInv[m.key] && storeInv[m.key][c.key]) {
                         const sizes = storeInv[m.key][c.key];
-                        const sVal = sizes.S || 0;
-                        const mVal = sizes.M || 0;
-                        const lVal = sizes.L || 0;
-                        const xlVal = sizes.XL || 0;
+                        const stVal = allowedSizes.includes("St") ? (sizes.St || 0) : 0;
+                        const sVal = allowedSizes.includes("S") ? (sizes.S || 0) : 0;
+                        const mVal = allowedSizes.includes("M") ? (sizes.M || 0) : 0;
+                        const lVal = allowedSizes.includes("L") ? (sizes.L || 0) : 0;
+                        const xlVal = allowedSizes.includes("XL") ? (sizes.XL || 0) : 0;
 
-                        const rowTotal = sVal + mVal + lVal + xlVal;
+                        const rowTotal = stVal + sVal + mVal + lVal + xlVal;
                         if (sKey === "ALM-01") centralItems += rowTotal;
                         else if (sKey.startsWith("TDA-")) tiendasItems += rowTotal;
 
                         if (selectedStore === "all" || selectedStore === sKey) {
+                            stSum += stVal;
                             sSum += sVal;
                             mSum += mVal;
                             lSum += lVal;
@@ -346,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                const totalRow = sSum + mSum + lSum + xlSum;
+                const totalRow = stSum + sSum + mSum + lSum + xlSum;
 
                 // Solo contar si pertenece al filtro o si no hay filtro
                 if (selectedStore === "all") {
@@ -357,8 +361,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         const storeInv = invData[sKey];
                         let storeSum = 0;
                         Object.keys(storeInv).forEach(mK => {
+                            const allowed = getAllowedSizesForModel(mK);
                             Object.keys(storeInv[mK]).forEach(cK => {
-                                Object.values(storeInv[mK][cK]).forEach(val => storeSum += val);
+                                const sizes = storeInv[mK][cK];
+                                allowed.forEach(sz => {
+                                    storeSum += (sizes[sz] || 0);
+                                });
                             });
                         });
                         return storeSum;
@@ -382,15 +390,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Generar detalle por sede para el modal/alert
                 let detailStr = "";
                 Object.keys(invData).forEach(sKey => {
-                    const qty = (invData[sKey]?.[m.key]?.[c.key]?.S || 0) + 
-                                (invData[sKey]?.[m.key]?.[c.key]?.M || 0) + 
-                                (invData[sKey]?.[m.key]?.[c.key]?.L || 0) + 
-                                (invData[sKey]?.[m.key]?.[c.key]?.XL || 0);
+                    const storeInv = invData[sKey]?.[m.key]?.[c.key] || {};
+                    const stVal = allowedSizes.includes("St") ? (storeInv.St || 0) : 0;
+                    const sVal = allowedSizes.includes("S") ? (storeInv.S || 0) : 0;
+                    const mVal = allowedSizes.includes("M") ? (storeInv.M || 0) : 0;
+                    const lVal = allowedSizes.includes("L") ? (storeInv.L || 0) : 0;
+                    const xlVal = allowedSizes.includes("XL") ? (storeInv.XL || 0) : 0;
+                    const qty = stVal + sVal + mVal + lVal + xlVal;
                     if (qty > 0) {
-                        detailStr += `\\n- ${STORE_NAMES[sKey] || sKey}: ${qty} uds (S:${invData[sKey]?.[m.key]?.[c.key]?.S||0}, M:${invData[sKey]?.[m.key]?.[c.key]?.M||0}, L:${invData[sKey]?.[m.key]?.[c.key]?.L||0}, XL:${invData[sKey]?.[m.key]?.[c.key]?.XL||0})`;
+                        let parts = [];
+                        if (allowedSizes.includes("St")) parts.push(`St:${stVal}`);
+                        if (allowedSizes.includes("S")) parts.push(`S:${sVal}`);
+                        if (allowedSizes.includes("M")) parts.push(`M:${mVal}`);
+                        if (allowedSizes.includes("L")) parts.push(`L:${lVal}`);
+                        if (allowedSizes.includes("XL")) parts.push(`XL:${xlVal}`);
+                        detailStr += `\\n- ${STORE_NAMES[sKey] || sKey}: ${qty} uds (${parts.join(", ")})`;
                     }
                 });
                 if (!detailStr) detailStr = "Sin existencias en ninguna sede.";
+
+                function renderSizeCell(sz, val) {
+                    if (!allowedSizes.includes(sz)) {
+                        return `<td class="px-4 py-4 text-center text-on-surface/20 font-medium">-</td>`;
+                    }
+                    const isLow = val < 5;
+                    return `<td class="px-4 py-4 text-center font-bold ${isLow ? 'text-error font-extrabold' : ''}">${val}</td>`;
+                }
 
                 rowsHtml += `
                     <tr class="hover:bg-surface-container-low transition-colors">
@@ -401,10 +426,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td class="px-4 py-4">
                             <span class="px-3 py-1 rounded-full text-[11px] font-semibold ${c.badge}">${c.name}</span>
                         </td>
-                        <td class="px-4 py-4 text-center font-bold ${sSum < 5 ? 'text-error font-extrabold' : ''}">${sSum}</td>
-                        <td class="px-4 py-4 text-center font-bold ${mSum < 5 ? 'text-error font-extrabold' : ''}">${mSum}</td>
-                        <td class="px-4 py-4 text-center font-bold ${lSum < 5 ? 'text-error font-extrabold' : ''}">${lSum}</td>
-                        <td class="px-4 py-4 text-center font-bold ${xlSum < 5 ? 'text-error font-extrabold' : ''}">${xlSum}</td>
+                        ${renderSizeCell("St", stSum)}
+                        ${renderSizeCell("S", sSum)}
+                        ${renderSizeCell("M", mSum)}
+                        ${renderSizeCell("L", lSum)}
+                        ${renderSizeCell("XL", xlSum)}
                         <td class="px-4 py-4 text-center font-extrabold text-primary text-sm">${totalRow}</td>
                         <td class="px-4 py-4">${statusBadge}</td>
                         <td class="px-6 py-4 text-right">
@@ -417,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="p-8 text-center text-on-surface-variant font-semibold">No se encontraron productos que coincidan.</td></tr>`;
+        tbody.innerHTML = rowsHtml || `<tr><td colspan="10" class="p-8 text-center text-on-surface-variant font-semibold">No se encontraron productos que coincidan.</td></tr>`;
 
         // Calcular totalItems y alerts correctos según filtro
         let filterTotal = 0;
@@ -427,8 +453,12 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.keys(invData).forEach(sKey => {
             let storeSum = 0;
             Object.keys(invData[sKey] || {}).forEach(mK => {
+                const allowed = getAllowedSizesForModel(mK);
                 Object.keys(invData[sKey][mK] || {}).forEach(cK => {
-                    Object.values(invData[sKey][mK][cK] || {}).forEach(val => storeSum += val);
+                    const sizes = invData[sKey][mK][cK];
+                    allowed.forEach(sz => {
+                        storeSum += (sizes[sz] || 0);
+                    });
                 });
             });
             if (sKey === "ALM-01") filterCentral += storeSum;
