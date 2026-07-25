@@ -269,9 +269,6 @@
         Stock de Polos
       </h3>
       <div class="flex items-center gap-3">
-        <!-- Buscador compacto de tabla -->
-        <input type="text" id="inventory-search-table" placeholder="Buscar por modelo o SKU..." class="h-8 border border-outline-variant bg-surface rounded px-2 text-[11px] font-bold text-on-surface focus:ring-0 outline-none w-48" />
-        
         <!-- Paginación compacta -->
         <div class="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant bg-surface border border-outline-variant p-0.5 rounded">
           <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_left</span></button>
@@ -283,6 +280,35 @@
           <span class="material-symbols-outlined text-xs">swap_horiz</span>
           Pedir Stock
         </a>
+      </div>
+    </div>
+    <!-- Barra de Filtros en Cascada -->
+    <div class="p-3 bg-surface-container-low border-b border-outline-variant grid grid-cols-1 sm:grid-cols-4 gap-3 shrink-0">
+      <div class="flex flex-col gap-0.5">
+        <label class="text-[10px] text-on-surface-variant font-bold uppercase">Filtrar por Tipo</label>
+        <select id="select-filter-tipo" class="h-9 border border-outline-variant bg-surface rounded px-2 text-xs font-semibold text-on-surface focus:ring-0 outline-none">
+          <option value="all">Todos los tipos</option>
+          <option value="Polo">Polo</option>
+          <option value="Short">Short</option>
+          <option value="Chompa">Chompa</option>
+          <option value="Buzo">Buzo</option>
+        </select>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <label class="text-[10px] text-on-surface-variant font-bold uppercase">Filtrar por Modelo</label>
+        <select id="select-filter-modelo" class="h-9 border border-outline-variant bg-surface rounded px-2 text-xs font-semibold text-on-surface focus:ring-0 outline-none">
+          <option value="all">Todos los modelos</option>
+        </select>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <label class="text-[10px] text-on-surface-variant font-bold uppercase">Filtrar por Color</label>
+        <select id="select-filter-color" class="h-9 border border-outline-variant bg-surface rounded px-2 text-xs font-semibold text-on-surface focus:ring-0 outline-none">
+          <option value="all">Todos los colores</option>
+        </select>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <label class="text-[10px] text-on-surface-variant font-bold uppercase">Buscar Texto</label>
+        <input type="text" id="inventory-search-table" placeholder="Buscar por palabra clave..." class="h-9 border border-outline-variant bg-surface rounded px-2 text-xs text-on-surface focus:ring-0 outline-none" />
       </div>
     </div>
     <div class="table-container overflow-auto flex-1 max-h-[380px]">
@@ -347,7 +373,73 @@
         renderInventoryTable();
         renderPendingTransfers();
 
-        // Bind table search input
+        // Populate color filter dropdown
+        const filterColor = document.getElementById("select-filter-color");
+        if (filterColor) {
+            filterColor.innerHTML = '<option value="all">Todos los colores</option>';
+            for (const [colorId, colorName] of Object.entries(COLOR_NAMES)) {
+                const opt = document.createElement("option");
+                opt.value = colorId;
+                opt.textContent = colorName;
+                filterColor.appendChild(opt);
+            }
+        }
+
+        const filterTipo = document.getElementById("select-filter-tipo");
+        const filterModelo = document.getElementById("select-filter-modelo");
+
+        function updateFilterModels() {
+            if (!filterTipo || !filterModelo) return;
+            const selectedType = filterTipo.value;
+            let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+            
+            if (modelsList.length === 0) {
+                modelsList = [
+                    { id_modelo: "MOD-001", tipo: "Polo", nombre: "Camisero MC" },
+                    { id_modelo: "MOD-002", tipo: "Polo", nombre: "Camisero ML" },
+                    { id_modelo: "MOD-003", tipo: "Polo", nombre: "Girasol MC" },
+                    { id_modelo: "MOD-004", tipo: "Polo", nombre: "Girasol ML" },
+                    { id_modelo: "MOD-005", tipo: "Polo", nombre: "Redondo MC" },
+                    { id_modelo: "MOD-006", tipo: "Polo", nombre: "Redondo ML" },
+                    { id_modelo: "MOD-007", tipo: "Polo", nombre: "Cuadrado MC" },
+                    { id_modelo: "MOD-008", tipo: "Polo", nombre: "Cuadrado ML" },
+                    { id_modelo: "MOD-009", tipo: "Polo", nombre: "Tania MC" },
+                    { id_modelo: "MOD-010", tipo: "Polo", nombre: "Tania ML" },
+                    { id_modelo: "MOD-011", tipo: "Polo", nombre: "Noemi MC" },
+                    { id_modelo: "MOD-012", tipo: "Polo", nombre: "Noemi ML" },
+                    { id_modelo: "MOD-013", tipo: "Polo", nombre: "Boton MC" },
+                    { id_modelo: "MOD-014", tipo: "Polo", nombre: "Boton ML" },
+                    { id_modelo: "MOD-015", tipo: "Short", nombre: "Short Pinza" },
+                    { id_modelo: "MOD-016", tipo: "Short", nombre: "Short Boton" },
+                    { id_modelo: "MOD-017", tipo: "Chompa", nombre: "Chompa Redondo" },
+                    { id_modelo: "MOD-018", tipo: "Chompa", nombre: "Chompa V" },
+                    { id_modelo: "MOD-019", tipo: "Buzo", nombre: "Buzo Normal" },
+                    { id_modelo: "MOD-020", tipo: "Polo", nombre: "Corazon MC" },
+                    { id_modelo: "MOD-021", tipo: "Polo", nombre: "Corazon ML" }
+                ];
+            }
+            
+            filterModelo.innerHTML = '<option value="all">Todos los modelos</option>';
+            const filtered = selectedType === "all" ? modelsList : modelsList.filter(m => m.tipo.toLowerCase() === selectedType.toLowerCase());
+            filtered.forEach(m => {
+                const opt = document.createElement("option");
+                opt.value = m.id_modelo;
+                opt.textContent = m.nombre;
+                filterModelo.appendChild(opt);
+            });
+            renderInventoryTable();
+        }
+
+        if (filterTipo) {
+            filterTipo.addEventListener("change", updateFilterModels);
+        }
+        if (filterModelo) {
+            filterModelo.addEventListener("change", renderInventoryTable);
+        }
+        if (filterColor) {
+            filterColor.addEventListener("change", renderInventoryTable);
+        }
+        
         const tableSearchInput = document.getElementById("inventory-search-table");
         if (tableSearchInput) {
             tableSearchInput.addEventListener('input', () => {
@@ -363,6 +455,8 @@
                 renderPendingTransfers();
             }
         });
+        
+        updateFilterModels(); // init models dropdown
     });
 
     function switchTab(tab) {
@@ -427,6 +521,9 @@
         }
 
         const query = (document.getElementById("inventory-search-table")?.value || "").toLowerCase();
+        const selectedTipo = document.getElementById("select-filter-tipo")?.value || "all";
+        const selectedModelo = document.getElementById("select-filter-modelo")?.value || "all";
+        const selectedColor = document.getElementById("select-filter-color")?.value || "all";
 
         const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
         const targetStore = activeTab === 'local' ? user.storeId : 'ALM-01';
@@ -436,7 +533,19 @@
 
         // Iterate through all model names and color names to keep list unified
         for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+            // Filter by selected model
+            if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
+            
+            // Filter by type
+            let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+            const modelObj = modelsList.find(m => m.id_modelo === modelKey);
+            const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
+            if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
+
             for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
+                // Filter by color
+                if (selectedColor !== "all" && colorKey !== selectedColor) continue;
+
                 if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
                     continue;
                 }
