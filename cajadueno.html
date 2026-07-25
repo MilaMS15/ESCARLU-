@@ -190,7 +190,13 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Ingresos -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-28">
-            <span class="text-xs text-green-700 font-bold uppercase tracking-wider">Total Ingresos</span>
+            <div class="flex justify-between items-center w-full">
+                <span class="text-xs text-green-700 font-bold uppercase tracking-wider">Total Ingresos</span>
+                <div class="flex flex-col items-end text-[10px] font-bold text-on-surface-variant leading-tight">
+                    <span id="kpi-ingresos-efectivo" class="text-slate-600">Efectivo: S/ 0.00</span>
+                    <span id="kpi-ingresos-yape" class="text-primary font-bold">Yape/Digital: S/ 0.00</span>
+                </div>
+            </div>
             <span id="kpi-ingresos" class="text-3xl font-black text-green-600 mt-2">S/ 0.00</span>
         </div>
         <!-- Egresos -->
@@ -364,8 +370,21 @@
         const totalEgresos = monthlyExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
         const utilidad = totalIngresos - totalEgresos;
 
+        let ingresosEfectivo = 0;
+        let ingresosDigital = 0;
+        approvedSales.forEach(s => {
+            const amt = parseFloat(s.amount || 0);
+            if (s.method && s.method.toLowerCase() === 'efectivo') {
+                ingresosEfectivo += amt;
+            } else {
+                ingresosDigital += amt;
+            }
+        });
+
         // Render KPIs
         document.getElementById("kpi-ingresos").textContent = `S/ ${totalIngresos.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById("kpi-ingresos-efectivo").textContent = `Efectivo: S/ ${ingresosEfectivo.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById("kpi-ingresos-yape").textContent = `Yape/Digital: S/ ${ingresosDigital.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         document.getElementById("kpi-egresos").textContent = `S/ ${totalEgresos.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         
         const kpiUtilidad = document.getElementById("kpi-utilidad");
