@@ -492,17 +492,43 @@
             }
         }
 
-        // Talla buttons behavior
-        const tallaButtons = document.querySelectorAll('.talla-btn');
-        tallaButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tallaButtons.forEach(b => {
-                    b.className = 'talla-btn flex-1 h-10 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all';
+        function updateTallaButtons() {
+            const tallaContainer = document.getElementById('talla-buttons-container');
+            if (!selectModel || !tallaContainer) return;
+            
+            const modelVal = selectModel.value;
+            const allowedSizes = getAllowedSizesForModel(modelVal);
+            
+            if (!allowedSizes.includes(selectedTalla)) {
+                selectedTalla = allowedSizes[0];
+            }
+            
+            tallaContainer.innerHTML = "";
+            allowedSizes.forEach(size => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.setAttribute('data-talla', size);
+                btn.className = size === selectedTalla
+                    ? 'talla-btn flex-1 h-10 border-2 border-primary bg-primary/5 text-primary font-bold rounded-lg transition-all'
+                    : 'talla-btn flex-1 h-10 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all';
+                btn.textContent = size;
+                
+                btn.addEventListener('click', () => {
+                    tallaContainer.querySelectorAll('.talla-btn').forEach(b => {
+                        b.className = 'talla-btn flex-1 h-10 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all';
+                    });
+                    btn.className = 'talla-btn flex-1 h-10 border-2 border-primary bg-primary/5 text-primary font-bold rounded-lg transition-all';
+                    selectedTalla = size;
                 });
-                btn.className = 'talla-btn flex-1 h-10 border-2 border-primary bg-primary/5 text-primary font-bold rounded-lg transition-all';
-                selectedTalla = btn.getAttribute('data-talla');
+                
+                tallaContainer.appendChild(btn);
             });
-        });
+        }
+
+        if (selectModel) {
+            selectModel.addEventListener('change', updateTallaButtons);
+            updateTallaButtons(); // init
+        }
 
         // Submit form
         const btnSubmit = document.getElementById('btn-submit-ingreso');

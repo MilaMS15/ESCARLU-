@@ -119,15 +119,23 @@ CREATE TABLE public.gastos (
   CONSTRAINT gastos_id_sede_fkey FOREIGN KEY (id_sede) REFERENCES public.sedes(id_sede)
 );
 CREATE TABLE public.moldes (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  tipo text NOT NULL,
-  modelo text NOT NULL,
-  talla text NOT NULL,
-  nombre_pieza text NOT NULL,
+  nombre_molde character varying NOT NULL,
   dxf_url text NOT NULL,
-  rotacion_maxima numeric DEFAULT 0,
   created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
-  CONSTRAINT moldes_pkey PRIMARY KEY (id)
+  CONSTRAINT moldes_pkey PRIMARY KEY (nombre_molde)
+);
+
+CREATE TABLE public.recetas_moldes (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  id_modelo character varying NOT NULL,
+  id_talla character varying NOT NULL,
+  nombre_molde character varying NOT NULL,
+  cantidad integer NOT NULL CHECK (cantidad > 0),
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT recetas_moldes_pkey PRIMARY KEY (id),
+  CONSTRAINT recetas_moldes_id_modelo_fkey FOREIGN KEY (id_modelo) REFERENCES public.modelos(id_modelo) ON DELETE CASCADE,
+  CONSTRAINT recetas_moldes_id_talla_fkey FOREIGN KEY (id_talla) REFERENCES public.tallas(id_talla) ON DELETE CASCADE,
+  CONSTRAINT recetas_moldes_nombre_molde_fkey FOREIGN KEY (nombre_molde) REFERENCES public.moldes(nombre_molde) ON DELETE CASCADE
 );
 CREATE TABLE public.tendidas_config (
   id uuid NOT NULL DEFAULT gen_random_uuid(),

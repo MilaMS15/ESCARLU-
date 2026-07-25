@@ -1215,5 +1215,24 @@ async function getStockForProduct(model, color, storeId) {
     return result;
 }
 
+function getAllowedSizesForModel(modelId) {
+    const models = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+    const model = models.find(m => m.id_modelo === modelId);
+    if (!model) {
+        // Fallback fallback checks by ID prefix if local storage isn't loaded yet
+        if (modelId === "MOD-015" || modelId === "MOD-016") {
+            return ["S", "M", "L", "XL"]; // Shorts
+        }
+        return ["St", "L"]; // Polos, Chompas, Buzos
+    }
+    
+    const category = model.tipo.toLowerCase();
+    if (category === "short") {
+        return ["S", "M", "L", "XL"];
+    } else {
+        return ["St", "L"];
+    }
+}
+
 
 

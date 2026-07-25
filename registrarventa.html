@@ -389,13 +389,32 @@
         checkAuth();
         renderSideNav("registrarventa");
 
-        // Update suggested price when model changes
+        // Update suggested price and talla choices when model changes
         const modelSelect = document.getElementById('select-model');
         const priceInput = document.getElementById('price-input');
+        const tallaSelect = document.getElementById('select-talla');
+
+        function updateSizesDropdown() {
+            if (!modelSelect || !tallaSelect) return;
+            const model = modelSelect.value;
+            const allowedSizes = getAllowedSizesForModel(model);
+            tallaSelect.innerHTML = "";
+            allowedSizes.forEach(sz => {
+                const opt = document.createElement('option');
+                opt.value = sz;
+                opt.textContent = sz;
+                tallaSelect.appendChild(opt);
+            });
+        }
+
         modelSelect.addEventListener('change', () => {
             const model = modelSelect.value;
             priceInput.value = MODEL_PRICES[model] || 0;
+            updateSizesDropdown();
         });
+
+        // Initialize sizes dropdown
+        updateSizesDropdown();
 
         // Toggle WhatsApp button
         const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
