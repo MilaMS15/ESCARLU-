@@ -200,14 +200,19 @@
 </div>
 </div>
 <!-- Product Selectors -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 <div>
-<label class="block font-label-lg text-label-lg mb-2">Modelo de Polo</label>
+<label class="block font-label-lg text-label-lg mb-2">Tipo de Prenda</label>
+<select id="select-tipo" class="w-full h-14 bg-white border-2 border-outline-variant rounded-lg px-4 font-body-md focus:border-primary focus:ring-0">
+    <option value="Polo">Polo</option>
+    <option value="Short">Short</option>
+    <option value="Chompa">Chompa</option>
+    <option value="Buzo">Buzo</option>
+</select>
+</div>
+<div>
+<label class="block font-label-lg text-label-lg mb-2">Modelo</label>
 <select id="select-model" class="w-full h-14 bg-white border-2 border-outline-variant rounded-lg px-4 font-body-md focus:border-primary focus:ring-0">
-    <option value="classic">Polo Clásico Piqué</option>
-    <option value="slim">Polo Slim Fit Mercerizado</option>
-    <option value="sport">Polo Técnico Deportivo</option>
-    <option value="premium">Polo Premium Seda/Algodón</option>
 </select>
 </div>
 <div>
@@ -375,49 +380,17 @@ Agregar a la Lista
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         document.getElementById("current-date-label").textContent = new Date().toLocaleDateString('es-ES', options);
 
-        // Populate select-model from MODEL_NAMES
+        const selectTipo = document.getElementById('select-tipo');
         const selectModel = document.getElementById('select-model');
-        if (selectModel) {
-            selectModel.innerHTML = "";
-            for (const [modelId, modelName] of Object.entries(MODEL_NAMES)) {
-                const opt = document.createElement('option');
-                opt.value = modelId;
-                opt.textContent = modelName;
-                selectModel.appendChild(opt);
-            }
-        }
-
-        // Populate select-color from COLOR_NAMES
         const selectColor = document.getElementById('select-color');
-        if (selectColor) {
-            selectColor.innerHTML = "";
-            for (const [colorId, colorName] of Object.entries(COLOR_NAMES)) {
-                const opt = document.createElement('option');
-                opt.value = colorId;
-                opt.textContent = colorName;
-                selectColor.appendChild(opt);
-            }
-        }
-
-        // Populate select-origin-store excluding current store
         const selectOriginStore = document.getElementById('select-origin-store');
-        if (selectOriginStore && user) {
-            selectOriginStore.innerHTML = "";
-            for (const [storeId, storeName] of Object.entries(STORE_NAMES)) {
-                if (storeId !== user.storeId && storeId !== 'ALM-01' && storeId !== 'CTR-01') {
-                    const opt = document.createElement('option');
-                    opt.value = storeId;
-                    opt.textContent = storeName;
-                    selectOriginStore.appendChild(opt);
-                }
-            }
-        }
 
         function updateTallaButtons() {
             const tallaContainer = document.getElementById('talla-container');
             if (!selectModel || !tallaContainer) return;
             
             const modelVal = selectModel.value;
+            if (!modelVal) return;
             const allowedSizes = getAllowedSizesForModel(modelVal);
             
             if (!allowedSizes.includes(selectedTalla)) {
@@ -448,17 +421,80 @@ Agregar a la Lista
             updateSelectedStock();
         }
 
-        // Listen for selector changes to update stock and tallas
-        if (selectModel) {
-            selectModel.addEventListener('change', () => {
-                updateTallaButtons();
+        function updateModelsDropdown() {
+            if (!selectTipo || !selectModel) return;
+            const selectedType = selectTipo.value;
+            let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+            
+            if (modelsList.length === 0) {
+                modelsList = [
+                    { id_modelo: "MOD-001", tipo: "Polo", nombre: "Camisero MC" },
+                    { id_modelo: "MOD-002", tipo: "Polo", nombre: "Camisero ML" },
+                    { id_modelo: "MOD-003", tipo: "Polo", nombre: "Girasol MC" },
+                    { id_modelo: "MOD-004", tipo: "Polo", nombre: "Girasol ML" },
+                    { id_modelo: "MOD-005", tipo: "Polo", nombre: "Redondo MC" },
+                    { id_modelo: "MOD-006", tipo: "Polo", nombre: "Redondo ML" },
+                    { id_modelo: "MOD-007", tipo: "Polo", nombre: "Cuadrado MC" },
+                    { id_modelo: "MOD-008", tipo: "Polo", nombre: "Cuadrado ML" },
+                    { id_modelo: "MOD-009", tipo: "Polo", nombre: "Tania MC" },
+                    { id_modelo: "MOD-010", tipo: "Polo", nombre: "Tania ML" },
+                    { id_modelo: "MOD-011", tipo: "Polo", nombre: "Noemi MC" },
+                    { id_modelo: "MOD-012", tipo: "Polo", nombre: "Noemi ML" },
+                    { id_modelo: "MOD-013", tipo: "Polo", nombre: "Boton MC" },
+                    { id_modelo: "MOD-014", tipo: "Polo", nombre: "Boton ML" },
+                    { id_modelo: "MOD-015", tipo: "Short", nombre: "Short Pinza" },
+                    { id_modelo: "MOD-016", tipo: "Short", nombre: "Short Boton" },
+                    { id_modelo: "MOD-017", tipo: "Chompa", nombre: "Chompa Redondo" },
+                    { id_modelo: "MOD-018", tipo: "Chompa", nombre: "Chompa V" },
+                    { id_modelo: "MOD-019", tipo: "Buzo", nombre: "Buzo Normal" },
+                    { id_modelo: "MOD-020", tipo: "Polo", nombre: "Corazon MC" },
+                    { id_modelo: "MOD-021", tipo: "Polo", nombre: "Corazon ML" }
+                ];
+            }
+            
+            const filtered = modelsList.filter(m => m.tipo.toLowerCase() === selectedType.toLowerCase());
+            selectModel.innerHTML = "";
+            filtered.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id_modelo;
+                opt.textContent = m.nombre;
+                selectModel.appendChild(opt);
             });
+            updateTallaButtons();
+        }
+
+        // Populate select-color from COLOR_NAMES
+        if (selectColor) {
+            selectColor.innerHTML = "";
+            for (const [colorId, colorName] of Object.entries(COLOR_NAMES)) {
+                const opt = document.createElement('option');
+                opt.value = colorId;
+                opt.textContent = colorName;
+                selectColor.appendChild(opt);
+            }
+        }
+
+        // Populate select-origin-store excluding current store
+        if (selectOriginStore && user) {
+            selectOriginStore.innerHTML = "";
+            for (const [storeId, storeName] of Object.entries(STORE_NAMES)) {
+                if (storeId !== user.storeId && storeId !== 'ALM-01' && storeId !== 'CTR-01') {
+                    const opt = document.createElement('option');
+                    opt.value = storeId;
+                    opt.textContent = storeName;
+                    selectOriginStore.appendChild(opt);
+                }
+            }
+        }
+
+        // Listen for selector changes to update stock and tallas
+        if (selectTipo && selectModel) {
+            selectTipo.addEventListener('change', updateModelsDropdown);
+            selectModel.addEventListener('change', updateTallaButtons);
+            updateModelsDropdown(); // run once initially
         }
         if (selectColor) selectColor.addEventListener('change', updateSelectedStock);
         if (selectOriginStore) selectOriginStore.addEventListener('change', updateSelectedStock);
-
-        // Rebuild talla buttons initially
-        updateTallaButtons();
 
         // Bind origin toggle
         const btnAlmacen = document.getElementById('btn-almacen');

@@ -370,41 +370,24 @@
         <!-- Fila/Grid de Combinación de Producción -->
         <div class="border-t border-outline-variant pt-3 flex flex-col gap-2.5">
           <span class="text-xs font-bold text-on-surface">Combinación de Producción</span>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[10px] text-on-surface-variant font-medium">Tipo</label>
+              <select id="type-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
+                <option value="Polo">Polo</option>
+                <option value="Short">Short</option>
+                <option value="Chompa">Chompa</option>
+                <option value="Buzo">Buzo</option>
+              </select>
+            </div>
             <div class="flex flex-col gap-0.5">
               <label class="text-[10px] text-on-surface-variant font-medium">Modelo</label>
               <select id="model-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
-                <option value="MOD-001">Camisero MC</option>
-                <option value="MOD-002">Camisero ML</option>
-                <option value="MOD-003">Girasol MC</option>
-                <option value="MOD-004">Girasol ML</option>
-                <option value="MOD-005">Redondo MC</option>
-                <option value="MOD-006">Redondo ML</option>
-                <option value="MOD-007">Cuadrado MC</option>
-                <option value="MOD-008">Cuadrado ML</option>
-                <option value="MOD-009">Tania MC</option>
-                <option value="MOD-010">Tania ML</option>
-                <option value="MOD-011">Noemi MC</option>
-                <option value="MOD-012">Noemi ML</option>
-                <option value="MOD-013">Boton MC</option>
-                <option value="MOD-014">Boton ML</option>
-                <option value="MOD-015">Short Pinza</option>
-                <option value="MOD-016">Short Boton</option>
-                <option value="MOD-017">Chompa Redondo</option>
-                <option value="MOD-018">Chompa V</option>
-                <option value="MOD-019">Buzo Normal</option>
-                <option value="MOD-020">Corazon MC</option>
-                <option value="MOD-021">Corazon ML</option>
               </select>
             </div>
             <div class="flex flex-col gap-0.5">
               <label class="text-[10px] text-on-surface-variant font-medium">Talla</label>
               <select id="size-comb" class="border border-outline-variant rounded bg-surface p-1 text-xs text-on-surface focus-ring-lilac h-8">
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
-                <option value="St">St</option>
               </select>
             </div>
           </div>
@@ -482,6 +465,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sizeSel = document.getElementById('size-comb');
     const qtyInput = document.getElementById('qty-comb');
 
+    const typeSel = document.getElementById('type-comb');
+
     function updateSizesDropdown() {
         if (!modelSel || !sizeSel) return;
         const modelVal = modelSel.value;
@@ -495,9 +480,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    if (modelSel) {
+    function updateModelsDropdown() {
+        if (!typeSel || !modelSel) return;
+        const selectedType = typeSel.value;
+        let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+        
+        if (modelsList.length === 0) {
+            modelsList = [
+                { id_modelo: "MOD-001", tipo: "Polo", nombre: "Camisero MC" },
+                { id_modelo: "MOD-002", tipo: "Polo", nombre: "Camisero ML" },
+                { id_modelo: "MOD-003", tipo: "Polo", nombre: "Girasol MC" },
+                { id_modelo: "MOD-004", tipo: "Polo", nombre: "Girasol ML" },
+                { id_modelo: "MOD-005", tipo: "Polo", nombre: "Redondo MC" },
+                { id_modelo: "MOD-006", tipo: "Polo", nombre: "Redondo ML" },
+                { id_modelo: "MOD-007", tipo: "Polo", nombre: "Cuadrado MC" },
+                { id_modelo: "MOD-008", tipo: "Polo", nombre: "Cuadrado ML" },
+                { id_modelo: "MOD-009", tipo: "Polo", nombre: "Tania MC" },
+                { id_modelo: "MOD-010", tipo: "Polo", nombre: "Tania ML" },
+                { id_modelo: "MOD-011", tipo: "Polo", nombre: "Noemi MC" },
+                { id_modelo: "MOD-012", tipo: "Polo", nombre: "Noemi ML" },
+                { id_modelo: "MOD-013", tipo: "Polo", nombre: "Boton MC" },
+                { id_modelo: "MOD-014", tipo: "Polo", nombre: "Boton ML" },
+                { id_modelo: "MOD-015", tipo: "Short", nombre: "Short Pinza" },
+                { id_modelo: "MOD-016", tipo: "Short", nombre: "Short Boton" },
+                { id_modelo: "MOD-017", tipo: "Chompa", nombre: "Chompa Redondo" },
+                { id_modelo: "MOD-018", tipo: "Chompa", nombre: "Chompa V" },
+                { id_modelo: "MOD-019", tipo: "Buzo", nombre: "Buzo Normal" },
+                { id_modelo: "MOD-020", tipo: "Polo", nombre: "Corazon MC" },
+                { id_modelo: "MOD-021", tipo: "Polo", nombre: "Corazon ML" }
+            ];
+        }
+        
+        const filtered = modelsList.filter(m => m.tipo.toLowerCase() === selectedType.toLowerCase());
+        modelSel.innerHTML = "";
+        filtered.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id_modelo;
+            opt.textContent = m.nombre;
+            modelSel.appendChild(opt);
+        });
+        updateSizesDropdown();
+    }
+
+    if (typeSel && modelSel) {
+        typeSel.addEventListener('change', updateModelsDropdown);
         modelSel.addEventListener('change', updateSizesDropdown);
-        updateSizesDropdown(); // run once initially
+        updateModelsDropdown(); // run once initially
     }
 
     if (btnAddComb && combContainer) {

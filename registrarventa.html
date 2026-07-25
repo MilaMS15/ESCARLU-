@@ -197,30 +197,18 @@
             Seleccionar Producto
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <div class="md:col-span-4">
-                <label class="block font-label-md text-sm mb-1.5" for="select-model">Modelo de Polo</label>
+            <div class="md:col-span-2">
+                <label class="block font-label-md text-sm mb-1.5" for="select-tipo">Tipo de Prenda</label>
+                <select id="select-tipo" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0">
+                    <option value="Polo">Polo</option>
+                    <option value="Short">Short</option>
+                    <option value="Chompa">Chompa</option>
+                    <option value="Buzo">Buzo</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block font-label-md text-sm mb-1.5" for="select-model">Modelo</label>
                 <select id="select-model" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0">
-                    <option value="MOD-001">Camisero MC</option>
-                    <option value="MOD-002">Camisero ML</option>
-                    <option value="MOD-003">Girasol MC</option>
-                    <option value="MOD-004">Girasol ML</option>
-                    <option value="MOD-005">Redondo MC</option>
-                    <option value="MOD-006">Redondo ML</option>
-                    <option value="MOD-007">Cuadrado MC</option>
-                    <option value="MOD-008">Cuadrado ML</option>
-                    <option value="MOD-009">Tania MC</option>
-                    <option value="MOD-010">Tania ML</option>
-                    <option value="MOD-011">Noemi MC</option>
-                    <option value="MOD-012">Noemi ML</option>
-                    <option value="MOD-013">Boton MC</option>
-                    <option value="MOD-014">Boton ML</option>
-                    <option value="MOD-015">Short Pinza</option>
-                    <option value="MOD-016">Short Boton</option>
-                    <option value="MOD-017">Chompa Redondo</option>
-                    <option value="MOD-018">Chompa V</option>
-                    <option value="MOD-019">Buzo Normal</option>
-                    <option value="MOD-020">Corazon MC</option>
-                    <option value="MOD-021">Corazon ML</option>
                 </select>
             </div>
             <div class="md:col-span-2">
@@ -389,7 +377,8 @@
         checkAuth();
         renderSideNav("registrarventa");
 
-        // Update suggested price and talla choices when model changes
+        // Update suggested price, models and talla choices when model changes
+        const tipoSelect = document.getElementById('select-tipo');
         const modelSelect = document.getElementById('select-model');
         const priceInput = document.getElementById('price-input');
         const tallaSelect = document.getElementById('select-talla');
@@ -397,6 +386,7 @@
         function updateSizesDropdown() {
             if (!modelSelect || !tallaSelect) return;
             const model = modelSelect.value;
+            if (!model) return;
             const allowedSizes = getAllowedSizesForModel(model);
             tallaSelect.innerHTML = "";
             allowedSizes.forEach(sz => {
@@ -407,14 +397,60 @@
             });
         }
 
-        modelSelect.addEventListener('change', () => {
-            const model = modelSelect.value;
-            priceInput.value = MODEL_PRICES[model] || 0;
+        function updateModelsDropdown() {
+            if (!tipoSelect || !modelSelect) return;
+            const selectedType = tipoSelect.value;
+            let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+            
+            if (modelsList.length === 0) {
+                modelsList = [
+                    { id_modelo: "MOD-001", tipo: "Polo", nombre: "Camisero MC" },
+                    { id_modelo: "MOD-002", tipo: "Polo", nombre: "Camisero ML" },
+                    { id_modelo: "MOD-003", tipo: "Polo", nombre: "Girasol MC" },
+                    { id_modelo: "MOD-004", tipo: "Polo", nombre: "Girasol ML" },
+                    { id_modelo: "MOD-005", tipo: "Polo", nombre: "Redondo MC" },
+                    { id_modelo: "MOD-006", tipo: "Polo", nombre: "Redondo ML" },
+                    { id_modelo: "MOD-007", tipo: "Polo", nombre: "Cuadrado MC" },
+                    { id_modelo: "MOD-008", tipo: "Polo", nombre: "Cuadrado ML" },
+                    { id_modelo: "MOD-009", tipo: "Polo", nombre: "Tania MC" },
+                    { id_modelo: "MOD-010", tipo: "Polo", nombre: "Tania ML" },
+                    { id_modelo: "MOD-011", tipo: "Polo", nombre: "Noemi MC" },
+                    { id_modelo: "MOD-012", tipo: "Polo", nombre: "Noemi ML" },
+                    { id_modelo: "MOD-013", tipo: "Polo", nombre: "Boton MC" },
+                    { id_modelo: "MOD-014", tipo: "Polo", nombre: "Boton ML" },
+                    { id_modelo: "MOD-015", tipo: "Short", nombre: "Short Pinza" },
+                    { id_modelo: "MOD-016", tipo: "Short", nombre: "Short Boton" },
+                    { id_modelo: "MOD-017", tipo: "Chompa", nombre: "Chompa Redondo" },
+                    { id_modelo: "MOD-018", tipo: "Chompa", nombre: "Chompa V" },
+                    { id_modelo: "MOD-019", tipo: "Buzo", nombre: "Buzo Normal" },
+                    { id_modelo: "MOD-020", tipo: "Polo", nombre: "Corazon MC" },
+                    { id_modelo: "MOD-021", tipo: "Polo", nombre: "Corazon ML" }
+                ];
+            }
+            
+            const filtered = modelsList.filter(m => m.tipo.toLowerCase() === selectedType.toLowerCase());
+            modelSelect.innerHTML = "";
+            filtered.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id_modelo;
+                opt.textContent = m.nombre;
+                modelSelect.appendChild(opt);
+            });
+            
+            const firstModel = modelSelect.value;
+            priceInput.value = MODEL_PRICES[firstModel] || 0;
             updateSizesDropdown();
-        });
+        }
 
-        // Initialize sizes dropdown
-        updateSizesDropdown();
+        if (tipoSelect && modelSelect) {
+            tipoSelect.addEventListener('change', updateModelsDropdown);
+            modelSelect.addEventListener('change', () => {
+                const model = modelSelect.value;
+                priceInput.value = MODEL_PRICES[model] || 0;
+                updateSizesDropdown();
+            });
+            updateModelsDropdown(); // run once initially
+        }
 
         // Toggle WhatsApp button
         const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
