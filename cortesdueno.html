@@ -482,6 +482,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sizeSel = document.getElementById('size-comb');
     const qtyInput = document.getElementById('qty-comb');
 
+    function updateSizesDropdown() {
+        if (!modelSel || !sizeSel) return;
+        const modelVal = modelSel.value;
+        const allowedSizes = getAllowedSizesForModel(modelVal);
+        sizeSel.innerHTML = "";
+        allowedSizes.forEach(sz => {
+            const opt = document.createElement('option');
+            opt.value = sz;
+            opt.textContent = sz;
+            sizeSel.appendChild(opt);
+        });
+    }
+
+    if (modelSel) {
+        modelSel.addEventListener('change', updateSizesDropdown);
+        updateSizesDropdown(); // run once initially
+    }
+
     if (btnAddComb && combContainer) {
         btnAddComb.addEventListener('click', () => {
             const modelVal = modelSel.value;
@@ -561,18 +579,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const modelIds = [...new Set(combinations.map(c => c.model))];
                 const sizes = [...new Set(combinations.map(c => c.size))];
+                const dbTallaIds = sizes.map(s => TALLA_KEYS[s] || s);
 
-                // Consultar moldes reales de la BD
-                const { data: dbMoldes, error: moldesErr } = await client.from('moldes')
-                    .select('*')
-                    .in('modelo', modelIds)
-                    .in('talla', sizes);
+                // Consultar recetas relacionales de la BD (con su respectiva URL del molde)
+                const { data: dbRecetas, error: recetasErr } = await client.from('recetas_moldes')
+                    .select('*, moldes(dxf_url)')
+                    .in('id_modelo', modelIds)
+                    .in('id_talla', dbTallaIds);
 
-                if (moldesErr) throw moldesErr;
+                if (recetasErr) throw recetasErr;
 
-                // Si no hay moldes en la BD para esa selección, alertar al usuario
-                if (!dbMoldes || dbMoldes.length === 0) {
-                    alert("No se encontraron moldes configurados para los modelos y tallas seleccionados en la base de datos.");
+                // Si no hay recetas configuradas, alertar al usuario
+                if (!dbRecetas || dbRecetas.length === 0) {
+                    alert("No se encontraron moldes o recetas configuradas para los modelos y tallas seleccionados en la base de datos.");
                     btnEjecutar.disabled = false;
                     btnEjecutar.innerText = "Ejecutar Optimización";
                     return;
@@ -596,6 +615,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (configErr) throw configErr;
 
+                const piecesToSave = dbRecetas.map(r => ({
+                    nombre_molde: r.nombre_molde,
+                    id_modelo: r.id_modelo,
+                    id_talla: r.id_talla,
+                    cantidad_por_prenda: r.cantidad,
+                    dxf_url: r.moldes?.dxf_url || ""
+                }));
+
                 // 2. Guardar Resultados de Trazo
                 const { error: resultErr } = await client.from('resultados_trazo').insert({
                     tendida_config_id: configData.id,
@@ -603,7 +630,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     proc_merma: merma,
                     largo_usado: largoUsado,
                     consumo_tela_por_prenda: consumoTela,
-                    detalle_piezas_colocadas: { pieces: dbMoldes }
+                    detalle_piezas_colocadas: { pieces: piecesToSave }
                 });
 
                 if (resultErr) throw resultErr;
@@ -625,28 +652,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 4. Renderizar piezas en lienzo dinámicamente
                 canvasContainer.innerHTML = "";
                 
-                // Generar piezas a colocar según cantidades
+                // Generar piezas a colocar según cantidades de las recetas
                 combinations.forEach(comb => {
-                    const modelMoldes = dbMoldes.filter(m => m.modelo === comb.model && m.talla === comb.size);
-                    if (modelMoldes.length === 0) return;
+                    const mappedTalla = TALLA_KEYS[comb.size] || comb.size;
+                    const modelRecetas = dbRecetas.filter(r => r.id_modelo === comb.model && r.id_talla === mappedTalla);
+                    if (modelRecetas.length === 0) return;
 
-                    // Colocar visualmente los moldes principales
-                    modelMoldes.forEach(molde => {
-                        const count = Math.min(3, comb.qty); // Limitar cantidad mostrada para no colapsar el lienzo visualmente
-                        for (let i = 0; i < count; i++) {
+                    modelRecetas.forEach(receta => {
+                        // cantidad de esta pieza = cantidad por prenda * cantidad de prendas (con un tope para la visualización en el lienzo)
+                        const totalQty = receta.cantidad * comb.qty;
+                        const displayCount = Math.min(6, totalQty);
+                        
+                        for (let i = 0; i < displayCount; i++) {
                             const div = document.createElement("div");
                             const rot = Math.random() > 0.5 ? 90 : 0;
-                            const modelLabel = MODEL_NAMES[molde.modelo] || molde.modelo;
+                            const modelLabel = MODEL_NAMES[receta.id_modelo] || receta.id_modelo;
                             
                             let width = "100px";
                             let height = "130px";
                             let color = "bg-primary-container/80 text-on-primary-container border-primary";
                             
-                            if (molde.nombre_pieza.toLowerCase().includes("manga")) {
+                            const nameLower = receta.nombre_molde.toLowerCase();
+                            if (nameLower.includes("manga")) {
                                 width = "70px";
                                 height = "90px";
                                 color = "bg-secondary-container/80 text-on-secondary-container border-secondary";
-                            } else if (molde.nombre_pieza.toLowerCase().includes("cuello")) {
+                            } else if (nameLower.includes("cuello")) {
                                 width = "90px";
                                 height = "50px";
                                 color = "bg-tertiary-container/30 text-on-tertiary-container border-tertiary";
@@ -655,10 +686,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                             div.className = `m-1 p-1 rounded border flex flex-col items-center justify-center shadow-sm transition-transform hover:scale-105 select-none ${color}`;
                             div.style.width = width;
                             div.style.height = height;
+                            
+                            // Extraer el nombre de la pieza (Delantero, Espalda, Manga, etc.)
+                            let pieceType = "Pieza";
+                            if (nameLower.includes("delantero")) pieceType = "Delantero";
+                            else if (nameLower.includes("espalda")) pieceType = "Espalda";
+                            else if (nameLower.includes("manga")) pieceType = nameLower.includes("corta") ? "Manga Corta" : "Manga Larga";
+                            else if (nameLower.includes("cuello")) pieceType = "Cuello";
+
                             div.innerHTML = `
-                                <span class="text-[11px] font-bold truncate w-full text-center">${molde.nombre_pieza}</span>
+                                <span class="text-[11px] font-bold truncate w-full text-center">${pieceType}</span>
                                 <span class="text-[9px] truncate w-full text-center">${modelLabel}</span>
-                                <span class="text-[9px] font-semibold">Talla ${molde.talla} | Rot: ${rot}°</span>
+                                <span class="text-[9px] font-semibold">Talla ${comb.size} | Rot: ${rot}°</span>
                             `;
                             canvasContainer.appendChild(div);
                         }
@@ -679,90 +718,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function seedMoldesIfNeeded(client) {
         try {
-            const { data, error } = await client.from('moldes').select('id').limit(1);
+            const { data, error } = await client.from('moldes').select('nombre_molde').limit(1);
             if (error) throw error;
-            
             if (!data || data.length === 0) {
-                console.log("Seeding default moldes to Supabase...");
-                const defaultMoldes = [];
-                const modelsList = [
-                    { code: "MOD-001", name: "Camisero", mc: true, ml: false },
-                    { code: "MOD-002", name: "Camisero", mc: false, ml: true },
-                    { code: "MOD-020", name: "Corazon", mc: true, ml: false },
-                    { code: "MOD-021", name: "Corazon", mc: false, ml: true },
-                    { code: "MOD-007", name: "Cuadrado", mc: true, ml: false },
-                    { code: "MOD-008", name: "Cuadrado", mc: false, ml: true },
-                    { code: "MOD-003", name: "Girasol", mc: true, ml: false },
-                    { code: "MOD-004", name: "Girasol", mc: false, ml: true },
-                    { code: "MOD-011", name: "Noemi", mc: true, ml: false },
-                    { code: "MOD-012", name: "Noemi", mc: false, ml: true },
-                    { code: "MOD-005", name: "Redondo MC", mc: true, ml: false },
-                    { code: "MOD-006", name: "Redondo ML", mc: false, ml: true },
-                    { code: "MOD-009", name: "Tania", mc: true, ml: false },
-                    { code: "MOD-010", name: "Tania", mc: false, ml: true }
-                ];
-                const sizes = ["St", "L"];
-
-                modelsList.forEach(m => {
-                    sizes.forEach(size => {
-                        // Delantero
-                        let delanteroName = `Delantero ${m.name} ${size}`;
-                        if (m.code === "MOD-005") delanteroName = `Delantero Redondo MC ${size}`;
-                        if (m.code === "MOD-006") delanteroName = `Delantero Redondo ML ${size}`;
-                        defaultMoldes.push({
-                            tipo: "polo",
-                            modelo: m.code,
-                            talla: size,
-                            nombre_pieza: "Delantero",
-                            dxf_url: `https://pbqplcasneqkhwywqnf.supabase.co/storage/v1/object/public/moldes-dxf/${encodeURIComponent(delanteroName)}.dxf`,
-                            rotacion_maxima: 360
-                        });
-
-                        // Espalda
-                        let espaldaName = `Espalda ${m.name} ${size}`;
-                        if (m.code === "MOD-005" || m.code === "MOD-006") espaldaName = `Espalda Redondo ${size}`;
-                        defaultMoldes.push({
-                            tipo: "polo",
-                            modelo: m.code,
-                            talla: size,
-                            nombre_pieza: "Espalda",
-                            dxf_url: `https://pbqplcasneqkhwywqnf.supabase.co/storage/v1/object/public/moldes-dxf/${encodeURIComponent(espaldaName)}.dxf`,
-                            rotacion_maxima: 360
-                        });
-
-                        // Manga
-                        if (m.mc) {
-                            let mangaName = `Manga Corta ${size}`;
-                            if (m.code === "MOD-009") mangaName = `Manga Corta Tania ${size}`;
-                            defaultMoldes.push({
-                                tipo: "polo",
-                                modelo: m.code,
-                                talla: size,
-                                nombre_pieza: "Manga Corta",
-                                dxf_url: `https://pbqplcasneqkhwywqnf.supabase.co/storage/v1/object/public/moldes-dxf/${encodeURIComponent(mangaName)}.dxf`,
-                                rotacion_maxima: 90
-                            });
-                        } else if (m.ml) {
-                            let mangaName = `Manga Larga ${size}`;
-                            if (m.code === "MOD-010") mangaName = `Manga Larga Tania ${size}`;
-                            defaultMoldes.push({
-                                tipo: "polo",
-                                modelo: m.code,
-                                talla: size,
-                                nombre_pieza: "Manga Larga",
-                                dxf_url: `https://pbqplcasneqkhwywqnf.supabase.co/storage/v1/object/public/moldes-dxf/${encodeURIComponent(mangaName)}.dxf`,
-                                rotacion_maxima: 90
-                            });
-                        }
-                    });
-                });
-
-                const { error: seedErr } = await client.from('moldes').insert(defaultMoldes);
-                if (seedErr) throw seedErr;
-                console.log("Default moldes seeded successfully.");
+                console.log("No default moldes found in Supabase. Please run db_migration.sql.");
             }
         } catch (err) {
-            console.error("Error seeding moldes:", err);
+            console.error("Error checking moldes:", err);
         }
     }
 });

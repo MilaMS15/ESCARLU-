@@ -413,10 +413,52 @@ Agregar a la Lista
             }
         }
 
-        // Listen for selector changes to update stock
-        if (selectModel) selectModel.addEventListener('change', updateSelectedStock);
+        function updateTallaButtons() {
+            const tallaContainer = document.getElementById('talla-container');
+            if (!selectModel || !tallaContainer) return;
+            
+            const modelVal = selectModel.value;
+            const allowedSizes = getAllowedSizesForModel(modelVal);
+            
+            if (!allowedSizes.includes(selectedTalla)) {
+                selectedTalla = allowedSizes[0];
+            }
+            
+            tallaContainer.innerHTML = "";
+            allowedSizes.forEach(size => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.setAttribute('data-talla', size);
+                btn.className = size === selectedTalla
+                    ? 'talla-btn flex-1 h-14 border-2 border-primary bg-primary-container text-on-primary-container font-bold rounded-lg font-label-md'
+                    : 'talla-btn flex-1 h-14 border-2 border-outline-variant rounded-lg font-label-md hover:border-primary hover:text-primary transition-all';
+                btn.textContent = size;
+                
+                btn.addEventListener('click', () => {
+                    tallaContainer.querySelectorAll('.talla-btn').forEach(b => {
+                        b.className = 'talla-btn flex-1 h-14 border-2 border-outline-variant rounded-lg font-label-md hover:border-primary hover:text-primary transition-all';
+                    });
+                    btn.className = 'talla-btn flex-1 h-14 border-2 border-primary bg-primary-container text-on-primary-container font-bold rounded-lg font-label-md';
+                    selectedTalla = size;
+                    updateSelectedStock();
+                });
+                
+                tallaContainer.appendChild(btn);
+            });
+            updateSelectedStock();
+        }
+
+        // Listen for selector changes to update stock and tallas
+        if (selectModel) {
+            selectModel.addEventListener('change', () => {
+                updateTallaButtons();
+            });
+        }
         if (selectColor) selectColor.addEventListener('change', updateSelectedStock);
         if (selectOriginStore) selectOriginStore.addEventListener('change', updateSelectedStock);
+
+        // Rebuild talla buttons initially
+        updateTallaButtons();
 
         // Bind origin toggle
         const btnAlmacen = document.getElementById('btn-almacen');
@@ -437,21 +479,6 @@ Agregar a la Lista
             btnAlmacen.className = 'px-8 py-3 rounded-lg font-label-md text-label-md transition-all text-on-surface-variant hover:bg-surface-container-highest';
             originStoreContainer.classList.remove('hidden');
             updateSelectedStock();
-        });
-
-        // Bind talla buttons click
-        const tallaButtons = document.querySelectorAll('.talla-btn');
-        tallaButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Reset styling for all buttons
-                tallaButtons.forEach(b => {
-                    b.className = 'talla-btn flex-1 h-14 border-2 border-outline-variant rounded-lg font-label-md hover:border-primary hover:text-primary transition-all';
-                });
-                // Highlight selected button
-                btn.className = 'talla-btn flex-1 h-14 border-2 border-primary bg-primary-container text-on-primary-container font-bold rounded-lg font-label-md';
-                selectedTalla = btn.getAttribute('data-talla');
-                updateSelectedStock();
-            });
         });
 
         // Bind Add to List button
