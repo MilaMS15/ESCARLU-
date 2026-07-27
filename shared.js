@@ -618,7 +618,7 @@ function renderSideNav(activePage) {
         linksHtml += `
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cajatienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cajatienda.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'cajatienda' ? 1 : 0};">storefront</span>
-                <span class="font-label-lg text-label-lg">Caja Chica</span>
+                <span class="font-label-lg text-label-lg">Caja</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'solitienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="solitienda.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'solitienda' ? 1 : 0};">swap_horiz</span>
@@ -734,7 +734,7 @@ function setupMobileMenu(activePage) {
         linksHtml += `
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'cajatienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="cajatienda.html">
                 <span class="material-symbols-outlined">storefront</span>
-                <span class="font-label-lg">Caja Chica</span>
+                <span class="font-label-lg">Caja</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'solitienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="solitienda.html">
                 <span class="material-symbols-outlined">swap_horiz</span>
@@ -837,29 +837,23 @@ function setupHeaderProfile() {
     const user = getCurrentUser();
     if (!user) return;
 
-    // Replace Admin_Escarlu or Administrador in the top bar profile text
-    const lgSpans = document.querySelectorAll('header span.text-label-lg, header .text-label-lg, header span');
-    lgSpans.forEach(span => {
+    const storeLabel = STORE_NAMES[user.storeId] || user.storeId;
+
+    // 1. Dynamic replacement of left-side store/sede badge
+    const headerBadges = document.querySelectorAll('header span');
+    headerBadges.forEach(span => {
         const text = span.textContent.trim();
-        if (text === 'Admin_Escarlu' || text === 'Administrador' || text === 'Vendedora - Santa Lucía') {
-            span.textContent = user.label;
+        if (text === 'Tienda Santa Lucía' || text === 'Tienda Principal' || text === 'Almacén Central') {
+            span.textContent = storeLabel;
         }
     });
 
-    const leadParas = document.querySelectorAll('header p.font-label-lg.leading-tight, header p');
-    leadParas.forEach(p => {
-        const text = p.textContent.trim();
-        if (text === 'Administrador' || text === 'Vendedora - Santa Lucía') {
-            p.textContent = user.label;
-        }
-    });
-
-    const storeParas = document.querySelectorAll('header p.text-xs.text-on-surface-variant');
-    storeParas.forEach(p => {
-        const text = p.textContent.trim();
-        if (text === 'Tienda Principal' || text === 'Almacén Central') {
-            const storeLabel = STORE_NAMES[user.storeId] || user.storeId;
-            p.textContent = storeLabel;
+    // 2. Replace user name/label on right-side of the header
+    const profileTexts = document.querySelectorAll('header span, header p');
+    profileTexts.forEach(el => {
+        const text = el.textContent.trim();
+        if (text === 'Admin_Escarlu' || text === 'Administrador' || text === 'Vendedora - Santa Lucía' || text === 'Vendedora - Santa Lucia' || text.startsWith('Vendedora -')) {
+            el.textContent = user.label;
         }
     });
 }
