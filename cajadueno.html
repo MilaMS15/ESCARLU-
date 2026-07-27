@@ -312,6 +312,21 @@
             <button onclick="saveEgreso()" class="flex-1 h-12 rounded-xl bg-primary text-white font-bold hover:brightness-95 transition-all">Guardar Egreso</button>
         </div>
     </div>
+<!-- Modal Confirmar Eliminar Egreso -->
+<div id="delete-confirm-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full border border-outline-variant/40 shadow-2xl space-y-5 text-center transform transition-all scale-100">
+        <div class="w-12 h-12 rounded-full bg-error-container/30 text-error flex items-center justify-center mx-auto">
+            <span class="material-symbols-outlined text-2xl">delete</span>
+        </div>
+        <div class="space-y-1">
+            <h3 class="font-bold text-lg text-on-surface">¿Eliminar egreso?</h3>
+            <p class="text-xs text-on-surface-variant">Esta acción no se puede deshacer y actualizará los balances inmediatamente.</p>
+        </div>
+        <div class="flex gap-3 pt-2">
+            <button id="btn-cancel-delete" class="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-xs hover:bg-surface-container transition-all">Cancelar</button>
+            <button id="btn-confirm-delete" class="flex-1 py-2.5 rounded-xl bg-error text-white font-bold text-xs hover:brightness-95 transition-all shadow-sm">Sí, eliminar</button>
+        </div>
+    </div>
 </div>
 
 <script src="cajadueno.js"></script>

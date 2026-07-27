@@ -441,9 +441,36 @@ function exportToExcel() {
     XLSX.writeFile(wb, `Reporte_Flujo_Caja_ESCARLU_${periodoFilename}_${sedeFilename}.xlsx`);
 }
 
-async function deleteEgreso(idGasto) {
-    if (!confirm("¿Estás seguro de eliminar este egreso?")) return;
+function deleteEgreso(idGasto) {
+    const modal = document.getElementById("delete-confirm-modal");
+    const btnConfirm = document.getElementById("btn-confirm-delete");
+    const btnCancel = document.getElementById("btn-cancel-delete");
 
+    if (!modal || !btnConfirm || !btnCancel) {
+        if (!confirm("¿Estás seguro de eliminar este egreso?")) return;
+        executeDeleteEgreso(idGasto);
+        return;
+    }
+
+    modal.classList.remove("hidden");
+
+    // Limpiar listeners anteriores para evitar múltiples ejecuciones
+    const newBtnConfirm = btnConfirm.cloneNode(true);
+    const newBtnCancel = btnCancel.cloneNode(true);
+    btnConfirm.parentNode.replaceChild(newBtnConfirm, btnConfirm);
+    btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+
+    newBtnCancel.addEventListener("click", () => {
+        modal.classList.add("hidden");
+    });
+
+    newBtnConfirm.addEventListener("click", async () => {
+        modal.classList.add("hidden");
+        await executeDeleteEgreso(idGasto);
+    });
+}
+
+async function executeDeleteEgreso(idGasto) {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
 
     // 1. Eliminar en Supabase si está disponible
@@ -466,8 +493,6 @@ async function deleteEgreso(idGasto) {
     const allExpenses = JSON.parse(localStorage.getItem("escarlu_expenses")) || [];
     const updatedExpenses = allExpenses.filter(exp => exp.id !== idGasto);
     localStorage.setItem("escarlu_expenses", JSON.stringify(updatedExpenses));
-
-    alert("Egreso eliminado correctamente.");
 
     // 3. Recargar dashboard (recalcula TOTAL EGRESOS, BALANCE NETO y actualiza la tabla)
     renderFinanceDashboard();
