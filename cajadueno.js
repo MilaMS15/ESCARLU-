@@ -118,6 +118,7 @@ function renderFinanceDashboard() {
     // Add Expenses as Egresos
     monthlyExpenses.forEach(exp => {
         movements.push({
+            id: exp.id,
             date: exp.date.includes('T') ? exp.date : `${exp.date}T00:00:00`,
             category: exp.category.charAt(0).toUpperCase() + exp.category.slice(1),
             concept: exp.description,
@@ -151,12 +152,21 @@ function renderFinanceDashboard() {
             const amtClass = m.type === 'ingreso' ? 'text-green-600 font-bold text-right' : 'text-secondary font-bold text-right';
             const amtSign = m.type === 'ingreso' ? `+S/ ${m.amount.toFixed(2)}` : `-S/ ${m.amount.toFixed(2)}`;
 
+            const actionCell = m.type === 'egreso' ? `
+                <td class="py-3.5 px-4 text-center">
+                    <button onclick="deleteEgreso('${m.id}')" title="Eliminar egreso" class="text-error hover:bg-error-container/20 p-1.5 rounded-lg transition-colors inline-flex items-center justify-center">
+                        <span class="material-symbols-outlined text-base">delete</span>
+                    </button>
+                </td>
+            ` : `<td class="py-3.5 px-4 text-center text-on-surface-variant/40">-</td>`;
+
             tr.innerHTML = `
                 <td class="py-3.5 px-4 text-on-surface-variant font-medium">${dateStr}</td>
                 <td class="py-3.5 px-4 font-bold text-on-surface">${m.category}</td>
                 <td class="py-3.5 px-4 text-on-surface-variant font-medium">${m.concept}</td>
                 <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 bg-primary-container/20 text-primary text-xs font-bold rounded-full">${m.store}</span></td>
                 <td class="py-3.5 px-4 ${amtClass}">${amtSign}</td>
+                ${actionCell}
             `;
             tbody.appendChild(tr);
         });
@@ -431,6 +441,38 @@ function exportToExcel() {
     XLSX.writeFile(wb, `Reporte_Flujo_Caja_ESCARLU_${periodoFilename}_${sedeFilename}.xlsx`);
 }
 
+async function deleteEgreso(idGasto) {
+    if (!confirm("¿Estás seguro de eliminar este egreso?")) return;
+
+    const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+
+    // 1. Eliminar en Supabase si está disponible
+    if (client) {
+        try {
+            const { error } = await client
+                .from('gastos')
+                .delete()
+                .eq('id_gasto', idGasto);
+
+            if (error) {
+                console.error("Error eliminando egreso de Supabase:", error);
+            }
+        } catch (e) {
+            console.error("Excepción al eliminar egreso en Supabase:", e);
+        }
+    }
+
+    // 2. Eliminar de localStorage
+    const allExpenses = JSON.parse(localStorage.getItem("escarlu_expenses")) || [];
+    const updatedExpenses = allExpenses.filter(exp => exp.id !== idGasto);
+    localStorage.setItem("escarlu_expenses", JSON.stringify(updatedExpenses));
+
+    alert("Egreso eliminado correctamente.");
+
+    // 3. Recargar dashboard (recalcula TOTAL EGRESOS, BALANCE NETO y actualiza la tabla)
+    renderFinanceDashboard();
+}
+
 // Expose functions globally for onclick and console accessibility
 window.renderFinanceDashboard = renderFinanceDashboard;
 window.renderPendingYapes = renderPendingYapes;
@@ -440,3 +482,4 @@ window.openEgresoModal = openEgresoModal;
 window.closeEgresoModal = closeEgresoModal;
 window.saveEgreso = saveEgreso;
 window.exportToExcel = exportToExcel;
+window.deleteEgreso = deleteEgreso;
