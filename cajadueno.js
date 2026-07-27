@@ -18,6 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Listen for filter changes
     periodFilter.addEventListener('change', renderFinanceDashboard);
 
+    // Bind sede filter
+    const sedeFilter = document.getElementById("filter-sede");
+    if (sedeFilter) {
+        sedeFilter.addEventListener('change', renderFinanceDashboard);
+    }
+
     // Bind export button
     const exportBtn = document.getElementById("btnExportarExcel");
     if (exportBtn) {
@@ -36,19 +42,25 @@ function renderFinanceDashboard() {
     const selectedPeriod = document.getElementById("filter-period").value; // YYYY-MM
     if (!selectedPeriod) return;
 
+    const selectedSede = document.getElementById("filter-sede")?.value || "all";
+
     const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
     const allExpenses = JSON.parse(localStorage.getItem("escarlu_expenses")) || [];
 
-    // 1. Filter Sales for the selected month (Approved sales only)
+    // 1. Filter Sales for the selected month (Approved sales only) + sede
     const approvedSales = allSales.filter(sale => {
         if (!sale.date) return false;
-        return sale.date.startsWith(selectedPeriod) && sale.status === 'aprobado';
+        const matchesPeriod = sale.date.startsWith(selectedPeriod) && sale.status === 'aprobado';
+        const matchesSede = selectedSede === "all" || sale.storeId === selectedSede;
+        return matchesPeriod && matchesSede;
     });
 
-    // 2. Filter Expenses for the selected month
+    // 2. Filter Expenses for the selected month + sede
     const monthlyExpenses = allExpenses.filter(exp => {
         if (!exp.date) return false;
-        return exp.date.startsWith(selectedPeriod);
+        const matchesPeriod = exp.date.startsWith(selectedPeriod);
+        const matchesSede = selectedSede === "all" || exp.storeId === selectedSede || (selectedSede === "all" && !exp.storeId);
+        return matchesPeriod && matchesSede;
     });
 
     // 3. Calculate KPIs
@@ -287,19 +299,28 @@ function exportToExcel() {
         return;
     }
 
+    const selectedSede = document.getElementById("filter-sede")?.value || "all";
+    const selectedSedeName = selectedSede === "all"
+        ? "Todas las Tiendas y Almacén"
+        : (STORE_NAMES[selectedSede] || selectedSede);
+
     const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
     const allExpenses = JSON.parse(localStorage.getItem("escarlu_expenses")) || [];
 
-    // Filter approved sales
+    // Filter approved sales by period + sede
     const approvedSales = allSales.filter(sale => {
         if (!sale.date) return false;
-        return sale.date.startsWith(selectedPeriod) && sale.status === 'aprobado';
+        const matchesPeriod = sale.date.startsWith(selectedPeriod) && sale.status === 'aprobado';
+        const matchesSede = selectedSede === "all" || sale.storeId === selectedSede;
+        return matchesPeriod && matchesSede;
     });
 
-    // Filter expenses
+    // Filter expenses by period + sede
     const monthlyExpenses = allExpenses.filter(exp => {
         if (!exp.date) return false;
-        return exp.date.startsWith(selectedPeriod);
+        const matchesPeriod = exp.date.startsWith(selectedPeriod);
+        const matchesSede = selectedSede === "all" || exp.storeId === selectedSede;
+        return matchesPeriod && matchesSede;
     });
 
     // Calculate KPIs
@@ -349,6 +370,7 @@ function exportToExcel() {
     const ws_data = [
         ["REPORTE DE FLUJO DE CAJA - ESCARLÚ"],
         ["Periodo:", selectedPeriod],
+        ["Sede:", selectedSedeName],
         [],
         ["INDICADORES PRINCIPALES"],
         ["TOTAL INGRESOS (Efectivo y Digital)", { v: totalIngresos, t: 'n', z: '"S/" #,##0.00' }],
@@ -398,11 +420,12 @@ function exportToExcel() {
 
     XLSX.utils.book_append_sheet(wb, ws, "Flujo de Caja");
 
-    // Save File — nombre dinámico con el período seleccionado
+    // Save File — nombre dinámico con período + sede
     const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     const [yr, mo] = selectedPeriod.split("-");
     const periodoFilename = `${meses[parseInt(mo, 10) - 1]}_${yr}`;
-    XLSX.writeFile(wb, `Reporte_Flujo_Caja_ESCARLU_${periodoFilename}.xlsx`);
+    const sedeFilename = selectedSede === "all" ? "TodasLasSedes" : (STORE_NAMES[selectedSede] || selectedSede).replace(/\s+/g, "_");
+    XLSX.writeFile(wb, `Reporte_Flujo_Caja_ESCARLU_${periodoFilename}_${sedeFilename}.xlsx`);
 }
 
 // Expose functions globally for onclick and console accessibility
