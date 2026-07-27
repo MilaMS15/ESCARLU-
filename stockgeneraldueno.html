@@ -167,9 +167,13 @@
 <!-- Welcome & Filter Header -->
 <section class="space-y-2">
 <div class="flex flex-col md:flex-row justify-between md:items-end gap-4">
-<div>
-<h2 class="text-2xl font-bold text-black tracking-tight">Stock General Consolidado</h2>
-<p class="text-xs text-on-surface-variant">Visión global de inventario en Almacén Central y las 4 Tiendas.</p>
+<div class="flex flex-col sm:flex-row sm:items-center gap-4">
+  <div>
+    <h2 class="text-2xl font-bold text-black tracking-tight">Stock General Consolidado</h2>
+    <p class="text-xs text-on-surface-variant">Visión global de inventario en Almacén Central y las 4 Tiendas.</p>
+  </div>
+  <!-- Selector de Mes/Año (igual diseño que Flujo de Caja) -->
+  <input type="month" id="filter-period-stock" class="h-10 border border-outline-variant bg-surface rounded-lg px-3 text-sm font-bold text-black focus:ring-0 outline-none mt-1 sm:mt-0" />
 </div>
 <div class="flex flex-wrap gap-4 items-center">
 <div class="flex flex-col gap-1">
@@ -186,6 +190,7 @@
 </div>
 </div>
 </section>
+
 
 <!-- KPI Stats Grid -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mt-6">
