@@ -564,11 +564,11 @@ function renderSideNav(activePage) {
         linksHtml += `
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cajadueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cajadueno.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'cajadueno' ? 1 : 0};">account_balance_wallet</span>
-                <span class="font-label-lg text-label-lg">Caja Dueño</span>
+                <span class="font-label-lg text-label-lg">Caja</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cortesdueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cortesdueno.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'cortesdueno' ? 1 : 0};">content_cut</span>
-                <span class="font-label-lg text-label-lg">Cortes Dueño</span>
+                <span class="font-label-lg text-label-lg">Cortes</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'stockgeneraldueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="stockgeneraldueno.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'stockgeneraldueno' ? 1 : 0};">inventory_2</span>
@@ -682,11 +682,11 @@ function setupMobileMenu(activePage) {
         linksHtml += `
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'cajadueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="cajadueno.html">
                 <span class="material-symbols-outlined">account_balance_wallet</span>
-                <span class="font-label-lg">Caja Dueño</span>
+                <span class="font-label-lg">Caja</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'cortesdueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="cortesdueno.html">
                 <span class="material-symbols-outlined">content_cut</span>
-                <span class="font-label-lg">Cortes Dueño</span>
+                <span class="font-label-lg">Cortes</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'stockgeneraldueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="stockgeneraldueno.html">
                 <span class="material-symbols-outlined">inventory_2</span>
@@ -913,7 +913,8 @@ function setupNotifications() {
                 list.push({
                     text: `Yape por confirmar: S/ ${parseFloat(s.amount).toFixed(2)} de ${storeName}`,
                     url: 'cajadueno.html',
-                    icon: 'payments'
+                    icon: 'payments',
+                    date: s.date
                 });
             });
 
@@ -924,7 +925,8 @@ function setupNotifications() {
                 list.push({
                     text: `Pedido pendiente: ${destName} pide ${r.qty} uds de ${MODEL_NAMES[r.model] || r.model}`,
                     url: 'stockgeneraldueno.html',
-                    icon: 'swap_horiz'
+                    icon: 'swap_horiz',
+                    date: r.date
                 });
             });
         } else if (user.role === 'almacen') {
@@ -935,7 +937,8 @@ function setupNotifications() {
                 list.push({
                     text: `${destName} solicita ${r.qty} uds de ${MODEL_NAMES[r.model] || r.model}`,
                     url: 'ingresoprendalmacen.html',
-                    icon: 'warehouse'
+                    icon: 'warehouse',
+                    date: r.date
                 });
             });
         } else if (user.role === 'tienda') {
@@ -946,7 +949,8 @@ function setupNotifications() {
                 list.push({
                     text: `Traspaso: ${destName} te pide ${r.qty} uds de ${MODEL_NAMES[r.model] || r.model}`,
                     url: 'atenderpedidos.html',
-                    icon: 'swap_horiz'
+                    icon: 'swap_horiz',
+                    date: r.date
                 });
             });
 
@@ -957,14 +961,23 @@ function setupNotifications() {
                 list.push({
                     text: `Aprobado: ${origName} despachó tu pedido de ${r.qty} uds`,
                     url: 'stocktienda.html',
-                    icon: 'done_all'
+                    icon: 'done_all',
+                    date: r.date
                 });
             });
         }
 
-        // Render badge
+        // Render badge only if there are NEW notifications
+        const lastReadStr = localStorage.getItem("escarlu_notifications_last_read") || new Date(0).toISOString();
+        const lastRead = new Date(lastReadStr);
+
+        const hasNew = list.some(item => {
+            if (!item.date) return false;
+            return new Date(item.date) > lastRead;
+        });
+
         let badge = bellBtn.querySelector('.bell-badge');
-        if (list.length > 0) {
+        if (hasNew) {
             if (!badge) {
                 badge = document.createElement('span');
                 badge.className = 'bell-badge absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-white';
@@ -987,6 +1000,10 @@ function setupNotifications() {
             popover.remove();
             return;
         }
+
+        // Mark as read: update last read time and re-render badge
+        localStorage.setItem("escarlu_notifications_last_read", new Date().toISOString());
+        updateNotifications();
 
         const list = JSON.parse(bellBtn.dataset.notifications || "[]");
 

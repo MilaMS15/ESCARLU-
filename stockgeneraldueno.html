@@ -5,6 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Stock General Consolidado | ESCARLÚ</title>
 <script src="shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -152,9 +153,6 @@
     <button aria-label="Notifications" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
       <span class="material-symbols-outlined text-xl">notifications</span>
     </button>
-    <button aria-label="Settings" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
-      <span class="material-symbols-outlined text-xl">settings</span>
-    </button>
     <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
       <span class="text-xs font-bold text-on-surface">Administrador</span>
       <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
@@ -240,15 +238,45 @@
                     Existencias por Modelo y Talla
                 </h3>
 <div class="flex gap-2">
-<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold transition-colors">
+<button id="btnToggleFiltros" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold transition-colors">
 <span class="material-symbols-outlined text-sm">filter_list</span>
 <span>Filtrar</span>
 </button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-on-primary font-semibold text-sm shadow-sm hover:bg-primary/90 transition-colors">
+<button id="btnExportarReporte" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-on-primary font-semibold text-sm shadow-sm hover:bg-primary/90 transition-colors">
 <span class="material-symbols-outlined text-sm">download</span>
-<span>Exportar Reporte</span>
+<span>Exportar Excel</span>
 </button>
 </div>
+</div>
+
+<!-- Barra de Filtros en Cascada (Oculta por defecto) -->
+<div id="filter-bar" class="hidden p-4 bg-surface-container-low border-b border-outline-variant grid grid-cols-1 sm:grid-cols-4 gap-4 shrink-0">
+  <div class="flex flex-col gap-1">
+    <label class="text-[10px] text-on-surface-variant font-bold uppercase">Filtrar por Tipo</label>
+    <select id="select-filter-tipo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+      <option value="all">Todos los tipos</option>
+      <option value="Polo">Polo</option>
+      <option value="Short">Short</option>
+      <option value="Chompa">Chompa</option>
+      <option value="Buzo">Buzo</option>
+    </select>
+  </div>
+  <div class="flex flex-col gap-1">
+    <label class="text-[10px] text-on-surface-variant font-bold uppercase">Filtrar por Modelo</label>
+    <select id="select-filter-modelo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+      <option value="all">Todos los modelos</option>
+    </select>
+  </div>
+  <div class="flex flex-col gap-1">
+    <label class="text-[10px] text-on-surface-variant font-bold uppercase">Filtrar por Color</label>
+    <select id="select-filter-color" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+      <option value="all">Todos los colores</option>
+    </select>
+  </div>
+  <div class="flex flex-col gap-1">
+    <label class="text-[10px] text-on-surface-variant font-bold uppercase">Buscar Texto</label>
+    <input type="text" id="inventory-search-table" placeholder="Buscar por palabra clave..." class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none text-sm" />
+  </div>
 </div>
 
 <!-- Table -->
@@ -277,216 +305,5 @@
 </div>
 </main>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Cargar inventario desde localStorage o DEFAULT_INVENTORY
-    let invData = {};
-    function loadInv() {
-        const rawInv = localStorage.getItem("escarlu_inventory");
-        invData = rawInv ? JSON.parse(rawInv) : (typeof DEFAULT_INVENTORY !== 'undefined' ? DEFAULT_INVENTORY : {});
-    }
-    loadInv();
-
-    const tbody = document.getElementById("inventory-tbody");
-    const storeSelect = document.getElementById("store-filter-select");
-    const searchInput = document.getElementById("inventory-search-input");
-
-    function renderTable() {
-        if (!invData || Object.keys(invData).length === 0) return;
-
-        const selectedStore = storeSelect ? storeSelect.value : "all";
-        const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
-
-        let rowsHtml = "";
-        let totalItems = 0;
-        let centralItems = 0;
-        let tiendasItems = 0;
-        let lowAlerts = 0;
-
-        // Modelos y Colores dinámicos desde shared.js
-        const models = Object.entries(MODEL_NAMES).map(([key, name]) => ({
-            key,
-            name,
-            sku: `ESC-2026-${key}`
-        }));
-
-        const colors = Object.entries(COLOR_NAMES).map(([key, name]) => {
-            let badge = "bg-surface-variant text-on-surface-variant";
-            if (key === "COL-01") badge = "bg-black text-white";
-            else if (key === "COL-02") badge = "bg-white border border-outline-variant text-on-surface";
-            else if (key === "COL-03") badge = "bg-amber-100 text-amber-800";
-            else if (key === "COL-14") badge = "bg-rose-100 text-rose-800";
-            else if (key === "COL-18") badge = "bg-purple-100 text-purple-800";
-            return { key, name, badge };
-        });
-
-        models.forEach(m => {
-            const allowedSizes = getAllowedSizesForModel(m.key);
-            colors.forEach(c => {
-                let stSum = 0, sSum = 0, mSum = 0, lSum = 0, xlSum = 0;
-
-                // Sumar según filtro de sede
-                Object.keys(invData).forEach(sKey => {
-                    const storeInv = invData[sKey];
-                    if (storeInv && storeInv[m.key] && storeInv[m.key][c.key]) {
-                        const sizes = storeInv[m.key][c.key];
-                        const stVal = allowedSizes.includes("St") ? (sizes.St || 0) : 0;
-                        const sVal = allowedSizes.includes("S") ? (sizes.S || 0) : 0;
-                        const mVal = allowedSizes.includes("M") ? (sizes.M || 0) : 0;
-                        const lVal = allowedSizes.includes("L") ? (sizes.L || 0) : 0;
-                        const xlVal = allowedSizes.includes("XL") ? (sizes.XL || 0) : 0;
-
-                        const rowTotal = stVal + sVal + mVal + lVal + xlVal;
-                        if (sKey === "ALM-01") centralItems += rowTotal;
-                        else if (sKey.startsWith("TDA-")) tiendasItems += rowTotal;
-
-                        if (selectedStore === "all" || selectedStore === sKey) {
-                            stSum += stVal;
-                            sSum += sVal;
-                            mSum += mVal;
-                            lSum += lVal;
-                            xlSum += xlVal;
-                        }
-                    }
-                });
-
-                const totalRow = stSum + sSum + mSum + lSum + xlSum;
-
-                // Solo contar si pertenece al filtro o si no hay filtro
-                if (selectedStore === "all") {
-                    totalItems += totalRow;
-                } else {
-                    totalItems = Object.keys(invData).reduce((sum, sKey) => {
-                        if (sKey !== selectedStore) return sum;
-                        const storeInv = invData[sKey];
-                        let storeSum = 0;
-                        Object.keys(storeInv).forEach(mK => {
-                            const allowed = getAllowedSizesForModel(mK);
-                            Object.keys(storeInv[mK]).forEach(cK => {
-                                const sizes = storeInv[mK][cK];
-                                allowed.forEach(sz => {
-                                    storeSum += (sizes[sz] || 0);
-                                });
-                            });
-                        });
-                        return storeSum;
-                    }, 0);
-                }
-
-                if (totalRow < 5) lowAlerts++;
-
-                // Filtro de búsqueda
-                const matchSearch = m.name.toLowerCase().includes(query) || c.name.toLowerCase().includes(query) || m.sku.toLowerCase().includes(query);
-                if (!matchSearch) return;
-
-                // Estado de Stock
-                let statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-[11px] font-bold">Disponible</span>`;
-                if (totalRow === 0) {
-                    statusBadge = `<span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-[11px] font-bold">Agotado</span>`;
-                } else if (totalRow < 5) {
-                    statusBadge = `<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[11px] font-bold">Bajo Stock</span>`;
-                }
-
-                // Generar detalle por sede para el modal/alert
-                let detailStr = "";
-                Object.keys(invData).forEach(sKey => {
-                    const storeInv = invData[sKey]?.[m.key]?.[c.key] || {};
-                    const stVal = allowedSizes.includes("St") ? (storeInv.St || 0) : 0;
-                    const sVal = allowedSizes.includes("S") ? (storeInv.S || 0) : 0;
-                    const mVal = allowedSizes.includes("M") ? (storeInv.M || 0) : 0;
-                    const lVal = allowedSizes.includes("L") ? (storeInv.L || 0) : 0;
-                    const xlVal = allowedSizes.includes("XL") ? (storeInv.XL || 0) : 0;
-                    const qty = stVal + sVal + mVal + lVal + xlVal;
-                    if (qty > 0) {
-                        let parts = [];
-                        if (allowedSizes.includes("St")) parts.push(`St:${stVal}`);
-                        if (allowedSizes.includes("S")) parts.push(`S:${sVal}`);
-                        if (allowedSizes.includes("M")) parts.push(`M:${mVal}`);
-                        if (allowedSizes.includes("L")) parts.push(`L:${lVal}`);
-                        if (allowedSizes.includes("XL")) parts.push(`XL:${xlVal}`);
-                        detailStr += `\\n- ${STORE_NAMES[sKey] || sKey}: ${qty} uds (${parts.join(", ")})`;
-                    }
-                });
-                if (!detailStr) detailStr = "Sin existencias en ninguna sede.";
-
-                function renderSizeCell(sz, val) {
-                    if (!allowedSizes.includes(sz)) {
-                        return `<td class="px-4 py-4 text-center text-on-surface/20 font-medium">-</td>`;
-                    }
-                    const isLow = val < 5;
-                    return `<td class="px-4 py-4 text-center font-bold ${isLow ? 'text-error font-extrabold' : ''}">${val}</td>`;
-                }
-
-                rowsHtml += `
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="font-bold text-on-surface text-xs">${m.name}</div>
-                            <div class="text-[10px] text-on-surface-variant">REF: ${m.sku}</div>
-                        </td>
-                        <td class="px-4 py-4">
-                            <span class="px-3 py-1 rounded-full text-[11px] font-semibold ${c.badge}">${c.name}</span>
-                        </td>
-                        ${renderSizeCell("St", stSum)}
-                        ${renderSizeCell("S", sSum)}
-                        ${renderSizeCell("M", mSum)}
-                        ${renderSizeCell("L", lSum)}
-                        ${renderSizeCell("XL", xlSum)}
-                        <td class="px-4 py-4 text-center font-extrabold text-primary text-sm">${totalRow}</td>
-                        <td class="px-4 py-4">${statusBadge}</td>
-                        <td class="px-6 py-4 text-right">
-                            <button onclick="alert('${m.name} (${c.name}):${detailStr}')" class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary-container/20 text-[10px] font-bold transition-colors">
-                                Ver Sedes
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-        });
-
-        tbody.innerHTML = rowsHtml || `<tr><td colspan="10" class="p-8 text-center text-on-surface-variant font-semibold">No se encontraron productos que coincidan.</td></tr>`;
-
-        // Calcular totalItems y alerts correctos según filtro
-        let filterTotal = 0;
-        let filterCentral = 0;
-        let filterTiendas = 0;
-        
-        Object.keys(invData).forEach(sKey => {
-            let storeSum = 0;
-            Object.keys(invData[sKey] || {}).forEach(mK => {
-                const allowed = getAllowedSizesForModel(mK);
-                Object.keys(invData[sKey][mK] || {}).forEach(cK => {
-                    const sizes = invData[sKey][mK][cK];
-                    allowed.forEach(sz => {
-                        storeSum += (sizes[sz] || 0);
-                    });
-                });
-            });
-            if (sKey === "ALM-01") filterCentral += storeSum;
-            else if (sKey.startsWith("TDA-")) filterTiendas += storeSum;
-            
-            if (selectedStore === "all" || selectedStore === sKey) {
-                filterTotal += storeSum;
-            }
-        });
-
-        document.getElementById("kpi-total-stock").textContent = `${filterTotal.toLocaleString('es-PE')} unids`;
-        document.getElementById("kpi-central-stock").textContent = `${filterCentral.toLocaleString('es-PE')} unids`;
-        document.getElementById("kpi-tiendas-stock").textContent = `${filterTiendas.toLocaleString('es-PE')} unids`;
-        document.getElementById("kpi-alerts-count").textContent = `${lowAlerts} Variantes`;
-    }
-
-    renderTable();
-
-    if (storeSelect) storeSelect.addEventListener("change", renderTable);
-    if (searchInput) searchInput.addEventListener("input", renderTable);
-
-    // Sync en tiempo real
-    window.addEventListener('storage', (e) => {
-        if (!e.key || e.key === 'escarlu_inventory') {
-            loadInv();
-            renderTable();
-        }
-    });
-});
-</script>
+<script src="stockgeneral.js"></script>
 </body></html>
