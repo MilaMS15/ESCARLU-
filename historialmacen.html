@@ -218,10 +218,10 @@
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-center mb-0.5">
           <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Total Ingresos (Mes)</p>
-          <span class="text-green-600 font-bold bg-green-50 text-[10px] px-1.5 py-0.5 rounded">+12.5%</span>
+          <span id="card-ingresos-pct" class="text-green-600 font-bold bg-green-50 text-[10px] px-1.5 py-0.5 rounded">—</span>
         </div>
         <div class="flex items-baseline gap-1.5">
-          <span class="text-2xl font-bold text-primary font-headline-md">2,480</span>
+          <span id="card-ingresos-val" class="text-2xl font-bold text-primary font-headline-md">—</span>
           <span class="text-xs text-on-surface-variant font-semibold">Uds</span>
         </div>
       </div>
@@ -235,10 +235,10 @@
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-center mb-0.5">
           <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Total Egresos (Mes)</p>
-          <span class="text-red-600 font-bold bg-red-50 text-[10px] px-1.5 py-0.5 rounded">-4.2%</span>
+          <span id="card-egresos-pct" class="text-red-600 font-bold bg-red-50 text-[10px] px-1.5 py-0.5 rounded">—</span>
         </div>
         <div class="flex items-baseline gap-1.5">
-          <span class="text-2xl font-bold text-secondary font-headline-md">1,854</span>
+          <span id="card-egresos-val" class="text-2xl font-bold text-secondary font-headline-md">—</span>
           <span class="text-xs text-on-surface-variant font-semibold">Uds</span>
         </div>
       </div>
@@ -251,8 +251,8 @@
       </div>
       <div class="flex-1 min-w-0">
         <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Movimiento más frecuente</p>
-        <p class="text-lg font-bold text-on-surface truncate font-headline-md leading-tight">Tienda Santa Lucía</p>
-        <span class="text-[10px] text-on-surface-variant truncate block mt-0.5">Modelo "Seda Imperial" - 450 Uds</span>
+        <p id="card-frecuente-titulo" class="text-lg font-bold text-on-surface truncate font-headline-md leading-tight">—</p>
+        <span id="card-frecuente-detalle" class="text-[10px] text-on-surface-variant truncate block mt-0.5">Cargando...</span>
       </div>
     </div>
   </div>
@@ -481,8 +481,9 @@
         checkAuth();
         if (typeof renderSideNav === 'function') renderSideNav("historialmacen");
 
-        // Populate table on load
+        // Populate table and summary cards on load
         renderHistory();
+        updateSummaryCards();
 
         // Apply filters in real-time on any change
         const applyRealTime = () => renderHistory();
@@ -619,7 +620,115 @@
     window.addEventListener('storage', (e) => {
         if (!e.key || e.key === 'escarlu_requests' || e.key === 'escarlu_warehouse_entries') {
             renderHistory();
+            updateSummaryCards();
         }
     });
+
+    function updateSummaryCards() {
+        const allReqs  = JSON.parse(localStorage.getItem('escarlu_requests'))  || [];
+        const entries  = JSON.parse(localStorage.getItem('escarlu_warehouse_entries')) || [];
+
+        const now   = new Date();
+        const month = now.getMonth();
+        const year  = now.getFullYear();
+
+        function sameMonth(dateStr) {
+            if (!dateStr) return false;
+            const d = new Date(dateStr);
+            return !isNaN(d) && d.getMonth() === month && d.getFullYear() === year;
+        }
+
+        // ── Total Ingresos del mes ────────────────────────────────────
+        const ingresosThisMonth = entries.filter(e => e.type === 'ingreso' && sameMonth(e.date));
+        const totalIngresos = ingresosThisMonth.reduce((s, e) => s + (Number(e.qty) || 0), 0);
+
+        // Previous month ingresos for % change
+        const prevMonth = month === 0 ? 11 : month - 1;
+        const prevYear  = month === 0 ? year - 1 : year;
+        const ingPrev = entries
+            .filter(e => e.type === 'ingreso' && (() => { const d = new Date(e.date); return !isNaN(d) && d.getMonth() === prevMonth && d.getFullYear() === prevYear; })())
+            .reduce((s, e) => s + (Number(e.qty) || 0), 0);
+        const ingPct = ingPrev > 0 ? (((totalIngresos - ingPrev) / ingPrev) * 100).toFixed(1) : null;
+
+        const elIngVal = document.getElementById('card-ingresos-val');
+        const elIngPct = document.getElementById('card-ingresos-pct');
+        if (elIngVal) elIngVal.textContent = totalIngresos.toLocaleString('es-PE');
+        if (elIngPct) {
+            if (ingPct !== null) {
+                const positive = parseFloat(ingPct) >= 0;
+                elIngPct.textContent = (positive ? '+' : '') + ingPct + '%';
+                elIngPct.className = `font-bold text-[10px] px-1.5 py-0.5 rounded ${
+                    positive ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
+                }`;
+            } else {
+                elIngPct.textContent = 'Sin prev.';
+                elIngPct.className = 'font-bold text-[10px] px-1.5 py-0.5 rounded text-on-surface-variant bg-surface-container';
+            }
+        }
+
+        // ── Total Egresos del mes ─────────────────────────────────────
+        const egresosList = allReqs
+            .filter(r => r.origin === 'ALM-01' && r.status === 'aprobado' && sameMonth(r.date));
+        const totalEgresos = egresosList.reduce((s, r) => s + (Number(r.qty) || 0), 0);
+
+        const egresosPrev = allReqs
+            .filter(r => r.origin === 'ALM-01' && r.status === 'aprobado' && (() => { const d = new Date(r.date); return !isNaN(d) && d.getMonth() === prevMonth && d.getFullYear() === prevYear; })())
+            .reduce((s, r) => s + (Number(r.qty) || 0), 0);
+        const egrPct = egresosPrev > 0 ? (((totalEgresos - egresosPrev) / egresosPrev) * 100).toFixed(1) : null;
+
+        const elEgrVal = document.getElementById('card-egresos-val');
+        const elEgrPct = document.getElementById('card-egresos-pct');
+        if (elEgrVal) elEgrVal.textContent = totalEgresos.toLocaleString('es-PE');
+        if (elEgrPct) {
+            if (egrPct !== null) {
+                const positive = parseFloat(egrPct) >= 0;
+                elEgrPct.textContent = (positive ? '+' : '') + egrPct + '%';
+                elEgrPct.className = `font-bold text-[10px] px-1.5 py-0.5 rounded ${
+                    positive ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
+                }`;
+            } else {
+                elEgrPct.textContent = 'Sin prev.';
+                elEgrPct.className = 'font-bold text-[10px] px-1.5 py-0.5 rounded text-on-surface-variant bg-surface-container';
+            }
+        }
+
+        // ── Movimiento más frecuente (tienda con más egresos totales) ─
+        const allEgresos = allReqs.filter(r => r.origin === 'ALM-01' && r.status === 'aprobado');
+
+        // Count by store
+        const storeTotals = {};
+        allEgresos.forEach(r => {
+            storeTotals[r.destination] = (storeTotals[r.destination] || 0) + (Number(r.qty) || 0);
+        });
+        const topStore = Object.entries(storeTotals).sort((a, b) => b[1] - a[1])[0];
+
+        // Count by model for the top store
+        const elTitulo  = document.getElementById('card-frecuente-titulo');
+        const elDetalle = document.getElementById('card-frecuente-detalle');
+
+        if (topStore && elTitulo && elDetalle) {
+            const [topStoreId, topStoreQty] = topStore;
+            const storeName = (typeof STORE_NAMES !== 'undefined' && STORE_NAMES[topStoreId]) || topStoreId;
+
+            // Find top model for that store
+            const modelTotals = {};
+            allEgresos
+                .filter(r => r.destination === topStoreId)
+                .forEach(r => {
+                    modelTotals[r.model] = (modelTotals[r.model] || 0) + (Number(r.qty) || 0);
+                });
+            const topModel = Object.entries(modelTotals).sort((a, b) => b[1] - a[1])[0];
+            const modelName = topModel
+                ? ((typeof MODEL_NAMES !== 'undefined' && MODEL_NAMES[topModel[0]]) || topModel[0])
+                : '—';
+            const modelQty = topModel ? topModel[1] : 0;
+
+            elTitulo.textContent  = storeName;
+            elDetalle.textContent = `${modelName} — ${modelQty.toLocaleString('es-PE')} Uds enviadas`;
+        } else if (elTitulo && elDetalle) {
+            elTitulo.textContent  = 'Sin movimientos';
+            elDetalle.textContent = 'Aún no hay egresos registrados';
+        }
+    }
 </script>
 </body></html>
