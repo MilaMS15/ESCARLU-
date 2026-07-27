@@ -442,32 +442,28 @@ function exportToExcel() {
 }
 
 function deleteEgreso(idGasto) {
+    console.log("Iniciando eliminación de egreso con ID:", idGasto);
     const modal = document.getElementById("delete-confirm-modal");
     const btnConfirm = document.getElementById("btn-confirm-delete");
     const btnCancel = document.getElementById("btn-cancel-delete");
 
-    if (!modal || !btnConfirm || !btnCancel) {
-        if (!confirm("¿Estás seguro de eliminar este egreso?")) return;
-        executeDeleteEgreso(idGasto);
+    if (!modal) {
+        if (confirm("¿Estás seguro de eliminar este egreso?")) {
+            executeDeleteEgreso(idGasto);
+        }
         return;
     }
 
     modal.classList.remove("hidden");
 
-    // Limpiar listeners anteriores para evitar múltiples ejecuciones
-    const newBtnConfirm = btnConfirm.cloneNode(true);
-    const newBtnCancel = btnCancel.cloneNode(true);
-    btnConfirm.parentNode.replaceChild(newBtnConfirm, btnConfirm);
-    btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
-
-    newBtnCancel.addEventListener("click", () => {
+    btnCancel.onclick = () => {
         modal.classList.add("hidden");
-    });
+    };
 
-    newBtnConfirm.addEventListener("click", async () => {
+    btnConfirm.onclick = async () => {
         modal.classList.add("hidden");
         await executeDeleteEgreso(idGasto);
-    });
+    };
 }
 
 async function executeDeleteEgreso(idGasto) {
