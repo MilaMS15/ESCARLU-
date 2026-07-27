@@ -354,6 +354,38 @@
 <div class="h-12"></div>
 </div>
 </main>
+
+<!-- Modal: Enviar Parcial -->
+<div id="partial-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-5 border-t-4 border-amber-400">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-amber-600 text-xl">local_shipping</span>
+      </div>
+      <div>
+        <h4 class="font-bold text-base text-on-surface">Enviar Parcial</h4>
+        <p id="partial-modal-desc" class="text-xs text-on-surface-variant mt-0.5"></p>
+      </div>
+    </div>
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col gap-3">
+      <p class="text-sm font-semibold text-amber-800">¿Cuántas unidades deseas enviar?</p>
+      <div class="flex items-center gap-3">
+        <button onclick="document.getElementById('partial-modal-qty').stepDown()" class="w-10 h-10 rounded-lg border-2 border-amber-300 bg-white text-amber-700 font-bold text-xl flex items-center justify-center hover:bg-amber-100 transition-colors">&minus;</button>
+        <input type="number" id="partial-modal-qty" min="1" value="1"
+          class="flex-1 h-10 rounded-lg border-2 border-amber-400 bg-white text-center text-lg font-bold text-on-surface focus:border-amber-500 focus:outline-none" />
+        <button onclick="document.getElementById('partial-modal-qty').stepUp()" class="w-10 h-10 rounded-lg border-2 border-amber-300 bg-white text-amber-700 font-bold text-xl flex items-center justify-center hover:bg-amber-100 transition-colors">+</button>
+      </div>
+      <p id="partial-modal-stock-info" class="text-xs text-amber-700 text-center font-semibold"></p>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="closePartialModal()" class="flex-1 h-11 rounded-xl border-2 border-outline-variant text-on-surface font-bold text-sm hover:bg-surface-container transition-colors">Cancelar</button>
+      <button onclick="confirmPartialSend()" class="flex-1 h-11 rounded-xl bg-amber-400 text-amber-900 font-bold text-sm hover:bg-amber-500 transition-colors flex items-center justify-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-base">send</span>
+        Confirmar Envío
+      </button>
+    </div>
+  </div>
+</div>
 <script>
     const user = getCurrentUser();
 
@@ -468,16 +500,6 @@
                 <!-- Stock Status -->
                 ${stockInfoHtml}
 
-                <!-- Partial Send Row -->
-                <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                    <span class="material-symbols-outlined text-amber-600 text-lg shrink-0">edit</span>
-                    <label class="text-xs font-bold text-amber-700 whitespace-nowrap">Enviar parcial:</label>
-                    <input type="number" id="partial-qty-${req.id}" min="1" max="${centralStock}" value="${Math.min(req.qty, centralStock) || 1}" 
-                        class="flex-1 h-8 rounded-lg border-2 border-amber-300 bg-white text-center text-sm font-bold text-on-surface focus:border-amber-500 focus:outline-none" 
-                        ${partialDisabled} />
-                    <span class="text-xs text-amber-600 font-semibold whitespace-nowrap">/ ${centralStock} disp.</span>
-                </div>
-
                 <!-- Action Buttons -->
                 <div class="grid grid-cols-3 gap-2">
                     <button onclick="approveRequest('${req.id}')" ${approveDisabled}
@@ -485,7 +507,7 @@
                         <span class="material-symbols-outlined text-base">check_circle</span>
                         <span>Aprobar</span>
                     </button>
-                    <button onclick="partialSendRequest('${req.id}')" ${partialDisabled}
+                    <button onclick="openPartialModal('${req.id}', '${modelLabel}', '${storeName}', ${centralStock})" ${partialDisabled}
                         class="h-11 rounded-xl bg-amber-400 text-amber-900 font-bold text-xs hover:bg-amber-500 transition-all flex flex-col items-center justify-center gap-0.5 shadow-sm ${partialOpacity}">
                         <span class="material-symbols-outlined text-base">local_shipping</span>
                         <span>Enviar Parcial</span>
@@ -541,6 +563,75 @@
         alert("Solicitud aprobada y despachada con éxito.");
         renderRequests();
     }
+
+    // ── Modal: Enviar Parcial ─────────────────────────────────
+    let _partialReqId = null;
+    let _partialMaxStock = 0;
+
+    window.openPartialModal = function(reqId, modelLabel, storeName, maxStock) {
+        _partialReqId   = reqId;
+        _partialMaxStock = maxStock;
+
+        const qtyInput = document.getElementById('partial-modal-qty');
+        const desc     = document.getElementById('partial-modal-desc');
+        const stockInfo = document.getElementById('partial-modal-stock-info');
+        const modal    = document.getElementById('partial-modal');
+
+        if (qtyInput)   { qtyInput.max = maxStock; qtyInput.value = Math.min(1, maxStock); }
+        if (desc)       desc.textContent = `${modelLabel} → ${storeName}`;
+        if (stockInfo)  stockInfo.textContent = `Máximo disponible: ${maxStock} unidades`;
+        if (modal)      modal.classList.remove('hidden');
+    };
+
+    window.closePartialModal = function() {
+        const modal = document.getElementById('partial-modal');
+        if (modal) modal.classList.add('hidden');
+        _partialReqId = null;
+    };
+
+    window.confirmPartialSend = function() {
+        if (!_partialReqId) return;
+
+        const qtyInput   = document.getElementById('partial-modal-qty');
+        const partialQty = qtyInput ? parseInt(qtyInput.value) : 0;
+
+        if (!partialQty || partialQty < 1) {
+            alert('Ingresa una cantidad válida.');
+            return;
+        }
+        if (partialQty > _partialMaxStock) {
+            alert(`Solo hay ${_partialMaxStock} unidades disponibles.`);
+            return;
+        }
+
+        const allReqs  = JSON.parse(localStorage.getItem('escarlu_requests'))  || [];
+        const inventory = JSON.parse(localStorage.getItem('escarlu_inventory')) || {};
+
+        const reqIndex = allReqs.findIndex(r => r.id === _partialReqId);
+        if (reqIndex === -1) return;
+
+        const req = allReqs[reqIndex];
+
+        // Deduct from central warehouse
+        inventory['ALM-01'][req.model][req.color][req.size] -= partialQty;
+
+        // Add to store stock
+        if (!inventory[req.destination]) inventory[req.destination] = {};
+        if (!inventory[req.destination][req.model]) inventory[req.destination][req.model] = {};
+        if (!inventory[req.destination][req.model][req.color]) inventory[req.destination][req.model][req.color] = {};
+        const currentDestStock = inventory[req.destination][req.model][req.color][req.size] || 0;
+        inventory[req.destination][req.model][req.color][req.size] = currentDestStock + partialQty;
+
+        req.status = 'aprobado';
+        req.partialQty = partialQty;
+
+        localStorage.setItem('escarlu_inventory', JSON.stringify(inventory));
+        localStorage.setItem('escarlu_requests',  JSON.stringify(allReqs));
+
+        closePartialModal();
+        alert(`✅ Envío parcial de ${partialQty} unidades realizado correctamente.`);
+        renderRequests();
+    };
 
     function partialSendRequest(id) {
         const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
