@@ -154,14 +154,31 @@ async function syncSalesToSupabase(localSales) {
 async function syncExpensesToSupabase(localExpenses) {
     const client = getSupabaseClient();
     if (!client) return;
+
+    // Mapa de IDs legáceos (formato viejo) a IDs reales de sede
+    const LEGACY_STORE_MAP = {
+        "tienda_1": "TDA-01",
+        "tienda_2": "TDA-02",
+        "tienda_3": "TDA-03",
+        "tienda_4": "TDA-04",
+        "general":  "CTR-01"
+    };
+
     for (const exp of localExpenses) {
+        let sedeId = exp.storeId || "CTR-01";
+        // Normalizar IDs legáceos
+        if (LEGACY_STORE_MAP[sedeId]) sedeId = LEGACY_STORE_MAP[sedeId];
+        // Si aún es un valor desconocido, usar CTR-01
+        const validIds = ["CTR-01","ALM-01","TDA-01","TDA-02","TDA-03","TDA-04"];
+        if (!validIds.includes(sedeId)) sedeId = "CTR-01";
+
         await client.from('gastos').upsert({
             id_gasto: exp.id,
             descripcion: exp.description,
             categoria: exp.category === 'fabricacion' ? 'fabricación' : exp.category,
             monto: exp.amount,
             fecha: exp.date,
-            id_sede: exp.storeId || 'CTR-01'
+            id_sede: sedeId
         });
     }
 }
@@ -245,7 +262,8 @@ async function downloadFromSupabase() {
             category: row.categoria === 'fabricación' ? 'fabricacion' : row.categoria,
             amount: parseFloat(row.monto),
             date: row.fecha,
-            storeId: row.id_sede
+            // CTR-01 = gasto general (sin sede específica)
+            storeId: (row.id_sede === 'CTR-01' || !row.id_sede) ? '' : row.id_sede
         }));
         const expStr = JSON.stringify(expenses);
         originalSetItem.call(localStorage, 'escarlu_expenses', expStr);
