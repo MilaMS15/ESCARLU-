@@ -257,7 +257,7 @@
     </div>
   </div>
 <!-- Filters -->
-<div class="glass-card rounded-2xl p-6 mb-4 flex flex-col md:flex-row gap-6 items-end">
+<div class="glass-card rounded-2xl p-4 mb-4 flex flex-col md:flex-row gap-4 items-end">
 <div class="flex-1 w-full space-y-2">
 <label class="font-label-md text-label-md text-on-surface-variant">Fecha</label>
 <div class="flex gap-2">
@@ -283,10 +283,7 @@
 <option value="TDA-04">Tienda Aviación</option>
 </select>
 </div>
-<button id="btn-filter" class="h-10 px-8 bg-primary text-on-primary font-label-lg text-label-lg rounded-xl hover:bg-on-primary-container transition-all active:scale-95 flex items-center gap-2">
-<span class="material-symbols-outlined">filter_list</span>
-                    Filtrar
-                </button>
+<button id="btn-filter" class="hidden"></button>
 </div>
 <!-- Main Movement Table -->
 <div class="glass-card rounded-2xl overflow-hidden mb-12">
@@ -487,8 +484,11 @@
         // Populate table on load
         renderHistory();
 
-        // Bind filter button
-        document.getElementById('btn-filter').addEventListener('click', renderHistory);
+        // Apply filters in real-time on any change
+        const applyRealTime = () => renderHistory();
+        document.getElementById('date-filter').addEventListener('change', applyRealTime);
+        document.getElementById('type-filter').addEventListener('change', applyRealTime);
+        document.getElementById('store-filter').addEventListener('change', applyRealTime);
 
         // Bind FAB click to redirect to ingresoprendalmacen.html
         const fab = document.querySelector('button.fixed.bottom-10');
