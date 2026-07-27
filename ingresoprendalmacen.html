@@ -209,9 +209,7 @@
     </div>
 </div>
 <!-- Main Grid Layout (Bento Style) -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-<!-- Left Column: Entry Form -->
-<div class="lg:col-span-7 space-y-4">
+<div class="space-y-4">
 <div class="bg-surface-container-lowest p-4 rounded-xl shadow-[0px_4px_20px_rgba(116,84,117,0.08)] border-t-2 border-tertiary relative overflow-hidden">
 <div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
 <span class="material-symbols-outlined text-[80px]">app_registration</span>
@@ -221,7 +219,7 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 <div class="space-y-2">
 <label class="block font-label-lg text-on-surface">Tipo de Prenda</label>
-<select id="select-tipo" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-8 text-body-md focus:border-primary focus:ring-0 transition-colors bg-surface">
+<select id="select-tipo" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-8 text-sm font-semibold focus:border-primary focus:ring-0 transition-colors bg-surface">
     <option value="Polo">Polo</option>
     <option value="Short">Short</option>
     <option value="Chompa">Chompa</option>
@@ -230,12 +228,12 @@
 </div>
 <div class="space-y-2">
 <label class="block font-label-lg text-on-surface">Modelo / SKU</label>
-<select id="select-model" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-10 text-body-md focus:border-primary focus:ring-0 transition-colors bg-surface">
+<select id="select-model" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-8 text-sm font-semibold focus:border-primary focus:ring-0 transition-colors bg-surface">
 </select>
 </div>
 <div class="space-y-2">
 <label class="block font-label-lg text-on-surface">Color</label>
-<select id="select-color" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-8 text-body-md focus:border-primary focus:ring-0 transition-colors bg-surface">
+<select id="select-color" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-8 text-sm font-semibold focus:border-primary focus:ring-0 transition-colors bg-surface">
 </select>
 </div>
 </div>
@@ -292,121 +290,6 @@
 <p class="text-body-sm opacity-70">Stock Actual Central</p>
 <p id="kpi-central-stock" class="font-bold">0 Unidades</p>
 </div>
-</div>
-</div>
-</div>
-<!-- Right Column: Pending Requests -->
-<div class="lg:col-span-5 flex flex-col h-full">
-<div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0px_4px_20px_rgba(116,84,117,0.08)] flex-1 flex flex-col border border-outline-variant/10">
-<div class="flex items-center justify-between mb-6">
-<h3 class="font-headline-md text-headline-md text-on-surface">Solicitudes Pendientes</h3>
-<span id="alerts-count-badge" class="bg-tertiary text-on-tertiary text-label-md px-3 py-1 rounded-full">0 Alertas</span>
-</div>
-<div id="requests-list-container" class="space-y-4 overflow-y-auto max-h-[600px] pr-2">
-<!-- Request Item 1 -->
-<div class="p-4 border-2 border-outline-variant/30 rounded-xl hover:border-primary/30 transition-all bg-surface/50 space-y-4">
-<div class="flex justify-between items-start">
-<div>
-<p class="font-bold text-label-lg">Tienda: CC Real Plaza</p>
-<p class="text-body-sm text-on-surface-variant">Solicitado hace 20 min</p>
-</div>
-<span class="bg-secondary-container text-on-secondary-container text-[12px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Urgente</span>
-</div>
-<div class="bg-surface p-3 rounded-lg flex items-center justify-between border border-outline-variant/10">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
-<span class="material-symbols-outlined text-primary text-xl">styler</span>
-</div>
-<div>
-<p class="text-body-sm font-bold">Blusa Encaje Premium</p>
-<p class="text-[14px] text-on-surface-variant">Talla M - Color Marfil</p>
-</div>
-</div>
-<p class="font-headline-md text-primary">45 <span class="text-body-sm font-normal text-on-surface-variant">u.</span></p>
-</div>
-<div class="flex flex-wrap gap-2 pt-2 border-t border-outline-variant/20">
-<button class="flex-1 h-10 bg-primary text-on-primary text-label-md rounded flex items-center justify-center gap-2 hover:brightness-110 transition-all">
-<span class="material-symbols-outlined text-[18px]">local_shipping</span> Aprobar Despacho
-                                        </button>
-<button class="h-10 px-3 border border-primary text-primary rounded hover:bg-primary/5 transition-all">
-<span class="material-symbols-outlined">edit_note</span>
-</button>
-<button class="h-10 px-3 border border-error text-error rounded hover:bg-error/5 transition-all">
-<span class="material-symbols-outlined">close</span>
-</button>
-</div>
-</div>
-<!-- Request Item 2 -->
-<div class="p-4 border-2 border-outline-variant/30 rounded-xl hover:border-primary/30 transition-all bg-surface/50 space-y-4">
-<div class="flex justify-between items-start">
-<div>
-<p class="font-bold text-label-lg">Tienda: San Isidro Boutique</p>
-<p class="text-body-sm text-on-surface-variant">Solicitado hace 2 horas</p>
-</div>
-<span class="bg-surface-container-high text-on-surface-variant text-[12px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Normal</span>
-</div>
-<div class="bg-surface p-3 rounded-lg flex items-center justify-between border border-outline-variant/10">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
-<span class="material-symbols-outlined text-primary text-xl">styler</span>
-</div>
-<div>
-<p class="text-body-sm font-bold">Pantalón Satín Gold</p>
-<p class="text-[14px] text-on-surface-variant">Talla S - Color Champagne</p>
-</div>
-</div>
-<p class="font-headline-md text-primary">12 <span class="text-body-sm font-normal text-on-surface-variant">u.</span></p>
-</div>
-<div class="flex flex-wrap gap-2 pt-2 border-t border-outline-variant/20">
-<button class="flex-1 h-10 bg-primary text-on-primary text-label-md rounded flex items-center justify-center gap-2 hover:brightness-110 transition-all">
-<span class="material-symbols-outlined text-[18px]">local_shipping</span> Aprobar Despacho
-                                        </button>
-<button class="h-10 px-3 border border-primary text-primary rounded hover:bg-primary/5 transition-all">
-<span class="material-symbols-outlined">edit_note</span>
-</button>
-<button class="h-10 px-3 border border-error text-error rounded hover:bg-error/5 transition-all">
-<span class="material-symbols-outlined">close</span>
-</button>
-</div>
-</div>
-<!-- Request Item 3 -->
-<div class="p-4 border-2 border-outline-variant/30 rounded-xl hover:border-primary/30 transition-all bg-surface/50 space-y-4">
-<div class="flex justify-between items-start">
-<div>
-<p class="font-bold text-label-lg">Tienda: Outlet Sur</p>
-<p class="text-body-sm text-on-surface-variant">Solicitado hace 4 horas</p>
-</div>
-<span class="bg-tertiary-container text-on-tertiary-container text-[12px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Stock Bajo</span>
-</div>
-<div class="bg-surface p-3 rounded-lg flex items-center justify-between border border-outline-variant/10">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
-<span class="material-symbols-outlined text-primary text-xl">styler</span>
-</div>
-<div>
-<p class="text-body-sm font-bold">Vestido Noche Escarlú</p>
-<p class="text-[14px] text-on-surface-variant">Talla L - Color Rubí</p>
-</div>
-</div>
-<p class="font-headline-md text-primary">20 <span class="text-body-sm font-normal text-on-surface-variant">u.</span></p>
-</div>
-<div class="flex flex-wrap gap-2 pt-2 border-t border-outline-variant/20">
-<button class="flex-1 h-10 bg-primary text-on-primary text-label-md rounded flex items-center justify-center gap-2 hover:brightness-110 transition-all">
-<span class="material-symbols-outlined text-[18px]">local_shipping</span> Aprobar Despacho
-                                        </button>
-<button class="h-10 px-3 border border-primary text-primary rounded hover:bg-primary/5 transition-all">
-<span class="material-symbols-outlined">edit_note</span>
-</button>
-<button class="h-10 px-3 border border-error text-error rounded hover:bg-error/5 transition-all">
-<span class="material-symbols-outlined">close</span>
-</button>
-</div>
-</div>
-</div>
-<button class="w-full mt-6 py-4 text-primary font-bold hover:bg-surface-container transition-all flex items-center justify-center gap-2 border-t border-outline-variant/20">
-                                Ver todas las solicitudes
-                                <span class="material-symbols-outlined">arrow_forward</span>
-</button>
 </div>
 </div>
 </div>
