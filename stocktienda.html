@@ -269,13 +269,6 @@
         Existencias de Prendas
       </h3>
       <div class="flex items-center gap-3">
-        <!-- Paginación compacta -->
-        <div class="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant bg-surface border border-outline-variant p-0.5 rounded">
-          <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_left</span></button>
-          <span class="px-1.5">1/3</span>
-          <button class="w-5 h-5 flex items-center justify-center hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[10px]">chevron_right</span></button>
-        </div>
-
         <a href="solitienda.html" class="flex items-center gap-1 px-3 h-8 rounded bg-surface hover:bg-surface-container-high border border-outline-variant text-primary text-[11px] font-bold transition-colors">
           <span class="material-symbols-outlined text-xs">swap_horiz</span>
           Pedir Stock
@@ -514,10 +507,8 @@
         if (!tbody) return;
 
         const actionColHeader = document.getElementById("action-col-header");
-        if (activeTab === 'local') {
+        if (actionColHeader) {
             actionColHeader.classList.remove("hidden");
-        } else {
-            actionColHeader.classList.add("hidden");
         }
 
         const query = (document.getElementById("inventory-search-table")?.value || "").toLowerCase();
@@ -591,16 +582,13 @@
                     `;
                 }
 
-                let actionTd = "";
-                if (activeTab === 'local') {
-                    actionTd = `
-                        <td class="px-4 py-2 text-right">
-                            <a href="solitienda.html?tipo=${modelType}&model=${modelKey}&color=${colorKey}" class="inline-flex items-center justify-center bg-primary text-on-primary px-3 py-1.5 rounded-lg shadow-sm hover:brightness-95 transition-all active:scale-95 text-[10px] font-bold uppercase no-underline">
-                                Pedir Stock
-                            </a>
-                        </td>
-                    `;
-                }
+                let actionTd = `
+                    <td class="px-4 py-2 text-right">
+                        <a href="solitienda.html?tipo=${modelType}&model=${modelKey}&color=${colorKey}" class="inline-flex items-center justify-center bg-primary text-on-primary px-3 py-1.5 rounded-lg shadow-sm hover:brightness-95 transition-all active:scale-95 text-[10px] font-bold uppercase no-underline">
+                            Pedir Stock
+                        </a>
+                    </td>
+                `;
 
                 const tr = document.createElement("tr");
                 tr.className = "hover:bg-surface-container-low transition-colors group";
