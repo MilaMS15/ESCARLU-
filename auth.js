@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (mappedRole === "admin" || mappedRole === "dueño") {
                     window.location.href = "cajadueno.html";
                 } else if (mappedRole === "almacen") {
-                    window.location.href = "Stockalmacen.html";
+                    window.location.href = "historialmacen.html";
                 } else if (mappedRole === "tienda") {
                     window.location.href = "cajatienda.html";
                 } else {
