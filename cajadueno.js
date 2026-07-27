@@ -398,8 +398,11 @@ function exportToExcel() {
 
     XLSX.utils.book_append_sheet(wb, ws, "Flujo de Caja");
 
-    // Save File
-    XLSX.writeFile(wb, "Reporte_Flujo_Caja_ESCARLU.xlsx");
+    // Save File — nombre dinámico con el período seleccionado
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const [yr, mo] = selectedPeriod.split("-");
+    const periodoFilename = `${meses[parseInt(mo, 10) - 1]}_${yr}`;
+    XLSX.writeFile(wb, `Reporte_Flujo_Caja_ESCARLU_${periodoFilename}.xlsx`);
 }
 
 // Expose functions globally for onclick and console accessibility

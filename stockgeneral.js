@@ -106,6 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
         storeSelect.addEventListener("change", renderTable);
     }
 
+    // --- Selector de Mes/Año ---
+    const periodInput = document.getElementById("filter-period-stock");
+    // Set default to current month
+    if (periodInput) {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        periodInput.value = `${yyyy}-${mm}`;
+        // No hace falta re-renderizar la tabla al cambiar el mes (el stock es un snapshot),
+        // pero actualizará el label del Excel al exportar
+    }
+
     function renderTable() {
         if (!invData || Object.keys(invData).length === 0) return;
 
@@ -343,6 +355,18 @@ function exportToExcel() {
     const selectedModelo = filterModelo ? filterModelo.value : "all";
     const selectedColor = filterColor ? filterColor.value : "all";
 
+    // Leer el período seleccionado
+    const periodInput = document.getElementById("filter-period-stock");
+    const periodValue = periodInput ? periodInput.value : "";
+    let periodoLabel = "Período no especificado";
+    let periodoFilename = "";
+    if (periodValue) {
+        const [yr, mo] = periodValue.split("-");
+        const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+        periodoLabel = `${meses[parseInt(mo, 10) - 1]} ${yr}`;
+        periodoFilename = `${meses[parseInt(mo, 10) - 1]}_${yr}`;
+    }
+
     const rawInv = localStorage.getItem("escarlu_inventory");
     const invData = rawInv ? JSON.parse(rawInv) : (typeof DEFAULT_INVENTORY !== 'undefined' ? DEFAULT_INVENTORY : {});
 
@@ -461,7 +485,8 @@ function exportToExcel() {
     const selectedStoreName = selectedStore === "all" ? "Consolidado Total (Todas las Sedes)" : (STORE_NAMES[selectedStore] || selectedStore);
 
     const ws_data = [
-        ["REPORTE DE INVENTARIO GENERAL - ESCARLÚ"],
+        [`REPORTE DE INVENTARIO GENERAL - ESCARLÚ | ${periodoLabel}`],
+        ["Período:", periodoLabel],
         ["Sede Filtrada:", selectedStoreName],
         ["Filtro Tipo:", selectedTipo === "all" ? "Todos los tipos" : selectedTipo],
         ["Filtro Modelo:", selectedModelo === "all" ? "Todos los modelos" : (MODEL_NAMES[selectedModelo] || selectedModelo)],
@@ -501,6 +526,9 @@ function exportToExcel() {
 
     XLSX.utils.book_append_sheet(wb, ws, "Inventario General");
 
-    // Save File
-    XLSX.writeFile(wb, "Reporte_Inventario_ESCARLU.xlsx");
+    // Save File — include period in filename
+    const filename = periodoFilename
+        ? `Reporte_Inventario_ESCARLU_${periodoFilename}.xlsx`
+        : "Reporte_Inventario_ESCARLU.xlsx";
+    XLSX.writeFile(wb, filename);
 }
