@@ -56,11 +56,15 @@ function renderFinanceDashboard() {
     });
 
     // 2. Filter Expenses for the selected month + sede
+    // Egresos sin storeId son gastos generales: se muestran siempre (en "all") o nunca al filtrar por tienda específica
     const monthlyExpenses = allExpenses.filter(exp => {
         if (!exp.date) return false;
         const matchesPeriod = exp.date.startsWith(selectedPeriod);
-        const matchesSede = selectedSede === "all" || exp.storeId === selectedSede || (selectedSede === "all" && !exp.storeId);
-        return matchesPeriod && matchesSede;
+        if (!matchesPeriod) return false;
+        if (selectedSede === "all") return true;
+        // Si el egreso tiene storeId vacío es un gasto general — se incluye en todas
+        if (!exp.storeId) return true;
+        return exp.storeId === selectedSede;
     });
 
     // 3. Calculate KPIs
@@ -261,7 +265,6 @@ function saveEgreso() {
     const concepto = document.getElementById("egreso-concepto").value.trim();
     const categoria = document.getElementById("egreso-categoria").value;
     const monto = parseFloat(document.getElementById("egreso-monto").value);
-    const sede = document.getElementById("egreso-sede").value;
     const fecha = document.getElementById("egreso-fecha").value;
 
     if (!concepto || isNaN(monto) || monto <= 0 || !fecha) {
@@ -275,7 +278,7 @@ function saveEgreso() {
         description: concepto,
         category: categoria,
         amount: monto,
-        storeId: sede === 'general' ? '' : sede,
+        storeId: "",  // Gasto general (sin sede específica)
         date: fecha
     };
 
