@@ -95,8 +95,8 @@
     ::-webkit-scrollbar-thumb { background: #c8a2c8; border-radius: 10px; border: 3px solid #f0eded; }
     html, body { height: 100vh; overflow: hidden; }
     main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    .dashboard-content { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 16px !important; gap: 14px !important; }
-    .table-container { flex: 1; overflow-y: auto; max-height: calc(100vh - 200px); }
+    .dashboard-content { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 8px 16px !important; gap: 8px !important; }
+    .table-container { flex: 1; overflow-y: auto; }
 
     /* Modal */
     #ingreso-modal { display: none; }
@@ -107,9 +107,9 @@
     /* Table row hover */
     tbody tr:hover { background-color: #f6f3f2; }
 
-    /* Size number cells — large & bold */
-    .size-cell { font-size: 15px; font-weight: 800; text-align: center; padding: 14px 8px; }
-    .size-empty { font-size: 14px; text-align: center; padding: 14px 8px; color: #cfc3cc; }
+    /* Size number cells — compact & bold */
+    .size-cell { font-size: 14px; font-weight: 800; text-align: center; padding: 10px 8px; }
+    .size-empty { font-size: 14px; text-align: center; padding: 10px 8px; color: #cfc3cc; }
 
     /* Centrado perfecto de los caracteres de los botones */
     .stepper-btn {
@@ -168,10 +168,10 @@
   </header>
 
   <!-- Dashboard Content con paddings idénticos -->
-  <div class="dashboard-content w-full px-6 py-4 flex flex-col gap-3 flex-grow min-h-0 overflow-y-auto">
+  <div class="dashboard-content w-full px-6 py-2 flex flex-col gap-2 flex-grow min-h-0 overflow-y-auto">
 
     <!-- Page Header (Compact e idéntico a Registrar Venta) -->
-    <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mt-1">
+    <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0">
       <div class="flex items-center gap-3">
         <h2 id="page-title" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Stock Tienda</h2>
         <span class="text-xs text-on-surface-variant font-semibold">| Fecha: <span id="current-date-label" class="text-primary font-bold"></span></span>
@@ -234,6 +234,26 @@
             <!-- Inyectado dinámicamente -->
           </tbody>
         </table>
+      </div>
+
+      <!-- Paginación Premium al pie de la tarjeta -->
+      <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/60 flex items-center justify-between shrink-0">
+        <span class="text-xs text-on-surface-variant font-semibold" id="pagination-info">
+          Mostrando 0-0 de 0 prendas
+        </span>
+        <div class="flex items-center gap-3">
+          <button type="button" id="btn-prev-page"
+            class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">chevron_left</span> Anterior
+          </button>
+          <span class="text-xs font-bold text-primary" id="pagination-current">
+            Página 1 de 1
+          </span>
+          <button type="button" id="btn-next-page"
+            class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+            Siguiente <span class="material-symbols-outlined text-sm">chevron_right</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -412,8 +432,9 @@
         return ["St", "L"]; // Polos, Chompas y Buzos manejan St y L
     }
 
-    // ── STATS (Eliminadas) ───────────────────────────────────────
-
+    // ── PAGINACIÓN VARIABLES ─────────────────────────────────────
+    let currentPage = 1;
+    const rowsPerPage = 5;
 
     // ── INVENTORY TABLE ──────────────────────────────────────────
     function renderInventoryTable() {
@@ -429,7 +450,6 @@
         const modelos = getModelos();
         tbody.innerHTML = "";
         
-        // Determinar qué tallas mostrar en las columnas
         // Determinar qué tallas mostrar en las columnas
         let activeSizes = ["St", "S", "M", "L", "XL"];
         let sizeColWidth = "7%"; // 5 tallas * 7% = 35%
@@ -452,18 +472,60 @@
         `;
         theadTr.innerHTML = headHtml;
 
-        let rowCount = 0;
+        // 1. Filtrar primero los modelos según los inputs activos
+        const modelosFiltrados = modelos.filter(m => {
+            if (selectedTipo  !== "all" && m.tipo.toLowerCase() !== selectedTipo.toLowerCase()) return false;
+            if (selectedModel !== "all" && m.id_modelo !== selectedModel) return false;
+            if (query && !m.nombre.toLowerCase().includes(query) && !m.id_modelo.toLowerCase().includes(query)) return false;
+            return true;
+        });
 
-        for (const m of modelos) {
-            if (selectedTipo  !== "all" && m.tipo.toLowerCase() !== selectedTipo.toLowerCase()) continue;
-            if (selectedModel !== "all" && m.id_modelo !== selectedModel) continue;
-            if (query && !m.nombre.toLowerCase().includes(query) && !m.id_modelo.toLowerCase().includes(query)) continue;
-
-            const sizes        = stock[m.id_modelo] || {};
+        // 2. Mapear calculando el stock total de los modelos que pasaron el filtro
+        const modelosConStock = modelosFiltrados.map(m => {
+            const sizes = stock[m.id_modelo] || {};
             const allowedSizes = getAllowedSizes(m.id_modelo);
-
             let totalModel = 0;
             allowedSizes.forEach(sz => { totalModel += (sizes[sz] || 0); });
+            return { model: m, totalModel, sizes, allowedSizes };
+        });
+
+        // 3. Ordenar estrictamente de mayor a menor stock total
+        modelosConStock.sort((a, b) => {
+            if (b.totalModel !== a.totalModel) {
+                return b.totalModel - a.totalModel;
+            }
+            return a.model.nombre.localeCompare(b.model.nombre);
+        });
+
+        // 4. Lógica de Paginación
+        const totalItems = modelosConStock.length;
+        const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+        
+        // Mantener currentPage dentro de los límites válidos
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIdx = (currentPage - 1) * rowsPerPage;
+        const endIdx   = Math.min(startIdx + rowsPerPage, totalItems);
+        const pagedData = modelosConStock.slice(startIdx, endIdx);
+
+        // Actualizar textos e información del paginador
+        document.getElementById("pagination-current").textContent = `Página ${currentPage} de ${totalPages}`;
+        document.getElementById("pagination-info").textContent = totalItems > 0 
+            ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalItems} prendas`
+            : "Mostrando 0-0 de 0 prendas";
+
+        // Habilitar/deshabilitar botones
+        document.getElementById("btn-prev-page").disabled = currentPage === 1;
+        document.getElementById("btn-next-page").disabled = currentPage === totalPages;
+
+        let rowCount = 0;
+
+        for (const item of pagedData) {
+            const m = item.model;
+            const sizes        = item.sizes;
+            const allowedSizes = item.allowedSizes;
+            const totalModel   = item.totalModel;
 
             // Generar celdas dinámicas de talla sólo para las columnas activas
             let sizeCellsHtml = "";
@@ -490,7 +552,7 @@
             const tr = document.createElement("tr");
             tr.className = "transition-colors cursor-default";
             tr.innerHTML = `
-                <td class="px-5 py-4">
+                <td class="px-5 py-2.5">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-primary-container/40 rounded-xl flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-primary">apparel</span>
@@ -502,10 +564,10 @@
                     </div>
                 </td>
                 ${sizeCellsHtml}
-                <td class="px-3 py-4 text-center">
+                <td class="px-3 py-2.5 text-center">
                     <div class="inline-flex justify-center">${statusBadge}</div>
                 </td>
-                <td class="px-3 py-4 text-center font-black text-base text-primary">${totalModel}</td>
+                <td class="px-3 py-2.5 text-center font-black text-base text-primary">${totalModel}</td>
             `;
             tbody.appendChild(tr);
             rowCount++;
@@ -661,11 +723,24 @@
         updateFilterModels();
 
         // Filter events
-        document.getElementById("select-filter-tipo").addEventListener("change", updateFilterModels);
-        document.getElementById("select-filter-modelo").addEventListener("change", renderInventoryTable);
-        document.getElementById("inventory-search-filter").addEventListener("input", renderInventoryTable);
+        document.getElementById("select-filter-tipo").addEventListener("change", () => { currentPage = 1; updateFilterModels(); });
+        document.getElementById("select-filter-modelo").addEventListener("change", () => { currentPage = 1; renderInventoryTable(); });
+        document.getElementById("inventory-search-filter").addEventListener("input", () => { currentPage = 1; renderInventoryTable(); });
         document.getElementById("inventory-search-table").addEventListener("input", (e) => {
             document.getElementById("inventory-search-filter").value = e.target.value;
+            currentPage = 1;
+            renderInventoryTable();
+        });
+
+        // Pagination events
+        document.getElementById("btn-prev-page").addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderInventoryTable();
+            }
+        });
+        document.getElementById("btn-next-page").addEventListener("click", () => {
+            currentPage++;
             renderInventoryTable();
         });
 
