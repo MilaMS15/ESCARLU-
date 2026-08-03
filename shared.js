@@ -620,14 +620,6 @@ function renderSideNav(activePage) {
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'cajatienda' ? 1 : 0};">storefront</span>
                 <span class="font-label-lg text-label-lg">Caja</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'solitienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="solitienda.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'solitienda' ? 1 : 0};">swap_horiz</span>
-                <span class="font-label-lg text-label-lg">Pedir Stock</span>
-            </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'atenderpedidos' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="atenderpedidos.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'atenderpedidos' ? 1 : 0};">assignment_turned_in</span>
-                <span class="font-label-lg text-label-lg">Atender Pedidos</span>
-            </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'registrarventa' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="registrarventa.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'registrarventa' ? 1 : 0};">point_of_sale</span>
                 <span class="font-label-lg text-label-lg">Registrar Venta</span>
@@ -735,14 +727,6 @@ function setupMobileMenu(activePage) {
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'cajatienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="cajatienda.html">
                 <span class="material-symbols-outlined">storefront</span>
                 <span class="font-label-lg">Caja</span>
-            </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'solitienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="solitienda.html">
-                <span class="material-symbols-outlined">swap_horiz</span>
-                <span class="font-label-lg">Pedir Stock</span>
-            </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'atenderpedidos' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="atenderpedidos.html">
-                <span class="material-symbols-outlined">assignment_turned_in</span>
-                <span class="font-label-lg">Atender Pedidos</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'registrarventa' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="registrarventa.html">
                 <span class="material-symbols-outlined">point_of_sale</span>
@@ -1248,7 +1232,6 @@ function getAllowedSizesForModel(modelId) {
     const models = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
     const model = models.find(m => m.id_modelo === modelId);
     if (!model) {
-        // Fallback fallback checks by ID prefix if local storage isn't loaded yet
         if (modelId === "MOD-015" || modelId === "MOD-016") {
             return ["S", "M", "L", "XL"]; // Shorts
         }
@@ -1262,6 +1245,181 @@ function getAllowedSizesForModel(modelId) {
         return ["St", "L"];
     }
 }
+
+// Estilos globales y dropdowns personalizados de ESCARLÚ
+(function() {
+    const styleOverride = document.createElement("style");
+    styleOverride.innerHTML = `
+        /* Ocultar select nativo cuando se inicializa el personalizado */
+        .escarlu-select-hidden {
+            display: none !important;
+        }
+        
+        .escarlu-select-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .escarlu-select-trigger {
+            font-family: "Source Sans 3", sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: #1c1b1b !important;
+            border: 2px solid #cfc3cc !important;
+            border-radius: 12px !important;
+            padding: 10px 36px 10px 14px !important;
+            background-color: #ffffff !important;
+            cursor: pointer !important;
+            display: flex;
+            align-items: center;
+            justify-content: justify;
+            width: 100%;
+            min-height: 44px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            user-select: none;
+        }
+        
+        .escarlu-select-trigger:after {
+            content: "";
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-top-color: #745475;
+            transition: transform 0.2s ease;
+        }
+        
+        .escarlu-select-wrapper.open .escarlu-select-trigger {
+            border-color: #745475 !important;
+            box-shadow: 0 0 0 3px rgba(116, 84, 117, 0.15) !important;
+        }
+        
+        .escarlu-select-wrapper.open .escarlu-select-trigger:after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+        
+        .escarlu-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #ffffff;
+            border: 2px solid #745475;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(116, 84, 117, 0.15);
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 99999;
+            display: none;
+            box-sizing: border-box;
+        }
+        
+        .escarlu-select-wrapper.open .escarlu-select-dropdown {
+            display: block;
+        }
+        
+        .escarlu-select-option {
+            padding: 10px 14px;
+            font-size: 13.5px;
+            color: #4c444b;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            font-family: "Source Sans 3", sans-serif !important;
+        }
+        
+        .escarlu-select-option:hover {
+            background-color: #c8a2c8;
+            color: #553757;
+        }
+        
+        .escarlu-select-option.selected {
+            background-color: #745475;
+            color: #ffffff;
+        }
+    `;
+    document.head.appendChild(styleOverride);
+
+    function buildCustomDropdown(select) {
+        if (select.dataset.customDropdownInitialized) return;
+        select.dataset.customDropdownInitialized = "true";
+        select.classList.add("escarlu-select-hidden");
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "escarlu-select-wrapper";
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(select);
+
+        const trigger = document.createElement("div");
+        trigger.className = "escarlu-select-trigger";
+        trigger.textContent = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : "Seleccionar...";
+        wrapper.appendChild(trigger);
+
+        const dropdown = document.createElement("div");
+        dropdown.className = "escarlu-select-dropdown";
+        wrapper.appendChild(dropdown);
+
+        function populateOptions() {
+            dropdown.innerHTML = "";
+            Array.from(select.options).forEach((opt, index) => {
+                const optionEl = document.createElement("div");
+                optionEl.className = "escarlu-select-option";
+                if (index === select.selectedIndex) optionEl.classList.add("selected");
+                optionEl.textContent = opt.text;
+                optionEl.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    select.selectedIndex = index;
+                    trigger.textContent = opt.text;
+                    wrapper.classList.remove("open");
+                    select.dispatchEvent(new Event("change"));
+                });
+                dropdown.appendChild(optionEl);
+            });
+        }
+
+        populateOptions();
+
+        // Reconstruir opciones e iniciar sincronización si cambian dinámicamente en el select original
+        const observer = new MutationObserver(() => {
+            populateOptions();
+            const selectedOpt = select.options[select.selectedIndex];
+            trigger.textContent = selectedOpt ? selectedOpt.text : "Seleccionar...";
+        });
+        observer.observe(select, { childList: true, characterData: true, subtree: true });
+
+        // Evento change en el select original para actualizar visualmente la opción seleccionada
+        select.addEventListener("change", () => {
+            const selectedOpt = select.options[select.selectedIndex];
+            trigger.textContent = selectedOpt ? selectedOpt.text : "Seleccionar...";
+            populateOptions();
+        });
+
+        trigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            document.querySelectorAll(".escarlu-select-wrapper").forEach(w => {
+                if (w !== wrapper) w.classList.remove("open");
+            });
+            wrapper.classList.toggle("open");
+        });
+    }
+
+    // Monitorear e inicializar periódicamente
+    setInterval(() => {
+        document.querySelectorAll("select").forEach(select => {
+            buildCustomDropdown(select);
+        });
+    }, 200);
+
+    // Cerrar al hacer clic afuera
+    document.addEventListener("click", () => {
+        document.querySelectorAll(".escarlu-select-wrapper").forEach(w => w.classList.remove("open"));
+    });
+})();
 
 
 

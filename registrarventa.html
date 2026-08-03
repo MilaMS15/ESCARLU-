@@ -197,7 +197,7 @@
             Seleccionar Producto
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <div class="md:col-span-2">
+            <div class="md:col-span-3">
                 <label class="block font-label-md text-sm mb-1.5" for="select-tipo">Tipo de Prenda</label>
                 <select id="select-tipo" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0">
                     <option value="Polo">Polo</option>
@@ -206,33 +206,9 @@
                     <option value="Buzo">Buzo</option>
                 </select>
             </div>
-            <div class="md:col-span-2">
+            <div class="md:col-span-3">
                 <label class="block font-label-md text-sm mb-1.5" for="select-model">Modelo</label>
                 <select id="select-model" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0">
-                </select>
-            </div>
-            <div class="md:col-span-2">
-                <label class="block font-label-md text-sm mb-1.5" for="select-color">Color</label>
-                <select id="select-color" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0">
-                    <option value="COL-01">Negro</option>
-                    <option value="COL-02">Perla</option>
-                    <option value="COL-03">Beige</option>
-                    <option value="COL-04">Botella</option>
-                    <option value="COL-05">Marron</option>
-                    <option value="COL-06">Acero</option>
-                    <option value="COL-07">Camello</option>
-                    <option value="COL-08">Rojo</option>
-                    <option value="COL-09">Fucsia</option>
-                    <option value="COL-10">Lacre</option>
-                    <option value="COL-11">Azul noche</option>
-                    <option value="COL-12">Amarillo</option>
-                    <option value="COL-13">Naranja</option>
-                    <option value="COL-14">Palo rosa</option>
-                    <option value="COL-15">Topo</option>
-                    <option value="COL-16">Italiano</option>
-                    <option value="COL-17">Celeste</option>
-                    <option value="COL-18">Lila</option>
-                    <option value="COL-19">Melange</option>
                 </select>
             </div>
             <div class="md:col-span-2">
@@ -295,7 +271,7 @@
             <label class="font-label-lg text-sm text-outline uppercase tracking-wider block mb-1.5" for="total-amount-input">Monto Total a Cobrar (S/)</label>
             <div class="relative">
                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-display-lg text-2xl font-bold">S/</span>
-                <input type="number" id="total-amount-input" name="sale_amount" value="0.00" min="0" step="0.01" class="w-full h-16 pl-12 pr-4 bg-white border-2 border-outline rounded-lg font-display-lg text-2xl font-black text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none" required/>
+                <input type="number" id="total-amount-input" name="sale_amount" value="0.00" min="0" step="0.1" class="w-full h-16 pl-12 pr-4 bg-white border-2 border-outline rounded-lg font-display-lg text-2xl font-black text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none" required/>
             </div>
         </div>
 
@@ -472,7 +448,6 @@
         // Add item to cart click
         document.getElementById('btn-add-item').addEventListener('click', () => {
             const model = document.getElementById('select-model').value;
-            const color = document.getElementById('select-color').value;
             const talla = document.getElementById('select-talla').value;
             const qty = parseInt(document.getElementById('qty-input').value);
             const price = parseFloat(document.getElementById('price-input').value);
@@ -487,15 +462,16 @@
                 return;
             }
 
-            // Verify stock
-            const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
-            const storeStock = inventory[user.storeId]?.[model]?.[color]?.[talla] || 0;
+            // Verify stock: new flat structure {model: {size: qty}}
+            const tiendaStock = JSON.parse(localStorage.getItem("escarlu_tienda_stock")) || {};
+            const modelSizes = tiendaStock[user.storeId]?.[model] || {};
+            const storeStock = modelSizes[talla] || 0;
 
-            const existing = cart.find(item => item.model === model && item.color === color && item.size === talla && item.price === price);
+            const existing = cart.find(item => item.model === model && item.size === talla && item.price === price);
             const currentCartQty = existing ? existing.qty : 0;
 
             if (currentCartQty + qty > storeStock) {
-                alert(`¡Stock insuficiente! Solo tienes ${storeStock} disponibles de esta prenda y ya tienes ${currentCartQty} en el carrito.`);
+                alert(`¡Stock insuficiente! Solo tienes ${storeStock} disponibles de esta prenda (talla ${talla}) y ya tienes ${currentCartQty} en el carrito.`);
                 return;
             }
 
@@ -504,7 +480,6 @@
             } else {
                 cart.push({
                     model,
-                    color,
                     size: talla,
                     qty,
                     price: price
@@ -525,21 +500,21 @@
                 return;
             }
 
-            // Double check stock
-            const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+            // Double check stock (nueva estructura sin colores)
+            const tiendaStock = JSON.parse(localStorage.getItem("escarlu_tienda_stock")) || {};
             for (let item of cart) {
-                const stock = inventory[user.storeId]?.[item.model]?.[item.color]?.[item.size] || 0;
+                const stock = tiendaStock[user.storeId]?.[item.model]?.[item.size] || 0;
                 if (stock < item.qty) {
-                    alert(`¡Error! El artículo ${MODEL_NAMES[item.model]} (${COLOR_NAMES[item.color]} Talla ${item.size}) se quedó sin stock suficiente en tienda.`);
+                    alert(`¡Error! El artículo ${MODEL_NAMES[item.model]} (Talla ${item.size}) se quedó sin stock suficiente en tienda.`);
                     return;
                 }
             }
 
-            // Deduct stock
+            // Deduct stock (directo, sin colores)
             cart.forEach(item => {
-                inventory[user.storeId][item.model][item.color][item.size] -= item.qty;
+                tiendaStock[user.storeId][item.model][item.size] -= item.qty;
             });
-            localStorage.setItem("escarlu_inventory", JSON.stringify(inventory));
+            localStorage.setItem("escarlu_tienda_stock", JSON.stringify(tiendaStock));
 
             // Save sale record
             const allSales = JSON.parse(localStorage.getItem("escarlu_sales")) || [];
@@ -626,12 +601,11 @@
             tr.className = "border-b border-surface-container-high hover:bg-surface-container-low transition-colors";
             
             const modelLabel = MODEL_NAMES[item.model] || item.model;
-            const colorLabel = COLOR_NAMES[item.color] || item.color;
 
             tr.innerHTML = `
                 <td class="py-3.5">
                     <p class="font-bold text-xs text-on-surface">${modelLabel}</p>
-                    <p class="text-[10px] text-on-surface-variant font-medium">${colorLabel} • Talla ${item.size}</p>
+                    <p class="text-[10px] text-on-surface-variant font-medium">Talla ${item.size}</p>
                 </td>
                 <td class="py-3.5 text-xs font-bold text-on-surface">${item.qty}</td>
                 <td class="py-3.5 text-xs text-on-surface">S/ ${item.price.toFixed(2)}</td>
