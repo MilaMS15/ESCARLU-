@@ -2,8 +2,23 @@
 
 let supabaseClient = null;
 
-// Cargar dinámicamente dependencias de Supabase y config.js
+// Cargar dinámicamente dependencias de Supabase, config.js y el tema visual global
 (function() {
+    // 0. Redefinir la paleta en la configuración de Tailwind
+    if (!window.tailwind) window.tailwind = {};
+    if (!window.tailwind.config) window.tailwind.config = {};
+    if (!window.tailwind.config.theme) window.tailwind.config.theme = { extend: {} };
+    if (!window.tailwind.config.theme.extend) window.tailwind.config.theme.extend = {};
+    if (!window.tailwind.config.theme.extend.colors) window.tailwind.config.theme.extend.colors = {};
+    
+    // Mapear los colores del tema de ESCARLÚ
+    window.tailwind.config.theme.extend.colors.primary = "#C59B27"; // Dorado Champán
+    window.tailwind.config.theme.extend.colors.secondary = "#F8C8D4"; // Rosa Palo
+    window.tailwind.config.theme.extend.colors.background = "#FAF5F6"; // Fondo crema
+    window.tailwind.config.theme.extend.colors.surface = "#FFFFFF"; // Blanco
+    window.tailwind.config.theme.extend.colors["primary-container"] = "#FFF0F3"; // Rosa claro
+    window.tailwind.config.theme.extend.colors["surface-container"] = "#FFF0F3";
+
     // 1. Cargar Supabase CDN
     if (!window.supabase) {
         const scriptSupa = document.createElement('script');
@@ -17,6 +32,249 @@ let supabaseClient = null;
     scriptConfig.src = "config.js";
     scriptConfig.async = false;
     document.head.appendChild(scriptConfig);
+
+    // 3. Inyectar Estilo Global del Nuevo Tema Visual
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+        :root {
+          --bg-main: #FAF5F6;             /* Fondo general cálido/crema suave */
+          --primary-pink: #F8C8D4;        /* Rosa palo suave para contenedores y acentos */
+          --primary-pink-light: #FFF0F3;  /* Rosa tenue para tarjetas y Sidebar */
+          --dark-text: #1A1A1A;           /* Negro elegante para títulos y textos */
+          --accent-gold: #C59B27;         /* Dorado champán de la garza para botones y estados */
+          --white: #FFFFFF;               /* Blanco para contraste en tablas e inputs */
+        }
+
+        body, html, main, .bg-background {
+          background-color: var(--bg-main) !important;
+          color: var(--dark-text) !important;
+          font-family: 'Source Sans 3', sans-serif !important;
+        }
+
+        /* Sidebar (Menú Lateral) */
+        aside, nav, .bg-surface-container, [class*="bg-surface-container"] {
+          background-color: var(--primary-pink-light) !important;
+        }
+        aside a, nav a {
+          transition: all 0.2s ease-in-out !important;
+        }
+        aside a:hover, nav a:hover {
+          background-color: var(--primary-pink) !important;
+          color: var(--dark-text) !important;
+        }
+        /* Ítem activo del menú lateral */
+        .bg-primary-container, 
+        aside a[class*="bg-primary-container"], 
+        nav a[class*="bg-primary-container"] {
+          background-color: var(--primary-pink) !important;
+          color: var(--dark-text) !important;
+          border-left: 4px solid var(--accent-gold) !important;
+          font-weight: 700 !important;
+          border-radius: 12px !important;
+        }
+
+        /* Botones de Acción principales */
+        .bg-primary, 
+        button[type="submit"], 
+        form button,
+        #btn-open-ingreso, 
+        #btn-add-item, 
+        #btn-submit-consolidated, 
+        .bg-primary-container-dim, 
+        button.bg-primary,
+        button.bg-primary-container,
+        #btnExportarExcel,
+        #btnExportarExcelTienda {
+          background-color: var(--dark-text) !important;
+          color: var(--white) !important;
+          border: 1px solid var(--accent-gold) !important;
+          font-weight: 700 !important;
+          border-radius: 12px !important;
+          transition: all 0.2s ease-in-out !important;
+        }
+        .bg-primary:hover, 
+        button[type="submit"]:hover, 
+        form button:hover,
+        #btn-open-ingreso:hover, 
+        #btn-add-item:hover, 
+        #btn-submit-consolidated:hover,
+        #btnExportarExcel:hover,
+        #btnExportarExcelTienda:hover {
+          background-color: var(--accent-gold) !important;
+          color: var(--dark-text) !important;
+        }
+
+        /* Tarjetas y Tablas */
+        .glass-card, 
+        .bento-card, 
+        .bg-white, 
+        [class*="bg-surface-container-lowest"], 
+        .bg-surface-container-lowest {
+          background-color: var(--white) !important;
+          border: 1px solid rgba(248, 200, 212, 0.4) !important;
+          box-shadow: 0 4px 15px rgba(248, 200, 212, 0.12) !important;
+          border-radius: 20px !important;
+        }
+
+        /* Cabecera de tablas */
+        thead tr, .bg-surface-container-low, [class*="bg-surface-container-low"] {
+          background-color: var(--primary-pink-light) !important;
+          color: var(--dark-text) !important;
+        }
+        th {
+          color: var(--dark-text) !important;
+          font-weight: 700 !important;
+        }
+
+        /* Inputs y Selects */
+        input[type="text"], input[type="number"], input[type="password"], input[type="email"], input[type="date"], select, textarea {
+          border: 2px solid var(--primary-pink) !important;
+          background-color: var(--white) !important;
+          border-radius: 12px !important;
+          color: var(--dark-text) !important;
+        }
+        input:focus, select:focus, textarea:focus {
+          border-color: var(--accent-gold) !important;
+          outline: none !important;
+          box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.2) !important;
+        }
+        select option {
+          background-color: var(--white) !important;
+          color: var(--dark-text) !important;
+        }
+        select option:hover, select option:checked {
+          background-color: var(--primary-pink) !important;
+          color: var(--dark-text) !important;
+        }
+
+        /* Quitar bordes y fondos a los inputs del stepper de cantidad */
+        #ingreso-cantidad, 
+        #edit-cantidad, 
+        #qty-input,
+        input#ingreso-cantidad, 
+        input#edit-cantidad, 
+        input#qty-input {
+          border: none !important;
+          background-color: transparent !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+        }
+
+        h1, h2, h3, h4, h5, h6, .text-primary, .text-on-surface {
+          color: var(--dark-text) !important;
+        }
+        .text-xs, .text-sm, .text-on-surface-variant {
+          color: #4C4C4C !important;
+        }
+
+        .border-outline-variant, .border-outline-variant/30, .border-surface-variant {
+          border-color: rgba(248, 200, 212, 0.4) !important;
+        }
+
+        /* Redefinir variables y clases primarias/secundarias de Tailwind */
+        .bg-primary {
+          background-color: var(--dark-text) !important; /* Negro elegante */
+          color: var(--white) !important;
+        }
+        .bg-primary-container {
+          background-color: var(--primary-pink-light) !important; /* Rosa claro */
+          color: var(--dark-text) !important;
+        }
+        .text-primary {
+          color: var(--dark-text) !important;
+        }
+        .border-primary {
+          border-color: var(--primary-pink) !important;
+        }
+        .bg-primary\/10 {
+          background-color: var(--primary-pink-light) !important;
+          color: var(--accent-gold) !important;
+          border: 1px solid var(--primary-pink) !important;
+        }
+
+        /* Sobrescribir gradientes y fondos de cabeceras */
+        [class*="from-primary"], 
+        [class*="via-primary"], 
+        [class*="to-primary"],
+        [class*="bg-gradient-to-br"],
+        .text-primary-container-dim {
+          background-image: linear-gradient(135deg, var(--primary-pink) 0%, var(--primary-pink-light) 100%) !important;
+          background-color: transparent !important;
+        }
+
+        /* Forzar legibilidad en textos de cabecera de modales */
+        [class*="bg-gradient-to-br"] h3, 
+        [class*="bg-gradient-to-br"] h4,
+        [class*="bg-gradient-to-br"] p, 
+        [class*="bg-gradient-to-br"] span, 
+        [class*="bg-gradient-to-br"] .material-symbols-outlined,
+        [class*="bg-gradient-to-br"] div {
+          color: var(--dark-text) !important;
+        }
+
+        /* Botones de Cancelar/Cerrar secundarios en modales */
+        button[onclick*="close"], 
+        button[id*="cancel"], 
+        .btn-cancel,
+        [onclick*="Close"],
+        [onclick*="cancel"],
+        button.border-outline-variant {
+          background-color: var(--primary-pink-light) !important;
+          color: var(--dark-text) !important;
+          border: 2px solid var(--primary-pink) !important;
+          border-radius: 12px !important;
+          background-image: none !important;
+        }
+        button[onclick*="close"]:hover, 
+        button[id*="cancel"]:hover, 
+        .btn-cancel:hover,
+        [onclick*="Close"]:hover,
+        [onclick*="cancel"]:hover {
+          background-color: var(--primary-pink) !important;
+        }
+
+        /* Botón de Confirmar / Guardar en el Modal (Acción Principal) */
+        button[type="submit"], 
+        form button[type="submit"], 
+        button[onclick*="save"],
+        button[onclick*="Save"],
+        #btn-confirm-delete,
+        #btn-confirm-tienda-delete,
+        .bg-primary,
+        #btn-open-ingreso {
+          background-color: var(--dark-text) !important;
+          color: var(--white) !important;
+          border: 1px solid var(--accent-gold) !important;
+          background-image: none !important;
+        }
+        button[type="submit"]:hover, 
+        form button[type="submit"]:hover, 
+        button[onclick*="save"]:hover,
+        #btn-confirm-delete:hover,
+        #btn-confirm-tienda-delete:hover {
+          background-color: var(--accent-gold) !important;
+          color: var(--dark-text) !important;
+          background-image: none !important;
+        }
+
+        /* Botones de Eliminar (Rojo legible) */
+        button.bg-error,
+        #btn-confirm-delete,
+        #btn-confirm-tienda-delete,
+        .text-error {
+          background-color: #D32F2F !important;
+          color: var(--white) !important;
+          border: 1px solid #C62828 !important;
+          background-image: none !important;
+        }
+        button.bg-error:hover,
+        #btn-confirm-delete:hover,
+        #btn-confirm-tienda-delete:hover {
+          background-color: #B71C1C !important;
+          color: var(--white) !important;
+        }
+    `;
+    document.head.appendChild(styleEl);
 })();
 
 function getSupabaseClient() {
@@ -568,7 +826,7 @@ function checkAuth() {
         // Restricciones de acceso por rol
         const ownerPages = ["cajadueno.html", "cortesdueno.html", "stockgeneraldueno.html"];
         const almacenPages = ["historialmacen.html", "ingresoprendalmacen.html", "solicitudpendientealmacen.html", "stockalmacen.html", "almacen.html"];
-        const tiendaPages = ["cajatienda.html", "solitienda.html", "registrarventa.html", "stocktienda.html", "solicitud.html", "atenderpedidos.html"];
+        const tiendaPages = ["cajatienda.html", "solitienda.html", "registrarventa.html", "stocktienda.html", "solicitud.html", "atenderpedidos.html", "historialprendas.html"];
 
         const currentPage = path.split("/").pop();
 
@@ -611,8 +869,8 @@ function renderSideNav(activePage) {
     // Logo en la esquina superior izquierda
     let brandHeaderHtml = `
         <div class="px-4 mb-4 flex flex-col items-center gap-2">
-            <div class="w-14 h-14 rounded-xl bg-white overflow-hidden shadow-sm border border-outline-variant flex items-center justify-center">
-                <img src="logo.jpeg" alt="Escarlú Logo" class="object-contain w-full h-full p-1" onerror="this.src='https://placehold.co/80x80?text=ESCARL%C3%9A'"/>
+            <div class="w-16 h-16 flex items-center justify-center">
+                <img src="logo_nuevo.jpeg" alt="Escarlú Logo" class="object-cover w-full h-full rounded-2xl" onerror="this.src='https://placehold.co/80x80?text=ESCARL%C3%9A'"/>
             </div>
             <div class="text-center">
                 <h1 class="font-headline-md text-xl text-primary font-bold tracking-tight">ESCARLÚ</h1>
@@ -622,58 +880,63 @@ function renderSideNav(activePage) {
     `;
     
     // Links según Rol especificado exactamente por el usuario
+    const storeName = STORE_NAMES?.[user.storeId] || user.label || "Sede";
     let linksHtml = "";
     
     if (user.role === "admin") {
         // DUEÑO: cajadueno.html, cortesdueno.html, stockgeneraldueno.html
         linksHtml += `
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cajadueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cajadueno.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'cajadueno' ? 1 : 0};">account_balance_wallet</span>
-                <span class="font-label-lg text-label-lg">Caja</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cajadueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cajadueno.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'cajadueno' ? 1 : 0};">account_balance_wallet</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Caja</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cortesdueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cortesdueno.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'cortesdueno' ? 1 : 0};">content_cut</span>
-                <span class="font-label-lg text-label-lg">Cortes</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cortesdueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cortesdueno.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'cortesdueno' ? 1 : 0};">content_cut</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Cortes</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'stockgeneraldueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="stockgeneraldueno.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'stockgeneraldueno' ? 1 : 0};">inventory_2</span>
-                <span class="font-label-lg text-label-lg">Stock General</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'stockgeneraldueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="stockgeneraldueno.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'stockgeneraldueno' ? 1 : 0};">inventory_2</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Stock General</span>
             </a>
         `;
     } else if (user.role === "almacen") {
-        // ALMACÉN: historialmacen.html, ingresoprendalmacen.html, solicitudpendientealmacen.html, Stockalmacen.html
+        // ALMACÉN
         linksHtml += `
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'historialmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="historialmacen.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'historialmacen' ? 1 : 0};">history</span>
-                <span class="font-label-lg text-label-lg">Historial Almacén</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'historialmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="historialmacen.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'historialmacen' ? 1 : 0};">history</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Historial Almacén</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'ingresoprendalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="ingresoprendalmacen.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'ingresoprendalmacen' ? 1 : 0};">add_box</span>
-                <span class="font-label-lg text-label-lg">Ingreso de Prendas</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'ingresoprendalmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="ingresoprendalmacen.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'ingresoprendalmacen' ? 1 : 0};">add_box</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Ingreso de Prendas</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'solicitudpendientealmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="solicitudpendientealmacen.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'solicitudpendientealmacen' ? 1 : 0};">pending_actions</span>
-                <span class="font-label-lg text-label-lg">Solicitudes Pendientes</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'solicitudpendientealmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="solicitudpendientealmacen.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'solicitudpendientealmacen' ? 1 : 0};">pending_actions</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Solicitudes Pendientes</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="Stockalmacen.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'Stockalmacen' ? 1 : 0};">inventory_2</span>
-                <span class="font-label-lg text-label-lg">Stock Almacén</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="Stockalmacen.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'Stockalmacen' ? 1 : 0};">inventory_2</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Stock Almacén</span>
             </a>
         `;
     } else {
-        // TIENDA: cajatienda.html, solitienda.html, atenderpedidos.html, registrarventa.html, stocktienda.html
+        // TIENDA
         linksHtml += `
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cajatienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cajatienda.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'cajatienda' ? 1 : 0};">storefront</span>
-                <span class="font-label-lg text-label-lg">Caja</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cajatienda' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cajatienda.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'cajatienda' ? 1 : 0};">storefront</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Caja</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'registrarventa' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="registrarventa.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'registrarventa' ? 1 : 0};">point_of_sale</span>
-                <span class="font-label-lg text-label-lg">Registrar Venta</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'registrarventa' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="registrarventa.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'registrarventa' ? 1 : 0};">point_of_sale</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Registrar Venta</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'stocktienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="stocktienda.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' ${activePage === 'stocktienda' ? 1 : 0};">inventory</span>
-                <span class="font-label-lg text-label-lg">Stock Tienda</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'stocktienda' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="stocktienda.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'stocktienda' ? 1 : 0};">inventory</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Stock Tienda</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'historialprendas' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="historialprendas.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'historialprendas' ? 1 : 0};">history</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Historial Prendas</span>
             </a>
         `;
     }
@@ -684,9 +947,9 @@ function renderSideNav(activePage) {
             ${linksHtml}
         </div>
         <div class="mt-auto pt-2 border-t border-outline-variant px-2">
-            <button id="logout-btn" class="w-full flex items-center gap-4 text-on-surface-variant py-2.5 px-4 hover:bg-error-container hover:text-on-error-container transition-all duration-200 rounded-lg min-h-[48px] text-left">
-                <span class="material-symbols-outlined">logout</span>
-                <span class="font-label-lg text-label-lg font-semibold">Cerrar Sesión</span>
+            <button id="logout-btn" class="w-full flex items-center gap-4 text-on-surface-variant py-2.5 px-4 hover:bg-error-container hover:text-on-error-container transition-all duration-200 rounded-xl min-h-[48px] text-left">
+                <span class="material-symbols-outlined text-[24px]">logout</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Cerrar Sesión</span>
             </button>
         </div>
     `;
@@ -706,7 +969,7 @@ function setupMobileMenu(activePage) {
     
     header.innerHTML = `
         <div class="flex items-center gap-3">
-            <img src="logo.jpeg" alt="Escarlú Logo" class="w-10 h-10 rounded object-contain bg-white border border-outline-variant p-0.5" onerror="this.src='https://placehold.co/50x50?text=ES'"/>
+            <img src="logo_nuevo.jpeg" alt="Escarlú Logo" class="w-10 h-10 rounded-lg object-cover" onerror="this.src='https://placehold.co/50x50?text=ES'"/>
             <span class="font-headline-md text-headline-md text-primary font-bold">ESCARLÚ</span>
         </div>
         <button id="mobile-menu-trigger" class="w-10 h-10 flex items-center justify-center text-primary rounded-full hover:bg-surface-container-high transition-colors">
@@ -783,6 +1046,10 @@ function setupMobileMenu(activePage) {
                 <span class="material-symbols-outlined">inventory</span>
                 <span class="font-label-lg">Stock Tienda</span>
             </a>
+            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'historialprendas' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="historialprendas.html">
+                <span class="material-symbols-outlined">history</span>
+                <span class="font-label-lg">Historial Prendas</span>
+            </a>
         `;
     }
 
@@ -790,7 +1057,7 @@ function setupMobileMenu(activePage) {
     drawerContent.innerHTML = `
         <div class="px-6 mb-6 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <img src="logo.jpeg" alt="Escarlú" class="w-8 h-8 rounded object-contain bg-white p-0.5 border border-outline-variant"/>
+                <img src="logo_nuevo.jpeg" alt="Escarlú" class="w-8 h-8 rounded-lg object-cover"/>
                 <span class="font-headline-md text-headline-md text-primary font-bold">ESCARLÚ</span>
             </div>
             <button id="close-drawer" class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full">

@@ -431,44 +431,51 @@
 
 </div>
 <!-- Custom Transfer Modal -->
-<div id="transfer-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] opacity-0 transition-opacity duration-200 pointer-events-none">
-  <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200 flex flex-col gap-4">
-    <div class="flex items-center gap-3 text-primary">
-      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
-      <h4 id="transfer-modal-title" class="font-headline-md text-base font-bold">Enviar Stock / Reposición</h4>
+<div id="transfer-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[9999] opacity-0 transition-opacity duration-200 pointer-events-none px-4">
+  <div class="rounded-[24px] shadow-2xl overflow-hidden w-full max-w-sm transform scale-95 transition-transform duration-200">
+    <!-- Header degradado morado -->
+    <div class="relative h-24 bg-gradient-to-br from-primary/90 via-primary to-primary/70 flex items-end px-8 pb-4 overflow-hidden">
+      <div class="absolute inset-0 opacity-20" style="background: radial-gradient(circle at 80% 20%, white 0%, transparent 60%);"></div>
+      <div class="relative z-10">
+        <p class="text-white/70 text-[10px] font-black uppercase tracking-widest">Control de Inventario</p>
+        <h4 id="transfer-modal-title" class="text-white text-xl font-serif font-bold leading-tight">Enviar Stock</h4>
+      </div>
     </div>
-    
-    <p id="transfer-modal-desc" class="text-xs font-body-sm text-on-surface-variant leading-relaxed"></p>
-    
-    <div class="flex flex-col gap-3">
-      <!-- Destinatario selector (only shown when sending from central warehouse) -->
-      <div id="transfer-dest-container" class="flex flex-col gap-1 hidden">
-        <label class="text-xs font-bold text-on-surface-variant ml-1" for="transfer-dest">Tienda Destino</label>
-        <select id="transfer-dest" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer text-sm">
-          <!-- populated dynamically -->
-        </select>
+    <!-- Body -->
+    <div class="bg-white p-6 flex flex-col gap-4">
+      <p id="transfer-modal-desc" class="text-xs text-on-surface-variant leading-relaxed"></p>
+
+      <div class="flex flex-col gap-3">
+        <!-- Destinatario selector (only shown when sending from central warehouse) -->
+        <div id="transfer-dest-container" class="flex flex-col gap-1 hidden">
+          <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider" for="transfer-dest">Tienda Destino</label>
+          <select id="transfer-dest" class="border-2 border-outline-variant rounded-xl h-10 w-full text-sm font-semibold text-on-surface bg-surface px-3 outline-none focus:border-primary cursor-pointer">
+            <!-- populated dynamically -->
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider" for="transfer-size">Talla</label>
+          <select id="transfer-size" class="border-2 border-outline-variant rounded-xl h-10 w-full text-sm font-semibold text-on-surface bg-surface px-3 outline-none focus:border-primary cursor-pointer">
+            <!-- populated dynamically -->
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider" for="transfer-qty">Cantidad a Enviar</label>
+          <input type="number" id="transfer-qty" min="1" value="5" class="border-2 border-outline-variant rounded-xl h-10 w-full text-sm font-semibold text-on-surface bg-surface px-3 outline-none focus:border-primary" />
+        </div>
       </div>
 
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-bold text-on-surface-variant ml-1" for="transfer-size">Talla</label>
-        <select id="transfer-size" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer text-sm">
-          <!-- populated dynamically -->
-        </select>
+      <div class="flex gap-3 mt-1">
+        <button id="transfer-cancel-btn" class="flex-1 h-10 rounded-xl border-2 border-outline-variant text-on-surface font-bold text-sm hover:bg-surface-container transition-all active:scale-95">
+          Cancelar
+        </button>
+        <button id="transfer-confirm-btn" class="flex-1 h-10 rounded-xl bg-primary text-on-primary font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+          Solicitar
+        </button>
       </div>
-      
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-bold text-on-surface-variant ml-1" for="transfer-qty">Cantidad a Enviar</label>
-        <input type="number" id="transfer-qty" min="1" value="5" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none text-sm" />
-      </div>
-    </div>
-    
-    <div class="flex justify-end gap-2 mt-2">
-      <button id="transfer-cancel-btn" class="bg-surface hover:bg-surface-container-high text-on-surface px-4 py-2 rounded-xl font-label-lg text-xs uppercase font-bold border border-outline-variant transition-all active:scale-95">
-        Cancelar
-      </button>
-      <button id="transfer-confirm-btn" class="bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container px-4 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-95">
-        Solicitar
-      </button>
     </div>
   </div>
 </div>
