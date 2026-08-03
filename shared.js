@@ -35,6 +35,8 @@ localStorage.setItem = function(key, value) {
 
     if (key === 'escarlu_inventory') {
         syncInventoryToSupabase(JSON.parse(value));
+    } else if (key === 'escarlu_tienda_stock') {
+        syncTiendaStockToSupabase(JSON.parse(value));
     } else if (key === 'escarlu_sales') {
         syncSalesToSupabase(JSON.parse(value));
     } else if (key === 'escarlu_requests') {
@@ -43,6 +45,31 @@ localStorage.setItem = function(key, value) {
         syncExpensesToSupabase(JSON.parse(value));
     }
 };
+
+async function syncTiendaStockToSupabase(tiendaStock) {
+    const client = getSupabaseClient();
+    if (!client) return;
+    for (const [storeId, models] of Object.entries(tiendaStock)) {
+        for (const [modelId, sizes] of Object.entries(models)) {
+            for (const [sizeName, qty] of Object.entries(sizes)) {
+                const tallaId = TALLA_KEYS[sizeName];
+                if (!tallaId) continue;
+                // Para las tiendas, se guarda con un ID de color por defecto COL-01 (Negro)
+                const colorId = "COL-01";
+                const stockId = `STK-${storeId}-${modelId}-${colorId}-${tallaId}`;
+                await client.from('stock').upsert({
+                    id_stock: stockId,
+                    id_sede: storeId,
+                    id_modelo: modelId,
+                    id_color: colorId,
+                    id_talla: tallaId,
+                    cantidad: qty,
+                    ultima_actualizacion: new Date().toISOString()
+                });
+            }
+        }
+    }
+}
 
 async function syncInventoryToSupabase(localInv) {
     const client = getSupabaseClient();
@@ -198,6 +225,8 @@ async function downloadFromSupabase() {
     const { data: stockData } = await client.from('stock').select('*');
     if (stockData) {
         const inventory = {};
+        const tiendaStock = {};
+
         stockData.forEach(row => {
             const storeId = row.id_sede;
             const modelId = row.id_modelo;
@@ -205,14 +234,32 @@ async function downloadFromSupabase() {
             const sizeName = TALLA_NAMES[row.id_talla];
             if (!sizeName) return;
 
+            // 1.1 Poblar estructura con colores (escarlu_inventory)
             if (!inventory[storeId]) inventory[storeId] = {};
             if (!inventory[storeId][modelId]) inventory[storeId][modelId] = {};
             if (!inventory[storeId][modelId][colorId]) inventory[storeId][modelId][colorId] = {};
             inventory[storeId][modelId][colorId][sizeName] = row.cantidad;
+
+            // 1.2 Poblar estructura consolidada sin colores (escarlu_tienda_stock)
+            if (!tiendaStock[storeId]) tiendaStock[storeId] = {};
+            if (!tiendaStock[storeId][modelId]) tiendaStock[storeId][modelId] = {};
+            
+            // Si la sede es una tienda (TDA), sumamos la cantidad de todos los colores para esa talla
+            if (storeId.startsWith("TDA-")) {
+                tiendaStock[storeId][modelId][sizeName] = (tiendaStock[storeId][modelId][sizeName] || 0) + row.cantidad;
+            } else {
+                // Para almacén u otras sedes, también creamos la estructura base
+                tiendaStock[storeId][modelId][sizeName] = (tiendaStock[storeId][modelId][sizeName] || 0) + row.cantidad;
+            }
         });
+
         const invStr = JSON.stringify(inventory);
         originalSetItem.call(localStorage, 'escarlu_inventory', invStr);
         triggerStorageUpdate('escarlu_inventory', invStr);
+
+        const tiendaInvStr = JSON.stringify(tiendaStock);
+        originalSetItem.call(localStorage, 'escarlu_tienda_stock', tiendaInvStr);
+        triggerStorageUpdate('escarlu_tienda_stock', tiendaInvStr);
     }
 
     // 2. Download Sales

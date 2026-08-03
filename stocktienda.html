@@ -112,15 +112,15 @@
     .size-empty { font-size: 14px; text-align: center; padding: 14px 8px; color: #cfc3cc; }
 </style>
 </head>
-<body class="font-body-md text-body-md">
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden flex">
 
 <!-- Sidebar Navigation -->
 <aside></aside>
 
 <!-- Main Content Area -->
-<main class="ml-64 md:ml-72 flex flex-col h-screen overflow-hidden gap-3">
+<main class="w-full h-screen overflow-hidden md:ml-72 flex flex-col gap-3">
   <!-- Unified Top Bar Header (Tienda) -->
-  <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
+  <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 shrink-0">
     <!-- Lado Izquierdo: Badge de Sede -->
     <div class="flex items-center gap-2">
       <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
@@ -159,7 +159,7 @@
   </header>
 
   <!-- Dashboard Content con paddings idénticos -->
-  <div class="dashboard-content max-w-[1440px] mx-auto w-full px-6 py-4 flex flex-col gap-3 flex-grow min-h-0 overflow-y-auto">
+  <div class="dashboard-content w-full px-6 py-4 flex flex-col gap-3 flex-grow min-h-0 overflow-y-auto">
 
     <!-- Page Header (Compact e idéntico a Registrar Venta) -->
     <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mt-1">
