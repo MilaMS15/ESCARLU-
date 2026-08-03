@@ -277,23 +277,31 @@
 </main>
 
 <!-- Modal Registrar Egreso Tienda -->
-<div id="egreso-tienda-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-    <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full border border-outline-variant/50 shadow-2xl space-y-6">
-        <div class="flex justify-between items-center">
-            <h3 class="font-display-lg text-headline-lg text-primary font-bold">Registrar Gasto / Egreso</h3>
-            <button onclick="closeEgresoTiendaModal()" class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center">
-                <span class="material-symbols-outlined text-2xl">close</span>
-            </button>
+<div id="egreso-tienda-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-200">
+    <div class="bg-white rounded-[24px] shadow-2xl overflow-hidden max-w-lg w-full transform scale-95 transition-transform duration-200">
+        <!-- Header degradado -->
+        <div class="relative h-24 bg-gradient-to-br from-primary/90 via-primary to-primary/70 flex items-end px-8 pb-4 overflow-hidden">
+            <div class="absolute inset-0 opacity-10" style="background: radial-gradient(circle at 70% 50%, white, transparent 70%)"></div>
+            <div class="relative z-10 flex items-end justify-between w-full">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-white/70">Gestión de Gastos</p>
+                    <h3 class="font-serif text-xl font-bold text-white leading-tight">Registrar Gasto / Egreso</h3>
+                </div>
+                <button onclick="closeEgresoTiendaModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined text-white text-xl">close</span>
+                </button>
+            </div>
         </div>
-        <div class="space-y-4">
+        <!-- Cuerpo -->
+        <div class="p-8 flex flex-col gap-5">
             <div>
-                <label class="block font-bold text-sm text-on-surface-variant mb-1">Concepto / Descripción *</label>
-                <input id="egreso-tienda-concepto" type="text" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" placeholder="Ej. Pago de movilidad / pasaje" />
+                <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider">Concepto / Descripción *</label>
+                <input id="egreso-tienda-concepto" type="text" class="w-full mt-1.5 border-2 border-outline-variant rounded-xl h-11 px-4 outline-none focus:border-primary text-sm font-semibold text-on-surface" placeholder="Ej. Pago de movilidad / pasaje" />
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Categoría</label>
-                    <select id="egreso-tienda-categoria" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0">
+                    <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider">Categoría</label>
+                    <select id="egreso-tienda-categoria" class="w-full mt-1.5 border-2 border-outline-variant rounded-xl h-11 px-4 outline-none focus:border-primary text-sm font-semibold text-on-surface">
                         <option value="caja chica">Reposición Caja Chica</option>
                         <option value="servicios">Servicios Básicos</option>
                         <option value="personal">Personal / Sueldos</option>
@@ -302,35 +310,45 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block font-bold text-sm text-on-surface-variant mb-1">Monto (S/) *</label>
-                    <input id="egreso-tienda-monto" type="number" min="0.01" step="0.01" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" placeholder="0.00" />
+                    <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider">Monto (S/) *</label>
+                    <input id="egreso-tienda-monto" type="number" min="0.01" step="0.01" class="w-full mt-1.5 border-2 border-outline-variant rounded-xl h-11 px-4 outline-none focus:border-primary text-sm font-semibold text-on-surface" placeholder="0.00" />
                 </div>
             </div>
             <div>
-                <label class="block font-bold text-sm text-on-surface-variant mb-1">Fecha *</label>
-                <input id="egreso-tienda-fecha" type="date" class="w-full h-12 border border-outline-variant rounded-xl px-4 outline-none focus:border-primary focus:ring-0" />
+                <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider">Fecha *</label>
+                <input id="egreso-tienda-fecha" type="date" class="w-full mt-1.5 border-2 border-outline-variant rounded-xl h-11 px-4 outline-none focus:border-primary text-sm font-semibold text-on-surface" />
             </div>
-        </div>
-        <div class="flex gap-4">
-            <button onclick="closeEgresoTiendaModal()" class="flex-1 h-12 rounded-xl border border-outline bg-transparent font-bold hover:bg-surface-container transition-all">Cancelar</button>
-            <button onclick="saveEgresoTienda()" class="flex-1 h-12 rounded-xl bg-primary text-white font-bold hover:brightness-95 transition-all">Guardar Egreso</button>
+            <div class="flex gap-3 pt-1">
+                <button onclick="closeEgresoTiendaModal()" class="flex-1 border-2 border-outline-variant text-on-surface-variant rounded-xl text-sm font-bold hover:bg-surface-container transition-colors h-12">Cancelar</button>
+                <button onclick="saveEgresoTienda()" class="flex-1 bg-primary text-on-primary rounded-xl text-sm font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-sm h-12">Guardar Egreso</button>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Modal Confirmar Eliminar Egreso Tienda -->
-<div id="delete-confirm-tienda-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full border border-outline-variant/40 shadow-2xl space-y-5 text-center transform transition-all scale-100">
-        <div class="w-12 h-12 rounded-full bg-error-container/30 text-error flex items-center justify-center mx-auto">
-            <span class="material-symbols-outlined text-2xl">delete</span>
+<div id="delete-confirm-tienda-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+    <div class="bg-white rounded-[24px] shadow-2xl overflow-hidden max-w-sm w-full">
+        <!-- Header degradado -->
+        <div class="relative h-24 bg-gradient-to-br from-primary/90 via-primary to-primary/70 flex items-end px-8 pb-4 overflow-hidden">
+            <div class="absolute inset-0 opacity-10" style="background: radial-gradient(circle at 70% 50%, white, transparent 70%)"></div>
+            <div class="relative z-10 flex items-end justify-between w-full">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-white/70">Confirmar Acción</p>
+                    <h3 class="font-serif text-xl font-bold text-white leading-tight">¿Eliminar egreso?</h3>
+                </div>
+            </div>
         </div>
-        <div class="space-y-1">
-            <h3 class="font-bold text-lg text-on-surface">¿Eliminar egreso?</h3>
-            <p class="text-xs text-on-surface-variant">Esta acción no se puede deshacer y actualizará los balances de tu tienda inmediatamente.</p>
-        </div>
-        <div class="flex gap-3 pt-2">
-            <button id="btn-cancel-tienda-delete" class="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-xs hover:bg-surface-container transition-all">Cancelar</button>
-            <button id="btn-confirm-tienda-delete" class="flex-1 py-2.5 rounded-xl bg-error text-white font-bold text-xs hover:brightness-95 transition-all shadow-sm">Sí, eliminar</button>
+        <!-- Cuerpo -->
+        <div class="p-8 flex flex-col gap-5 items-center text-center">
+            <div class="w-14 h-14 rounded-full bg-error-container/30 text-error flex items-center justify-center">
+                <span class="material-symbols-outlined text-3xl">delete_forever</span>
+            </div>
+            <p class="text-sm text-on-surface-variant leading-relaxed">Esta acción no se puede deshacer y actualizará los balances de tu tienda inmediatamente.</p>
+            <div class="flex gap-3 w-full">
+                <button id="btn-cancel-tienda-delete" class="flex-1 border-2 border-outline-variant text-on-surface-variant rounded-xl text-sm font-bold hover:bg-surface-container transition-colors h-12">Cancelar</button>
+                <button id="btn-confirm-tienda-delete" class="flex-1 bg-error text-on-error rounded-xl text-sm font-bold hover:brightness-95 active:scale-95 transition-all shadow-sm h-12">Sí, eliminar</button>
+            </div>
         </div>
     </div>
 </div>
@@ -641,15 +659,28 @@
 
         // Window scope functions para Modales de Egreso y Borrado de Tienda
         window.openEgresoTiendaModal = function() {
-            document.getElementById("egreso-tienda-modal").classList.remove("hidden");
+            const modal = document.getElementById("egreso-tienda-modal");
+            modal.classList.remove("hidden");
+            // Forzar reflow para transiciones
+            setTimeout(() => {
+                modal.classList.add("opacity-100");
+                modal.firstElementChild.classList.remove("scale-95");
+                modal.firstElementChild.classList.add("scale-100");
+            }, 10);
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById("egreso-tienda-fecha").value = todayStr;
         };
 
         window.closeEgresoTiendaModal = function() {
-            document.getElementById("egreso-tienda-modal").classList.add("hidden");
-            document.getElementById("egreso-tienda-concepto").value = "";
-            document.getElementById("egreso-tienda-monto").value = "";
+            const modal = document.getElementById("egreso-tienda-modal");
+            modal.classList.remove("opacity-100");
+            modal.firstElementChild.classList.remove("scale-100");
+            modal.firstElementChild.classList.add("scale-95");
+            setTimeout(() => {
+                modal.classList.add("hidden");
+                document.getElementById("egreso-tienda-concepto").value = "";
+                document.getElementById("egreso-tienda-monto").value = "";
+            }, 200);
         };
 
         window.saveEgresoTienda = function() {

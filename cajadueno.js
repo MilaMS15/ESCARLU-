@@ -260,15 +260,27 @@ function rejectYape(id) {
 
 // Modal Control
 function openEgresoModal() {
-    document.getElementById("egreso-modal").classList.remove("hidden");
+    const modal = document.getElementById("egreso-modal");
+    modal.classList.remove("hidden");
+    setTimeout(() => {
+        modal.classList.add("opacity-100");
+        modal.firstElementChild.classList.remove("scale-95");
+        modal.firstElementChild.classList.add("scale-100");
+    }, 10);
     const todayStr = new Date().toISOString().split('T')[0];
     document.getElementById("egreso-fecha").value = todayStr;
 }
 
 function closeEgresoModal() {
-    document.getElementById("egreso-modal").classList.add("hidden");
-    document.getElementById("egreso-concepto").value = "";
-    document.getElementById("egreso-monto").value = "";
+    const modal = document.getElementById("egreso-modal");
+    modal.classList.remove("opacity-100");
+    modal.firstElementChild.classList.remove("scale-100");
+    modal.firstElementChild.classList.add("scale-95");
+    setTimeout(() => {
+        modal.classList.add("hidden");
+        document.getElementById("egreso-concepto").value = "";
+        document.getElementById("egreso-monto").value = "";
+    }, 200);
 }
 
 function saveEgreso() {

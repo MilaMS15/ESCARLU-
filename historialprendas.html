@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Historial de Prendas | ESCARLÚ</title>
+<script src="shared.js"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+            "on-background": "#1c1b1b",
+            "on-secondary": "#ffffff",
+            "surface": "#fcf9f8",
+            "on-surface-variant": "#4c444b",
+            "on-error": "#ffffff",
+            "background": "#fcf9f8",
+            "primary-container": "#c8a2c8",
+            "surface-bright": "#fcf9f8",
+            "on-primary-fixed-variant": "#5a3c5d",
+            "primary-fixed": "#ffd6fe",
+            "secondary-container": "#fecbcb",
+            "on-tertiary-fixed": "#241a00",
+            "on-surface": "#1c1b1b",
+            "inverse-primary": "#e2bae1",
+            "primary-fixed-dim": "#e2bae1",
+            "surface-variant": "#e5e2e1",
+            "on-secondary-container": "#7a5354",
+            "tertiary-container": "#cfaa32",
+            "surface-container-highest": "#e5e2e1",
+            "tertiary-fixed": "#ffe088",
+            "on-primary": "#ffffff",
+            "secondary-fixed": "#ffdad9",
+            "surface-container": "#f0eded",
+            "primary": "#745475",
+            "surface-container-high": "#eae7e7",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#745475",
+            "secondary": "#7b5455",
+            "outline": "#7e747c",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed-dim": "#ecbaba",
+            "tertiary-fixed-dim": "#e9c349",
+            "surface-container-low": "#f6f3f2",
+            "outline-variant": "#cfc3cc",
+            "on-error-container": "#93000a",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed-variant": "#613d3e",
+            "tertiary": "#735c00",
+            "on-tertiary-fixed-variant": "#574500",
+            "on-primary-fixed": "#2b112f",
+            "on-primary-container": "#553757",
+            "error": "#ba1a1a",
+            "inverse-surface": "#313030",
+            "surface-dim": "#dcd9d9",
+            "inverse-on-surface": "#f3f0ef",
+            "on-tertiary-container": "#513f00",
+            "on-secondary-fixed": "#2f1314"
+        },
+        "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        "fontFamily": {
+            "body-sm": ["Source Sans 3"], "label-lg": ["Source Sans 3"],
+            "headline-md": ["Libre Caslon Text"], "body-lg": ["Source Sans 3"],
+            "display-lg": ["Libre Caslon Text"], "body-md": ["Source Sans 3"],
+            "headline-lg": ["Libre Caslon Text"], "label-md": ["Source Sans 3"]
+        }
+      }
+    }
+  }
+</script>
+<style>
+    body { background-color: #fcf9f8; color: #1c1b1b; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .glass-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(200,162,200,0.2); }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #f0eded; }
+    ::-webkit-scrollbar-thumb { background: #c8a2c8; border-radius: 10px; border: 3px solid #f0eded; }
+    html, body { height: 100vh; overflow: hidden; }
+    main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    .dashboard-content { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 8px 16px !important; gap: 8px !important; }
+    .table-container { flex: 1; overflow-y: auto; }
+
+    /* Modales */
+    #edit-modal, #success-modal-hp { display: none; }
+    #edit-modal.open, #success-modal-hp.open { display: flex; }
+    @keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+    .modal-card { animation: slideUp 0.25s ease; }
+
+    /* Table row hover */
+    tbody tr:hover { background-color: #f6f3f2; }
+
+    /* Badge editado */
+    .badge-editado { background: #fff8e1; color: #735c00; border: 1px solid #e9c349; }
+    .badge-original { background: #f3f0ef; color: #4c444b; border: 1px solid #cfc3cc; }
+
+    /* Stepper */
+    .stepper-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 0 !important;
+        padding-bottom: 5px !important;
+    }
+
+    /* Timeline de auditoría */
+    .audit-line { border-left: 2px solid #cfc3cc; margin-left: 8px; padding-left: 16px; }
+    .audit-dot { width: 12px; height: 12px; border-radius: 50%; background: #745475; margin-left: -22px; margin-right: 10px; flex-shrink: 0; margin-top: 2px; }
+    .audit-dot-edit { background: #cfaa32; }
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden flex">
+
+<!-- Sidebar Navigation -->
+<aside></aside>
+
+<!-- Main Content Area -->
+<main class="w-full h-screen overflow-hidden md:ml-72 flex flex-col gap-3">
+  <!-- Unified Top Bar Header -->
+  <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 shrink-0">
+    <!-- Lado Izquierdo: Badge de Sede -->
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+        <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">storefront</span>
+        <span class="text-xs font-bold text-primary" id="header-store-name">Tienda</span>
+      </div>
+    </div>
+
+    <!-- Centro: Input de Búsqueda -->
+    <div class="flex-1 max-w-md mx-6">
+      <div class="relative w-full">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+          <span class="material-symbols-outlined text-sm">search</span>
+        </span>
+        <input type="text" placeholder="Buscar por modelo, destino..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="hp-search-top" />
+      </div>
+    </div>
+
+    <!-- Lado Derecho -->
+    <div class="flex items-center gap-4">
+      <button class="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-white"></span>
+      </button>
+      <div class="flex items-center gap-1.5 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span class="text-[11px] font-bold text-green-700">Caja Abierta</span>
+      </div>
+      <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+        <span class="text-xs font-bold text-on-surface" id="header-user-name">Vendedora</span>
+        <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+          <img alt="Perfil" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content w-full px-6 py-2 flex flex-col gap-2 flex-grow min-h-0 overflow-y-auto">
+
+    <!-- Page Header -->
+    <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0">
+      <div class="flex items-center gap-3">
+        <h2 id="page-title" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Historial de Prendas</h2>
+        <span class="text-xs text-on-surface-variant font-semibold">| Fecha: <span id="current-date-label" class="text-primary font-bold"></span></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- Filtro rápido de estado -->
+        <select id="hp-filter-estado" class="h-9 border border-outline-variant bg-surface rounded-lg px-3 text-xs font-semibold text-on-surface focus:ring-0 outline-none">
+          <option value="all">Todos los estados</option>
+          <option value="original">Solo Originales</option>
+          <option value="editado">Solo Editados</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="grid grid-cols-3 gap-3 shrink-0">
+      <!-- Total movimientos -->
+      <div class="glass-card rounded-2xl px-5 py-3 flex items-center gap-4 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings:'FILL' 1;">swap_horiz</span>
+        </div>
+        <div>
+          <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Total Movimientos</p>
+          <p class="text-2xl font-black text-primary" id="stat-total">0</p>
+        </div>
+      </div>
+      <!-- Prendas enviadas -->
+      <div class="glass-card rounded-2xl px-5 py-3 flex items-center gap-4 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-green-600 text-lg" style="font-variation-settings:'FILL' 1;">local_shipping</span>
+        </div>
+        <div>
+          <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Prendas Enviadas</p>
+          <p class="text-2xl font-black text-green-700" id="stat-prendas">0</p>
+        </div>
+      </div>
+      <!-- Editados -->
+      <div class="glass-card rounded-2xl px-5 py-3 flex items-center gap-4 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-yellow-400/20 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-yellow-700 text-lg" style="font-variation-settings:'FILL' 1;">edit_note</span>
+        </div>
+        <div>
+          <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Correcciones</p>
+          <p class="text-2xl font-black text-yellow-700" id="stat-edits">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historial Table -->
+    <section class="flex flex-col min-h-0 glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant flex-1">
+      <!-- Table Header -->
+      <div class="p-4 bg-surface-container-low border-b border-outline-variant shrink-0">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm text-primary flex items-center gap-2 font-bold uppercase tracking-wider">
+            <span class="material-symbols-outlined text-base">history</span>
+            Registro Completo de Salidas
+          </h3>
+          <span class="text-xs text-on-surface-variant font-medium" id="hp-count-label">0 registros</span>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container overflow-auto flex-1">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container text-on-surface-variant text-xs font-bold uppercase tracking-wider sticky top-0 z-10">
+              <th class="px-5 py-3.5 border-b border-outline-variant" style="width:14%">Fecha / Hora</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:18%">Prenda</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:8%">Talla</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:8%">Cant.</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:20%">Destino</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:18%">Estado</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant text-center" style="width:14%">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="hp-table-body" class="divide-y divide-outline-variant/60">
+            <!-- Inyectado dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="px-6 py-3 bg-surface-container-low border-t border-outline-variant/60 flex items-center justify-between shrink-0">
+        <span class="text-xs text-on-surface-variant font-semibold" id="hp-pagination-info">Mostrando 0-0 de 0 registros</span>
+        <div class="flex items-center gap-3">
+          <button type="button" id="hp-btn-prev"
+            class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">chevron_left</span> Anterior
+          </button>
+          <span class="text-xs font-bold text-primary" id="hp-pagination-current">Página 1 de 1</span>
+          <button type="button" id="hp-btn-next"
+            class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+            Siguiente <span class="material-symbols-outlined text-sm">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /dashboard-content -->
+</main>
+
+<!-- ===== MODAL: Editar / Corregir Movimiento ===== -->
+<div id="edit-modal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 items-center justify-center p-4">
+  <div class="modal-card bg-white rounded-[24px] shadow-2xl w-full max-w-[500px] overflow-hidden transform transition-all duration-300">
+
+    <!-- Fondo decorativo degradado en la cabecera -->
+    <div class="relative h-24 bg-gradient-to-br from-primary/90 via-primary to-primary/70 flex items-end px-8 pb-4 overflow-hidden">
+      <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 70% 50%, #fff 0%, transparent 60%);"></div>
+      <div class="relative z-10 flex items-end justify-between w-full">
+        <div>
+          <p class="text-on-primary/70 text-[11px] font-bold uppercase tracking-widest mb-0.5">Corrección de Registro</p>
+          <h3 class="font-serif text-[1.45rem] font-bold text-on-primary leading-tight">Editar Movimiento</h3>
+        </div>
+        <button id="btn-close-edit-modal" class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-on-primary">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido del modal -->
+    <div class="p-8 flex flex-col gap-5">
+
+      <!-- Info del movimiento (solo lectura) -->
+      <div class="bg-surface-container-low rounded-2xl p-4 border border-outline-variant/50">
+        <p class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider mb-2">Información del Movimiento Original</p>
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <div><span class="text-on-surface-variant font-semibold">Prenda:</span> <span id="edit-info-prenda" class="font-bold text-on-surface"></span></div>
+          <div><span class="text-on-surface-variant font-semibold">Talla:</span> <span id="edit-info-talla" class="font-bold text-on-surface"></span></div>
+          <div><span class="text-on-surface-variant font-semibold">Destino:</span> <span id="edit-info-destino" class="font-bold text-on-surface"></span></div>
+          <div><span class="text-on-surface-variant font-semibold">Cantidad orig.:</span> <span id="edit-info-cant-orig" class="font-bold text-primary"></span></div>
+        </div>
+      </div>
+
+      <!-- Formulario de edición -->
+      <form id="edit-form" class="flex flex-col gap-5">
+        <input type="hidden" id="edit-mov-id"/>
+
+        <!-- Nueva cantidad — stepper circular centrado -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider text-center">Nueva Cantidad Correcta</label>
+          <div class="flex items-center justify-center gap-4">
+            <button type="button" id="edit-minus"
+              class="stepper-btn w-14 h-14 rounded-full bg-surface-container-high border-2 border-outline-variant text-primary text-3xl font-bold hover:bg-primary hover:text-white hover:border-primary active:scale-95 transition-all flex items-center justify-center shadow-sm">
+              −
+            </button>
+            <div class="w-28 h-16 bg-surface-container-low border-2 border-outline-variant rounded-2xl flex items-center justify-center">
+              <input type="number" id="edit-cantidad" value="1" min="1"
+                class="w-full text-center font-black text-4xl text-primary border-none bg-transparent focus:ring-0 p-0 outline-none"/>
+            </div>
+            <button type="button" id="edit-plus"
+              class="stepper-btn w-14 h-14 rounded-full bg-surface-container-high border-2 border-outline-variant text-primary text-3xl font-bold hover:bg-primary hover:text-white hover:border-primary active:scale-95 transition-all flex items-center justify-center shadow-sm">
+              +
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview de impacto -->
+        <div id="edit-preview" class="bg-yellow-50 border border-yellow-300 rounded-2xl p-4 hidden">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-yellow-600 text-xl mt-0.5" style="font-variation-settings:'FILL' 1;">warning</span>
+            <p id="edit-preview-text" class="text-sm text-on-surface font-medium leading-snug"></p>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex gap-3 pt-1">
+          <button type="button" id="btn-cancel-edit"
+            class="flex-1 h-12 border-2 border-outline-variant text-on-surface-variant rounded-xl text-sm font-bold hover:bg-surface-container transition-colors">
+            Cancelar
+          </button>
+          <button type="submit"
+            class="flex-1 h-12 bg-primary text-on-primary rounded-xl text-sm font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">save</span>
+            Guardar Corrección
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Éxito -->
+<div id="success-modal-hp" class="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] items-center justify-center p-4">
+  <div class="modal-card bg-white rounded-3xl p-8 max-w-sm w-full border border-outline-variant/40 shadow-2xl text-center">
+    <div class="w-20 h-20 rounded-full bg-green-100/80 flex items-center justify-center mx-auto mb-5 shadow-inner">
+      <span class="material-symbols-outlined text-green-600 text-5xl font-black">check_circle</span>
+    </div>
+    <h3 class="font-sans font-black text-2xl text-on-surface mb-2 tracking-tight">¡Corrección Guardada!</h3>
+    <p id="success-modal-hp-text" class="text-sm text-on-surface-variant font-medium leading-relaxed mb-6 px-2"></p>
+    <button type="button" id="btn-success-hp-close"
+      class="w-full h-12 bg-primary text-on-primary rounded-xl text-sm font-bold shadow-md hover:bg-primary/95 active:scale-95 transition-all">
+      Entendido
+    </button>
+  </div>
+</div>
+
+<script>
+    const user = getCurrentUser();
+    const MOV_KEY = "escarlu_movimientos";
+
+    // ── MODELOS ──────────────────────────────────────────────────
+    const MODELOS_DEFAULT = [
+        { id_modelo: "MOD-001", tipo: "Polo",   nombre: "Camisero MC" },
+        { id_modelo: "MOD-002", tipo: "Polo",   nombre: "Camisero ML" },
+        { id_modelo: "MOD-003", tipo: "Polo",   nombre: "Girasol MC" },
+        { id_modelo: "MOD-004", tipo: "Polo",   nombre: "Girasol ML" },
+        { id_modelo: "MOD-005", tipo: "Polo",   nombre: "Redondo MC" },
+        { id_modelo: "MOD-006", tipo: "Polo",   nombre: "Redondo ML" },
+        { id_modelo: "MOD-007", tipo: "Polo",   nombre: "Cuadrado MC" },
+        { id_modelo: "MOD-008", tipo: "Polo",   nombre: "Cuadrado ML" },
+        { id_modelo: "MOD-009", tipo: "Polo",   nombre: "Tania MC" },
+        { id_modelo: "MOD-010", tipo: "Polo",   nombre: "Tania ML" },
+        { id_modelo: "MOD-011", tipo: "Polo",   nombre: "Noemi MC" },
+        { id_modelo: "MOD-012", tipo: "Polo",   nombre: "Noemi ML" },
+        { id_modelo: "MOD-013", tipo: "Polo",   nombre: "Boton MC" },
+        { id_modelo: "MOD-014", tipo: "Polo",   nombre: "Boton ML" },
+        { id_modelo: "MOD-015", tipo: "Short",  nombre: "Short Pinza" },
+        { id_modelo: "MOD-016", tipo: "Short",  nombre: "Short Boton" },
+        { id_modelo: "MOD-017", tipo: "Chompa", nombre: "Chompa Redondo" },
+        { id_modelo: "MOD-018", tipo: "Chompa", nombre: "Chompa V" },
+        { id_modelo: "MOD-019", tipo: "Buzo",   nombre: "Buzo Normal" },
+        { id_modelo: "MOD-020", tipo: "Polo",   nombre: "Corazon MC" },
+        { id_modelo: "MOD-021", tipo: "Polo",   nombre: "Corazon ML" }
+    ];
+
+    function getModelos() {
+        return JSON.parse(localStorage.getItem("escarlu_modelos")) || MODELOS_DEFAULT;
+    }
+
+    function getModelName(modelId) {
+        const m = getModelos().find(x => x.id_modelo === modelId);
+        return m ? m.nombre : modelId;
+    }
+
+    // ── MOVIMIENTOS ──────────────────────────────────────────────
+    function getMovimientos() {
+        return JSON.parse(localStorage.getItem(MOV_KEY)) || [];
+    }
+
+    function saveMovimientos(movs) {
+        localStorage.setItem(MOV_KEY, JSON.stringify(movs));
+        syncMovimientosToSupabase(movs);
+    }
+
+    async function syncMovimientosToSupabase(movs) {
+        const client = getSupabaseClient ? getSupabaseClient() : null;
+        if (!client) return;
+        for (const mov of movs) {
+            try {
+                await client.from('movimientos_inventario').upsert({
+                    id: mov.id,
+                    fecha_hora: mov.fecha_hora,
+                    origen_id: mov.origen_id,
+                    destino_id: mov.destino_id,
+                    modelo_id: mov.modelo_id,
+                    talla: mov.talla,
+                    cantidad: mov.cantidad,
+                    tipo: mov.tipo || 'salida_tienda',
+                    editado: mov.editado || false,
+                    fecha_edicion: mov.fecha_edicion || null,
+                    cantidad_original: mov.cantidad_original || mov.cantidad
+                });
+            } catch(e) { /* tabla puede no existir aún */ }
+        }
+    }
+
+    function getMisMovimientos() {
+        return getMovimientos().filter(m => m.origen_id === user.storeId);
+    }
+
+    // ── PAGINACIÓN ───────────────────────────────────────────────
+    let currentPage = 1;
+    const rowsPerPage = 8;
+
+    // ── RENDER TABLE ─────────────────────────────────────────────
+    function renderHPTable() {
+        const tbody = document.getElementById("hp-table-body");
+        if (!tbody) return;
+
+        const query = (document.getElementById("hp-search-top")?.value || "").toLowerCase();
+        const filterEstado = document.getElementById("hp-filter-estado")?.value || "all";
+
+        let movs = getMisMovimientos();
+
+        // Filtros
+        if (filterEstado === "original") movs = movs.filter(m => !m.editado);
+        if (filterEstado === "editado") movs = movs.filter(m => m.editado);
+        if (query) {
+            movs = movs.filter(m =>
+                getModelName(m.modelo_id).toLowerCase().includes(query) ||
+                (STORE_NAMES?.[m.destino_id] || m.destino_id).toLowerCase().includes(query) ||
+                m.talla.toLowerCase().includes(query)
+            );
+        }
+
+        // Ordenar por fecha más reciente primero
+        movs.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
+
+        // Stats
+        const totalPrendas = movs.reduce((s, m) => s + (m.cantidad || 0), 0);
+        const totalEdits = movs.filter(m => m.editado).length;
+        document.getElementById("stat-total").textContent = movs.length;
+        document.getElementById("stat-prendas").textContent = totalPrendas;
+        document.getElementById("stat-edits").textContent = totalEdits;
+        document.getElementById("hp-count-label").textContent = `${movs.length} registro${movs.length !== 1 ? 's' : ''}`;
+
+        // Paginación
+        const totalItems = movs.length;
+        const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIdx = (currentPage - 1) * rowsPerPage;
+        const endIdx   = Math.min(startIdx + rowsPerPage, totalItems);
+        const paged    = movs.slice(startIdx, endIdx);
+
+        document.getElementById("hp-pagination-current").textContent = `Página ${currentPage} de ${totalPages}`;
+        document.getElementById("hp-pagination-info").textContent = totalItems > 0
+            ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalItems} registros`
+            : "Sin registros";
+        document.getElementById("hp-btn-prev").disabled = currentPage === 1;
+        document.getElementById("hp-btn-next").disabled = currentPage === totalPages;
+
+        tbody.innerHTML = "";
+
+        if (paged.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="py-14 text-center">
+                <div class="flex flex-col items-center gap-3">
+                    <span class="material-symbols-outlined text-outline-variant text-5xl">history</span>
+                    <p class="text-sm font-semibold text-on-surface-variant">Aún no hay movimientos registrados.</p>
+                    <p class="text-xs text-on-surface-variant/70">Registra una salida de prenda desde <strong>Stock Tienda</strong>.</p>
+                </div>
+            </td></tr>`;
+            return;
+        }
+
+        for (const mov of paged) {
+            const fecha = new Date(mov.fecha_hora);
+            const fechaStr = fecha.toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" });
+            const horaStr  = fecha.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
+            const destinoName = STORE_NAMES?.[mov.destino_id] || mov.destino_id;
+            const modelName = getModelName(mov.modelo_id);
+
+            let estadoBadge = "";
+            if (mov.editado) {
+                const fechaEdit = mov.fecha_edicion ? new Date(mov.fecha_edicion) : null;
+                const editStr = fechaEdit ? `${fechaEdit.toLocaleDateString("es-PE", {day:"2-digit",month:"short"})} ${fechaEdit.toLocaleTimeString("es-PE",{hour:"2-digit",minute:"2-digit"})}` : "";
+                estadoBadge = `
+                    <div class="flex flex-col gap-1">
+                        <span class="badge-editado inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold">
+                            <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1;">edit</span>
+                            Corregido
+                        </span>
+                        ${editStr ? `<span class="text-[10px] text-on-surface-variant font-medium">${editStr}</span>` : ""}
+                        <span class="text-[10px] text-on-surface-variant">Orig: <strong>${mov.cantidad_original || '?'}</strong> → <strong>${mov.cantidad}</strong></span>
+                    </div>`;
+            } else {
+                estadoBadge = `<span class="badge-original inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold">
+                    <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1;">check_circle</span>
+                    Original
+                </span>`;
+            }
+
+            const tr = document.createElement("tr");
+            tr.className = "transition-colors cursor-default";
+            tr.innerHTML = `
+                <td class="px-5 py-3">
+                    <p class="text-xs font-bold text-on-surface">${fechaStr}</p>
+                    <p class="text-[10px] text-on-surface-variant font-medium">${horaStr}</p>
+                </td>
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-primary-container/40 rounded-lg flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-sm">apparel</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs text-on-surface">${modelName}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="bg-primary/10 text-primary px-2.5 py-1 rounded-lg text-xs font-black">${mov.talla}</span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="text-base font-black text-on-surface">${mov.cantidad}</span>
+                </td>
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1;">storefront</span>
+                        <span class="text-xs font-semibold text-on-surface">${destinoName}</span>
+                    </div>
+                </td>
+                <td class="px-4 py-3">${estadoBadge}</td>
+                <td class="px-4 py-3 text-center">
+                    <button data-id="${mov.id}"
+                        class="btn-corregir inline-flex items-center gap-1.5 px-3 py-2 bg-primary/10 hover:bg-primary hover:text-white text-primary rounded-xl text-xs font-bold transition-all active:scale-95 border border-primary/20">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        Corregir
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        // Bind botones de corregir
+        document.querySelectorAll(".btn-corregir").forEach(btn => {
+            btn.addEventListener("click", () => openEditModal(btn.dataset.id));
+        });
+    }
+
+    // ── EDIT MODAL ───────────────────────────────────────────────
+    let editingMov = null;
+
+    function openEditModal(movId) {
+        const movs = getMovimientos();
+        editingMov = movs.find(m => m.id === movId);
+        if (!editingMov) return;
+
+        document.getElementById("edit-mov-id").value = movId;
+        document.getElementById("edit-info-prenda").textContent = getModelName(editingMov.modelo_id);
+        document.getElementById("edit-info-talla").textContent = editingMov.talla;
+        document.getElementById("edit-info-destino").textContent = STORE_NAMES?.[editingMov.destino_id] || editingMov.destino_id;
+        document.getElementById("edit-info-cant-orig").textContent = editingMov.cantidad_original || editingMov.cantidad;
+        document.getElementById("edit-cantidad").value = editingMov.cantidad;
+        updateEditPreview();
+
+        document.getElementById("edit-modal").classList.add("open");
+    }
+
+    function closeEditModal() {
+        document.getElementById("edit-modal").classList.remove("open");
+        editingMov = null;
+        document.getElementById("edit-preview").classList.add("hidden");
+    }
+
+    function updateEditPreview() {
+        const newCant = parseInt(document.getElementById("edit-cantidad").value) || 0;
+        if (!editingMov) return;
+        const oldCant = editingMov.cantidad;
+        const preview = document.getElementById("edit-preview");
+        const text = document.getElementById("edit-preview-text");
+        if (newCant === oldCant) {
+            preview.classList.add("hidden");
+            return;
+        }
+        const diff = newCant - oldCant;
+        const modelName = getModelName(editingMov.modelo_id);
+        const destName = STORE_NAMES?.[editingMov.destino_id] || editingMov.destino_id;
+        if (diff > 0) {
+            text.innerHTML = `Se <strong>agregarán ${diff} unidad(es)</strong> más de "<strong>${modelName}</strong>" en <strong>${destName}</strong> y se descontarán de tu tienda.`;
+        } else {
+            text.innerHTML = `Se <strong>devolverán ${Math.abs(diff)} unidad(es)</strong> de "<strong>${modelName}</strong>" desde <strong>${destName}</strong> a tu tienda.`;
+        }
+        preview.classList.remove("hidden");
+    }
+
+    function handleEditSubmit(e) {
+        e.preventDefault();
+        const newCant = parseInt(document.getElementById("edit-cantidad").value);
+        if (!editingMov || isNaN(newCant) || newCant <= 0) {
+            alert("Por favor ingresa una cantidad válida mayor a 0.");
+            return;
+        }
+
+        const oldCant = editingMov.cantidad;
+        const diff = newCant - oldCant;
+
+        // Ajustar stock origen (tu tienda) y destino
+        const STORE_INV_KEY = "escarlu_tienda_stock";
+        const rawStock = JSON.parse(localStorage.getItem(STORE_INV_KEY)) || {};
+
+        // Si diff < 0: se devuelven prendas a origen, se quitan de destino
+        // Si diff > 0: se envían más prendas de origen a destino
+        const modelId = editingMov.modelo_id;
+        const talla   = editingMov.talla;
+        const originId = editingMov.origen_id;
+        const destId   = editingMov.destino_id;
+
+        // Ajustar ORIGEN
+        if (!rawStock[originId]) rawStock[originId] = {};
+        if (!rawStock[originId][modelId]) rawStock[originId][modelId] = {};
+        rawStock[originId][modelId][talla] = Math.max(0, (rawStock[originId][modelId][talla] || 0) - diff);
+
+        // Ajustar DESTINO
+        if (!rawStock[destId]) rawStock[destId] = {};
+        if (!rawStock[destId][modelId]) rawStock[destId][modelId] = {};
+        rawStock[destId][modelId][talla] = Math.max(0, (rawStock[destId][modelId][talla] || 0) + diff);
+
+        localStorage.setItem(STORE_INV_KEY, JSON.stringify(rawStock));
+
+        // Actualizar movimiento
+        const movs = getMovimientos();
+        const idx = movs.findIndex(m => m.id === editingMov.id);
+        if (idx !== -1) {
+            movs[idx].cantidad_original = movs[idx].cantidad_original || oldCant;
+            movs[idx].cantidad   = newCant;
+            movs[idx].editado    = true;
+            movs[idx].fecha_edicion = new Date().toISOString();
+        }
+        saveMovimientos(movs);
+
+        closeEditModal();
+        renderHPTable();
+        showSuccessHP(getModelName(modelId), talla, oldCant, newCant);
+    }
+
+    function showSuccessHP(modelName, talla, oldCant, newCant) {
+        const modal = document.getElementById("success-modal-hp");
+        const text  = document.getElementById("success-modal-hp-text");
+        text.innerHTML = `La cantidad de <strong>"${modelName}"</strong> (Talla ${talla}) fue corregida de <strong>${oldCant}</strong> a <strong>${newCant}</strong> unidades. Los stocks de origen y destino han sido actualizados.`;
+        modal.classList.add("open");
+    }
+
+    // ── INIT ─────────────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", () => {
+        checkAuth();
+        renderSideNav("historialprendas");
+
+        const storeName = STORE_NAMES?.[user.storeId] || "Tienda";
+        document.getElementById("header-store-name").textContent = storeName;
+        document.getElementById("header-user-name").textContent = user.label || "Vendedora";
+        document.getElementById("page-title").textContent = `Historial de Prendas — ${storeName}`;
+
+        const now = new Date();
+        document.getElementById("current-date-label").textContent =
+            now.toLocaleDateString("es-PE", { day: "numeric", month: "long", year: "numeric" });
+
+        renderHPTable();
+
+        // Eventos de búsqueda / filtro
+        document.getElementById("hp-search-top").addEventListener("input", () => { currentPage = 1; renderHPTable(); });
+        document.getElementById("hp-filter-estado").addEventListener("change", () => { currentPage = 1; renderHPTable(); });
+
+        // Paginación
+        document.getElementById("hp-btn-prev").addEventListener("click", () => { if (currentPage > 1) { currentPage--; renderHPTable(); } });
+        document.getElementById("hp-btn-next").addEventListener("click", () => { currentPage++; renderHPTable(); });
+
+        // Modal de edición
+        document.getElementById("btn-close-edit-modal").addEventListener("click", closeEditModal);
+        document.getElementById("btn-cancel-edit").addEventListener("click", closeEditModal);
+        document.getElementById("edit-modal").addEventListener("click", e => {
+            if (e.target === document.getElementById("edit-modal")) closeEditModal();
+        });
+
+        document.getElementById("edit-minus").addEventListener("click", () => {
+            const inp = document.getElementById("edit-cantidad");
+            inp.value = Math.max(1, (parseInt(inp.value) || 1) - 1);
+            updateEditPreview();
+        });
+        document.getElementById("edit-plus").addEventListener("click", () => {
+            const inp = document.getElementById("edit-cantidad");
+            inp.value = (parseInt(inp.value) || 0) + 1;
+            updateEditPreview();
+        });
+        document.getElementById("edit-cantidad").addEventListener("input", updateEditPreview);
+        document.getElementById("edit-form").addEventListener("submit", handleEditSubmit);
+
+        // Modal de éxito
+        document.getElementById("btn-success-hp-close").addEventListener("click", () => {
+            document.getElementById("success-modal-hp").classList.remove("open");
+        });
+    });
+</script>
+</body></html>
