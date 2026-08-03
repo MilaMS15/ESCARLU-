@@ -261,52 +261,44 @@
 </main>
 
 <!-- ===== MODAL: Ingreso de Prenda ===== -->
-<div id="ingreso-modal" class="fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
-  <div class="modal-card bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+<div id="ingreso-modal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 items-center justify-center p-4">
+  <div class="modal-card bg-white rounded-[24px] shadow-2xl w-full max-w-[480px] p-8 overflow-hidden transform transition-all duration-300">
 
-    <!-- Modal Header con fondo morado suave -->
-    <div class="bg-primary/8 px-6 pt-6 pb-5 border-b border-outline-variant/40">
-      <div class="flex items-start justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center shadow-sm">
-            <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings:'FILL' 1;">inventory_2</span>
-          </div>
-          <div>
-            <h3 class="font-bold text-base text-on-surface">Ingreso de Prenda</h3>
-            <p class="text-xs text-on-surface-variant mt-0.5">Registra lo que llegó del almacén central</p>
-          </div>
-        </div>
-        <button id="btn-close-modal" class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center transition-colors mt-0.5">
-          <span class="material-symbols-outlined text-on-surface-variant text-lg">close</span>
-        </button>
-      </div>
+    <!-- Modal Header con tipografía Serif Premium -->
+    <div class="flex items-center justify-between pb-6 border-b border-outline-variant/40 mb-6">
+      <h3 class="font-serif text-[1.65rem] font-bold text-primary tracking-tight">Registrar Ingreso de Prenda</h3>
+      <button id="btn-close-modal" class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center transition-colors text-on-surface-variant">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
     </div>
 
     <!-- Modal Form -->
-    <form id="ingreso-form" class="px-6 py-5 flex flex-col gap-5">
-
-      <!-- Fila 1: Tipo + Modelo -->
+    <form id="ingreso-form" class="flex flex-col gap-5">
+      
+      <!-- Fila 1: Tipo y Modelo lado a lado (Dos Columnas) -->
       <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider" for="ingreso-tipo">Tipo de Prenda</label>
-          <select id="ingreso-tipo" class="h-12 border-2 border-outline-variant bg-surface-container-low rounded-xl px-4 text-sm font-semibold text-on-surface focus:border-primary focus:ring-0 outline-none transition-colors">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider" for="ingreso-tipo">Tipo de Prenda *</label>
+          <select id="ingreso-tipo" class="h-11 border-2 border-outline-variant bg-surface rounded-xl px-3 text-xs font-bold text-on-surface focus:border-primary focus:ring-0 outline-none transition-colors">
             <option value="Polo">Polo</option>
             <option value="Short">Short</option>
             <option value="Chompa">Chompa</option>
             <option value="Buzo">Buzo</option>
           </select>
         </div>
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider" for="ingreso-modelo">Modelo</label>
-          <select id="ingreso-modelo" class="h-12 border-2 border-outline-variant bg-surface-container-low rounded-xl px-4 text-sm font-semibold text-on-surface focus:border-primary focus:ring-0 outline-none transition-colors">
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider" for="ingreso-modelo">Modelo *</label>
+          <select id="ingreso-modelo" class="h-11 border-2 border-outline-variant bg-surface rounded-xl px-3 text-xs font-bold text-on-surface focus:border-primary focus:ring-0 outline-none transition-colors">
+            <!-- Cargado dinámicamente -->
           </select>
         </div>
       </div>
 
       <!-- Fila 2: Talla -->
-      <div class="flex flex-col gap-2">
-        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider" for="ingreso-talla">Talla</label>
-        <select id="ingreso-talla" class="h-12 border-2 border-outline-variant bg-surface-container-low rounded-xl px-4 text-sm font-semibold text-on-surface focus:border-primary focus:ring-0 outline-none transition-colors">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider" for="ingreso-talla">Talla *</label>
+        <select id="ingreso-talla" class="h-11 border-2 border-outline-variant bg-surface rounded-xl px-3 text-xs font-bold text-on-surface focus:border-primary focus:ring-0 outline-none transition-colors">
           <option value="St">St (Standard)</option>
           <option value="S">S</option>
           <option value="M">M</option>
@@ -316,8 +308,8 @@
       </div>
 
       <!-- Fila 3: Cantidad — stepper con botones circulares independientes -->
-      <div class="flex flex-col gap-2">
-        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider text-center">Cantidad a Ingresar</label>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider text-center">Cantidad a Ingresar</label>
         <div class="flex items-center justify-center gap-4">
           <button type="button" id="ingreso-minus"
             class="stepper-btn w-14 h-14 rounded-full bg-surface-container-high border-2 border-outline-variant text-primary text-3xl font-bold hover:bg-primary hover:text-white hover:border-primary active:scale-95 transition-all flex items-center justify-center shadow-sm">
