@@ -728,6 +728,16 @@
                 renderSales();
             }
         });
+
+        const dateInputs = document.querySelectorAll('input[type="date"], input[type="month"]');
+        dateInputs.forEach(input => {
+            input.style.cursor = 'pointer';
+            input.addEventListener('click', function() {
+                if (typeof this.showPicker === 'function') {
+                    this.showPicker();
+                }
+            });
+        });
     });
 </script>
 
