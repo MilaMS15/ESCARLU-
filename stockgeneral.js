@@ -331,15 +331,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Actualizar textos de paginador
         const paginationInfo = document.getElementById("pagination-info");
-        const paginationCurrent = document.getElementById("pagination-current");
         if (paginationInfo) {
             paginationInfo.textContent = totalVariantes > 0
                 ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalVariantes} variantes`
                 : "Mostrando 0-0 de 0 variantes";
         }
-        if (paginationCurrent) {
-            paginationCurrent.textContent = `Página ${currentPage} de ${totalPages}`;
-        }
+        setupPaginationNumbers("pagination-numbers", currentPage, totalPages, (page) => {
+            currentPage = page;
+            renderTable();
+        });
 
         // Habilitar/deshabilitar botones
         if (btnPrev) btnPrev.disabled = currentPage === 1;
@@ -758,3 +758,67 @@ function exportToExcel() {
         : "Reporte_Inventario_ESCARLU.xlsx";
     XLSX.writeFile(wb, filename);
 }
+
+function setupPaginationNumbers(containerId, currentPage, totalPages, onPageClick) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = "";
+
+    const maxVisible = 5;
+    let startPage = 1;
+    let endPage = totalPages;
+
+    if (totalPages > maxVisible) {
+        const half = Math.floor(maxVisible / 2);
+        if (currentPage <= half) {
+            startPage = 1;
+            endPage = maxVisible;
+        } else if (currentPage + half >= totalPages) {
+            startPage = totalPages - maxVisible + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - half;
+            endPage = currentPage + half;
+        }
+    }
+
+    if (startPage > 1) {
+        createPageButton(1, container, currentPage, onPageClick);
+        if (startPage > 2) {
+            const ellipsis = document.createElement("span");
+            ellipsis.textContent = "...";
+            ellipsis.className = "px-1.5 text-xs text-on-surface-variant font-bold";
+            container.appendChild(ellipsis);
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        createPageButton(i, container, currentPage, onPageClick);
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement("span");
+            ellipsis.textContent = "...";
+            ellipsis.className = "px-1.5 text-xs text-on-surface-variant font-bold";
+            container.appendChild(ellipsis);
+        }
+        createPageButton(totalPages, container, currentPage, onPageClick);
+    }
+}
+
+function createPageButton(page, container, currentPage, onPageClick) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = page;
+    btn.className = `w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all border-2 ${
+        page === currentPage
+            ? "bg-[#C59B27] text-white border-[#C59B27] shadow-sm"
+            : "border-[#F8C8D4]/40 text-[#4C4C4C] hover:bg-[#FCECEE]"
+    }`;
+    btn.addEventListener("click", () => {
+        onPageClick(page);
+    });
+    container.appendChild(btn);
+}
+
