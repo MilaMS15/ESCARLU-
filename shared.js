@@ -1521,7 +1521,8 @@ window.showSedesModal = function(modelName, colorName, detailString) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = modalId;
-        modal.className = "fixed inset-0 bg-black/60 flex items-center justify-center z-[99999] opacity-0 transition-opacity duration-200 pointer-events-none";
+        // Fondo difuminado elegante con backdrop-filter
+        modal.className = "fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-[99999] opacity-0 transition-opacity duration-200 pointer-events-none";
         document.body.appendChild(modal);
     }
 
@@ -1530,7 +1531,7 @@ window.showSedesModal = function(modelName, colorName, detailString) {
     const lines = detailString.split('\\n').filter(line => line.trim().startsWith('-'));
     
     if (lines.length === 0) {
-        rowsHtml = `<tr><td colspan="2" class="px-4 py-6 text-center text-on-surface-variant font-semibold text-xs">Sin existencias registradas en ninguna sede.</td></tr>`;
+        rowsHtml = `<tr><td colspan="2" class="px-5 py-8 text-center text-on-surface-variant font-bold text-sm">Sin existencias registradas en ninguna sede.</td></tr>`;
     } else {
         lines.forEach(line => {
             // Ejemplo: "- Tienda Aviación: 170 uds (St:2, L:168)"
@@ -1547,13 +1548,13 @@ window.showSedesModal = function(modelName, colorName, detailString) {
             const sizesDetail = sizesMatch ? sizesMatch[1] : '';
 
             rowsHtml += `
-                <tr class="border-b border-outline-variant/30 hover:bg-surface-container-low transition-colors">
-                    <td class="px-4 py-3">
-                        <div class="font-bold text-xs text-on-surface">${storeName}</div>
+                <tr class="border-b border-outline-variant/40 hover:bg-surface-container-low transition-colors">
+                    <td class="px-6 py-5">
+                        <div class="font-bold text-base text-on-surface">${storeName}</div>
                     </td>
-                    <td class="px-4 py-3 text-right">
-                        <div class="font-bold text-xs text-primary">${qty} uds</div>
-                        <div class="text-[10px] text-on-surface-variant/80 mt-0.5">${sizesDetail}</div>
+                    <td class="px-6 py-5 text-right">
+                        <div class="font-extrabold text-base text-primary">${qty} uds</div>
+                        <div class="text-[13px] text-on-surface-variant font-bold mt-1.5">${sizesDetail}</div>
                     </td>
                 </tr>
             `;
@@ -1561,29 +1562,29 @@ window.showSedesModal = function(modelName, colorName, detailString) {
     }
 
     modal.innerHTML = `
-        <div class="bg-white rounded-2xl max-w-md w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200 overflow-hidden" id="custom-sedes-card">
+        <div class="bg-white rounded-2xl max-w-xl w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200 overflow-hidden" id="custom-sedes-card">
             <!-- Cabecera -->
-            <div class="p-6 pb-4 border-b border-outline-variant/20 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">storefront</span>
+            <div class="p-6 border-b border-outline-variant/20 flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                    <span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">storefront</span>
                     <div>
-                        <h4 class="font-headline-md text-sm font-bold text-black">${modelName}</h4>
-                        <p class="text-[10px] text-on-surface-variant font-semibold mt-0.5">Color: ${colorName}</p>
+                        <h4 class="text-xl font-bold text-black">${modelName}</h4>
+                        <p class="text-sm text-on-surface-variant font-extrabold mt-1">Color: ${colorName}</p>
                     </div>
                 </div>
                 <button onclick="document.getElementById('custom-sedes-modal').classList.add('opacity-0', 'pointer-events-none')" class="text-on-surface-variant hover:text-black transition-colors">
-                    <span class="material-symbols-outlined text-xl">close</span>
+                    <span class="material-symbols-outlined text-3xl">close</span>
                 </button>
             </div>
             
             <!-- Cuerpo con la Tabla Premium -->
-            <div class="p-6 max-h-[350px] overflow-y-auto">
-                <p class="text-[10.5px] text-on-surface-variant/80 uppercase font-bold tracking-wider mb-3">Distribución por Sede</p>
+            <div class="p-6 max-h-[420px] overflow-y-auto">
+                <p class="text-xs text-on-surface-variant/80 uppercase font-bold tracking-widest mb-4">Distribución por Sede</p>
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-primary-container/40 text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">
-                            <th class="px-4 py-2 rounded-l-lg">Sede / Tienda</th>
-                            <th class="px-4 py-2 text-right rounded-r-lg">Cantidad (Tallas)</th>
+                        <tr class="bg-primary-container/40 text-on-surface-variant text-sm font-bold uppercase tracking-wider">
+                            <th class="px-6 py-3.5 rounded-l-lg">Sede / Tienda</th>
+                            <th class="px-6 py-3.5 text-right rounded-r-lg">Cantidad (Tallas)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1593,8 +1594,8 @@ window.showSedesModal = function(modelName, colorName, detailString) {
             </div>
 
             <!-- Botón Cerrar en el Pie -->
-            <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/30 flex justify-end">
-                <button onclick="document.getElementById('custom-sedes-modal').classList.add('opacity-0', 'pointer-events-none')" class="bg-primary text-on-primary hover:bg-primary/95 px-6 py-2 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95">
+            <div class="px-6 py-5 bg-surface-container-low border-t border-outline-variant/30 flex justify-end">
+                <button onclick="document.getElementById('custom-sedes-modal').classList.add('opacity-0', 'pointer-events-none')" class="bg-primary text-on-primary hover:bg-primary/95 px-8 py-3 rounded-xl text-sm font-bold shadow-sm transition-all active:scale-95">
                     Entendido
                 </button>
             </div>
