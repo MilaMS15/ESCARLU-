@@ -317,13 +317,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let filterTotal = 0;
         let filterCentral = 0;
         let filterTiendas = 0;
-
-        tbody.innerHTML = rowsHtml || `<tr><td colspan="10" class="p-8 text-center text-on-surface-variant font-semibold">No se encontraron productos que coincidan.</td></tr>`;
-
-        // Calcular totalItems y alerts correctos según filtro
-        let filterTotal = 0;
-        let filterCentral = 0;
-        let filterTiendas = 0;
         
         Object.keys(invData).forEach(sKey => {
             let storeSum = 0;
