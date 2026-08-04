@@ -306,6 +306,26 @@
 </tbody>
 </table>
 </div>
+
+<!-- Paginación Premium al pie de la tarjeta -->
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/60 flex items-center justify-between shrink-0">
+  <span class="text-xs text-on-surface-variant font-semibold" id="pagination-info">
+    Mostrando 0-0 de 0 variantes
+  </span>
+  <div class="flex items-center gap-3">
+    <button type="button" id="btn-prev-page"
+      class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+      <span class="material-symbols-outlined text-sm">chevron_left</span> Anterior
+    </button>
+    <span class="text-xs font-bold text-primary" id="pagination-current">
+      Página 1 de 1
+    </span>
+    <button type="button" id="btn-next-page"
+      class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+      Siguiente <span class="material-symbols-outlined text-sm">chevron_right</span>
+    </button>
+  </div>
+</div>
 </section>
 </div>
 </main>
