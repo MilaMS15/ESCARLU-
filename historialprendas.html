@@ -122,11 +122,11 @@
         max-width: 380px;
         animation: slideUp 0.25s ease;
     }
-    /* Header degradado premium */
+    /* Header degradado premium - ROSADO */
     #delete-confirm-modal .del-header {
         position: relative;
         height: 88px;
-        background: linear-gradient(135deg, rgba(116,84,117,0.92) 0%, rgba(116,84,117,1) 50%, rgba(116,84,117,0.75) 100%);
+        background: linear-gradient(135deg, #F8C8D4 0%, #f0b3c0 50%, #FCECEE 100%);
         display: flex;
         align-items: flex-end;
         padding: 0 28px 16px;
@@ -136,7 +136,7 @@
         content: '';
         position: absolute;
         inset: 0;
-        opacity: 0.10;
+        opacity: 0.15;
         background: radial-gradient(circle at 70% 50%, white, transparent 70%);
     }
     #delete-confirm-modal .del-header-text {
@@ -148,14 +148,14 @@
         font-weight: 900;
         letter-spacing: 0.18em;
         text-transform: uppercase;
-        color: rgba(255,255,255,0.65);
+        color: rgba(90, 40, 50, 0.55);
         display: block;
         margin-bottom: 2px;
     }
     #delete-confirm-modal .del-header-title {
         font-size: 20px;
         font-weight: 700;
-        color: #ffffff;
+        color: #1c1b1b;
         font-family: 'Libre Caslon Text', serif;
         line-height: 1.2;
         margin: 0;
@@ -603,9 +603,9 @@
                     </span>`;
                 accionButton = `
                     <button data-id="${mov.id}"
-                        class="btn-eliminar inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-xl text-xs font-bold transition-all active:scale-95 border border-red-200">
-                        <span class="material-symbols-outlined text-sm">delete</span>
-                        Eliminar
+                        class="btn-eliminar w-9 h-9 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-all active:scale-90"
+                        title="Eliminar salida">
+                        <span class="material-symbols-outlined" style="font-size:22px;">delete</span>
                     </button>`;
             }
 
@@ -655,7 +655,12 @@
 
     function handleDeleteMovimiento(movId) {
         pendingDeleteMovId = movId;
-        document.getElementById("delete-confirm-modal").classList.add("open");
+        const modal = document.getElementById("delete-confirm-modal");
+        // Mover al body para que el overlay cubra toda la pantalla
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
+        modal.classList.add("open");
     }
 
     async function confirmDeleteMovimiento(movId) {
