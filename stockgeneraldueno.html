@@ -166,28 +166,28 @@
 <div class="p-4 max-w-[1440px] mx-auto space-y-4">
 <!-- Welcome & Filter Header -->
 <section class="space-y-2">
-<div class="flex flex-col md:flex-row justify-between md:items-end gap-4">
-<div class="flex flex-col sm:flex-row sm:items-center gap-4">
-  <div>
-    <h2 class="text-2xl font-bold text-black tracking-tight">Stock General Consolidado</h2>
-    <p class="text-xs text-on-surface-variant">Visión global de inventario en Almacén Central y las 4 Tiendas.</p>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-black tracking-tight">Stock General Consolidado</h2>
+      <p class="text-xs text-on-surface-variant">Visión global de inventario en Almacén Central y las 4 Tiendas.</p>
+    </div>
+    <!-- Selector de Mes/Año -->
+    <input type="month" id="filter-period-stock" class="h-10 border border-outline-variant bg-surface rounded-lg px-3 text-sm font-bold text-black focus:ring-0 outline-none mt-1 sm:mt-0 cursor-pointer" />
   </div>
-  <!-- Selector de Mes/Año (igual diseño que Flujo de Caja) -->
-  <input type="month" id="filter-period-stock" class="h-10 border border-outline-variant bg-surface rounded-lg px-3 text-sm font-bold text-black focus:ring-0 outline-none mt-1 sm:mt-0" />
-</div>
-<div class="flex flex-wrap gap-4 items-center">
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-xs text-on-surface font-semibold ml-1" for="store-filter-select">Filtrar por Sede:</label>
-<select class="h-12 min-w-[220px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg text-sm px-4 bg-surface cursor-pointer outline-none" id="store-filter-select">
-<option value="all">Consolidado Total (Todas las Sedes)</option>
-<option value="ALM-01">Almacén Central</option>
-<option value="TDA-01">Tienda Santa Lucía</option>
-<option value="TDA-02">Tienda Generales Suplex</option>
-<option value="TDA-03">Tienda Generales Pasadizo</option>
-<option value="TDA-04">Tienda Aviación</option>
-</select>
-</div>
-</div>
+  <div class="flex items-center gap-3">
+    <div class="flex flex-col gap-0.5">
+      <label class="text-[10px] text-on-surface-variant font-bold uppercase ml-1" for="store-filter-select">Filtrar por Sede</label>
+      <select class="h-11 min-w-[280px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary text-xs font-bold px-4 bg-white cursor-pointer outline-none" id="store-filter-select">
+        <option value="all">Consolidado Total (Todas las Sedes)</option>
+        <option value="ALM-01">Almacén Central</option>
+        <option value="TDA-01">Tienda Santa Lucía</option>
+        <option value="TDA-02">Tienda Generales Suplex</option>
+        <option value="TDA-03">Tienda Generales Pasadizo</option>
+        <option value="TDA-04">Tienda Aviación</option>
+      </select>
+    </div>
+  </div>
 </div>
 </section>
 
