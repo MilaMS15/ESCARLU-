@@ -49,6 +49,13 @@ let supabaseClient = null;
           background-color: var(--bg-main) !important;
           color: var(--dark-text) !important;
           font-family: 'Source Sans 3', sans-serif !important;
+          /* Transición suave de entrada */
+          opacity: 0;
+          transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+        }
+
+        body.page-loaded {
+          opacity: 1 !important;
         }
 
         /* Sidebar (Menú Lateral) */
@@ -275,6 +282,34 @@ let supabaseClient = null;
         }
     `;
     document.head.appendChild(styleEl);
+
+    // Activar transición suave de entrada
+    const triggerFadeIn = () => {
+        document.body.classList.add('page-loaded');
+    };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', triggerFadeIn);
+    } else {
+        triggerFadeIn();
+    }
+
+    // Interceptar clics en enlaces locales para transición de salida (fade-out)
+    document.addEventListener('click', function(e) {
+        const anchor = e.target.closest('a');
+        if (anchor && anchor.href && 
+            anchor.getAttribute('href') !== '#' && 
+            !anchor.getAttribute('href').startsWith('javascript:') &&
+            anchor.target !== '_blank' &&
+            anchor.host === window.location.host) {
+            
+            e.preventDefault();
+            const targetUrl = anchor.href;
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 300); // Esperar a que la transición de salida termine (300ms)
+        }
+    });
 })();
 
 function getSupabaseClient() {
