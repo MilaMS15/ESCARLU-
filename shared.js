@@ -381,6 +381,7 @@ localStorage.setItem = function(key, value) {
 async function syncTiendaStockToSupabase(tiendaStock) {
     const client = getSupabaseClient();
     if (!client) return;
+    const records = [];
     for (const [storeId, models] of Object.entries(tiendaStock)) {
         for (const [modelId, sizes] of Object.entries(models)) {
             for (const [sizeName, qty] of Object.entries(sizes)) {
@@ -389,7 +390,7 @@ async function syncTiendaStockToSupabase(tiendaStock) {
                 // Para las tiendas, se guarda con un ID de color por defecto COL-01 (Negro)
                 const colorId = "COL-01";
                 const stockId = `STK-${storeId}-${modelId}-${colorId}-${tallaId}`;
-                await client.from('stock').upsert({
+                records.push({
                     id_stock: stockId,
                     id_sede: storeId,
                     id_modelo: modelId,
@@ -401,11 +402,15 @@ async function syncTiendaStockToSupabase(tiendaStock) {
             }
         }
     }
+    if (records.length > 0) {
+        await client.from('stock').upsert(records);
+    }
 }
 
 async function syncInventoryToSupabase(localInv) {
     const client = getSupabaseClient();
     if (!client) return;
+    const records = [];
     for (const [storeId, models] of Object.entries(localInv)) {
         for (const [modelId, colors] of Object.entries(models)) {
             for (const [colorId, sizes] of Object.entries(colors)) {
@@ -413,7 +418,7 @@ async function syncInventoryToSupabase(localInv) {
                     const tallaId = TALLA_KEYS[sizeName];
                     if (!tallaId) continue;
                     const stockId = `STK-${storeId}-${modelId}-${colorId}-${tallaId}`;
-                    await client.from('stock').upsert({
+                    records.push({
                         id_stock: stockId,
                         id_sede: storeId,
                         id_modelo: modelId,
@@ -426,6 +431,9 @@ async function syncInventoryToSupabase(localInv) {
             }
         }
     }
+    if (records.length > 0) {
+        await client.from('stock').upsert(records);
+    }
 }
 
 async function syncRequestsToSupabase(localReqs) {
@@ -433,9 +441,10 @@ async function syncRequestsToSupabase(localReqs) {
     if (!client) return;
     
     // 1. Upsert current requests
+    const records = [];
     for (const req of localReqs) {
         const tallaId = TALLA_KEYS[req.size] || 'TAL-03';
-        await client.from('solicitudes_traspaso').upsert({
+        records.push({
             id_solicitud: req.id,
             tipo: req.type === 'reposicion' ? 'reposición' : 'traspaso',
             id_sede_origen: req.origin === 'central' ? 'ALM-01' : req.origin,
@@ -447,6 +456,9 @@ async function syncRequestsToSupabase(localReqs) {
             estado: req.status,
             fecha_solicitud: req.date
         });
+    }
+    if (records.length > 0) {
+        await client.from('solicitudes_traspaso').upsert(records);
     }
 
     // 2. Delete requests in Supabase that are no longer present locally for this store destination
@@ -476,10 +488,13 @@ async function syncSalesToSupabase(localSales) {
     const client = getSupabaseClient();
     if (!client) return;
     const user = getCurrentUser();
+    const userId = user ? user.id_usuario : 'USR-03';
+    
+    const salesRecords = [];
+    const detailRecords = [];
+
     for (const sale of localSales) {
-        const userId = user ? user.id_usuario : 'USR-03';
-        // Sync sale header
-        await client.from('ventas').upsert({
+        salesRecords.push({
             id_venta: sale.id,
             id_sede: sale.storeId,
             id_usuario: userId,
@@ -489,17 +504,17 @@ async function syncSalesToSupabase(localSales) {
             estado: sale.status,
             referencia: sale.reference || null
         });
-        // Sync sale line items to detalle_venta
+
         if (sale.items && sale.items.length > 0) {
             for (let i = 0; i < sale.items.length; i++) {
                 const item = sale.items[i];
                 const tallaId = TALLA_KEYS[item.size] || 'TAL-03';
                 const subtotal = (item.price || 0) * (item.qty || 1);
-                await client.from('detalle_venta').upsert({
+                detailRecords.push({
                     id_detalle: `DV-${sale.id}-${i + 1}`,
                     id_venta: sale.id,
                     id_modelo: item.model,
-                    id_color: item.color,
+                    id_color: item.color || 'COL-01',
                     id_talla: tallaId,
                     cantidad: item.qty,
                     precio_unitario: item.price || 0,
@@ -507,6 +522,13 @@ async function syncSalesToSupabase(localSales) {
                 });
             }
         }
+    }
+
+    if (salesRecords.length > 0) {
+        await client.from('ventas').upsert(salesRecords);
+    }
+    if (detailRecords.length > 0) {
+        await client.from('detalle_venta').upsert(detailRecords);
     }
 }
 
@@ -523,6 +545,7 @@ async function syncExpensesToSupabase(localExpenses) {
         "general":  "CTR-01"
     };
 
+    const records = [];
     for (const exp of localExpenses) {
         let sedeId = exp.storeId || "CTR-01";
         // Normalizar IDs legáceos
@@ -531,7 +554,7 @@ async function syncExpensesToSupabase(localExpenses) {
         const validIds = ["CTR-01","ALM-01","TDA-01","TDA-02","TDA-03","TDA-04"];
         if (!validIds.includes(sedeId)) sedeId = "CTR-01";
 
-        await client.from('gastos').upsert({
+        records.push({
             id_gasto: exp.id,
             descripcion: exp.description,
             categoria: exp.category === 'fabricacion' ? 'fabricación' : exp.category,
@@ -540,13 +563,17 @@ async function syncExpensesToSupabase(localExpenses) {
             id_sede: sedeId
         });
     }
+    if (records.length > 0) {
+        await client.from('gastos').upsert(records);
+    }
 }
 
 async function syncWarehouseEntriesToSupabase(entries) {
     const client = getSupabaseClient();
     if (!client) return;
+    const records = [];
     for (const ent of entries) {
-        await client.from('movimientos_inventario').upsert({
+        records.push({
             id: ent.id,
             fecha_hora: ent.date,
             origen_id: null,
@@ -562,13 +589,17 @@ async function syncWarehouseEntriesToSupabase(entries) {
             cantidad_original: ent.qty
         });
     }
+    if (records.length > 0) {
+        await client.from('movimientos_inventario').upsert(records);
+    }
 }
 
 async function syncStoreMovementsToSupabase(movs) {
     const client = getSupabaseClient();
     if (!client) return;
+    const records = [];
     for (const mov of movs) {
-        await client.from('movimientos_inventario').upsert({
+        records.push({
             id: mov.id,
             fecha_hora: mov.fecha_hora,
             origen_id: mov.origen_id,
@@ -583,6 +614,9 @@ async function syncStoreMovementsToSupabase(movs) {
             fecha_edicion: mov.fecha_edicion || null,
             cantidad_original: mov.cantidad_original || mov.cantidad
         });
+    }
+    if (records.length > 0) {
+        await client.from('movimientos_inventario').upsert(records);
     }
 }
 
@@ -1265,6 +1299,52 @@ function setupMobileMenu(activePage) {
     }
 }
 
+let realtimeChannel = null;
+let downloadTimeout = null;
+
+function initRealtimeSubscription() {
+    const client = getSupabaseClient();
+    if (!client) return;
+
+    // Evitar duplicar suscripciones
+    if (realtimeChannel) return;
+
+    // Debounce de descargas para no saturar la red con múltiples eventos simultáneos
+    const triggerDebouncedDownload = () => {
+        if (downloadTimeout) clearTimeout(downloadTimeout);
+        downloadTimeout = setTimeout(() => {
+            console.log("Realtime: Cambios detectados. Descargando datos actualizados...");
+            downloadFromSupabase();
+        }, 300);
+    };
+
+    realtimeChannel = client
+        .channel('public-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'stock' }, (payload) => {
+            console.log("Realtime: Cambio en tabla stock recibido", payload);
+            triggerDebouncedDownload();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'solicitudes_traspaso' }, (payload) => {
+            console.log("Realtime: Cambio en solicitudes_traspaso recibido", payload);
+            triggerDebouncedDownload();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'movimientos_inventario' }, (payload) => {
+            console.log("Realtime: Cambio en movimientos_inventario recibido", payload);
+            triggerDebouncedDownload();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'ventas' }, (payload) => {
+            console.log("Realtime: Cambio en ventas recibido", payload);
+            triggerDebouncedDownload();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'gastos' }, (payload) => {
+            console.log("Realtime: Cambio en gastos recibido", payload);
+            triggerDebouncedDownload();
+        })
+        .subscribe((status) => {
+            console.log("Realtime: Estado de suscripción:", status);
+        });
+}
+
 // Inicialización de cada página
 document.addEventListener("DOMContentLoaded", () => {
     initDB();
@@ -1273,7 +1353,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Descarga inicial de Supabase con reintentos para asegurar carga del script
     downloadFromSupabase();
     setTimeout(downloadFromSupabase, 500);
-    setTimeout(downloadFromSupabase, 1500);
+    setTimeout(() => {
+        downloadFromSupabase();
+        initRealtimeSubscription();
+    }, 1500);
 
     const path = window.location.pathname.toLowerCase();
     let pageName = "";
