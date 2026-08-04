@@ -117,42 +117,74 @@
         background: #ffffff;
         border-radius: 24px;
         box-shadow: 0 24px 64px rgba(116, 84, 117, 0.18), 0 4px 16px rgba(0,0,0,0.12);
-        border: 1px solid rgba(248, 200, 212, 0.4);
+        overflow: hidden;
         width: 100%;
-        max-width: 360px;
-        padding: 32px;
+        max-width: 380px;
+        animation: slideUp 0.25s ease;
+    }
+    /* Header degradado premium */
+    #delete-confirm-modal .del-header {
+        position: relative;
+        height: 88px;
+        background: linear-gradient(135deg, rgba(116,84,117,0.92) 0%, rgba(116,84,117,1) 50%, rgba(116,84,117,0.75) 100%);
+        display: flex;
+        align-items: flex-end;
+        padding: 0 28px 16px;
+        overflow: hidden;
+    }
+    #delete-confirm-modal .del-header::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0.10;
+        background: radial-gradient(circle at 70% 50%, white, transparent 70%);
+    }
+    #delete-confirm-modal .del-header-text {
+        position: relative;
+        z-index: 1;
+    }
+    #delete-confirm-modal .del-header-label {
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.65);
+        display: block;
+        margin-bottom: 2px;
+    }
+    #delete-confirm-modal .del-header-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        font-family: 'Libre Caslon Text', serif;
+        line-height: 1.2;
+        margin: 0;
+    }
+    /* Cuerpo del modal */
+    #delete-confirm-modal .del-body {
+        padding: 28px 28px 28px;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 20px;
-        animation: slideUp 0.25s ease;
+        gap: 16px;
     }
     #delete-confirm-modal .del-icon-wrap {
         width: 56px;
         height: 56px;
         border-radius: 50%;
-        background: #FFF0F3;
-        border: 1px solid rgba(248, 200, 212, 0.5);
+        background: rgba(186, 26, 26, 0.10);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #C52A2A;
-    }
-    #delete-confirm-modal .del-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #1c1b1b;
-        margin: 0;
-        letter-spacing: -0.2px;
+        color: #ba1a1a;
     }
     #delete-confirm-modal .del-desc {
-        font-size: 13px;
+        font-size: 14px;
         color: #4c444b;
         font-weight: 500;
         line-height: 1.6;
         margin: 0;
-        padding: 0 4px;
     }
     #delete-confirm-modal .del-actions {
         display: flex;
@@ -162,34 +194,35 @@
     }
     #btn-delete-cancel {
         flex: 1;
-        height: 44px;
-        border: 1.5px solid #F8C8D4 !important;
-        background: #ffffff !important;
-        color: #1c1b1b !important;
+        height: 48px;
+        border: 2px solid #cfc3cc !important;
+        background: transparent !important;
+        color: #4c444b !important;
         font-weight: 700 !important;
-        font-size: 13px !important;
+        font-size: 14px !important;
         border-radius: 12px !important;
         cursor: pointer;
         transition: background 0.2s ease;
     }
     #btn-delete-cancel:hover {
-        background: #FCECEE !important;
+        background: #f0eded !important;
     }
     #btn-delete-confirm {
         flex: 1;
-        height: 44px;
-        background: #C52A2A !important;
+        height: 48px;
+        background: #ba1a1a !important;
         color: #ffffff !important;
         font-weight: 700 !important;
-        font-size: 13px !important;
+        font-size: 14px !important;
         border-radius: 12px !important;
         border: none !important;
         cursor: pointer;
-        transition: background 0.2s ease;
-        box-shadow: 0 2px 8px rgba(197, 42, 42, 0.3) !important;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(186, 26, 26, 0.3) !important;
     }
     #btn-delete-confirm:hover {
-        background: #A82020 !important;
+        background: #93000a !important;
+        box-shadow: 0 4px 16px rgba(186, 26, 26, 0.4) !important;
     }
     #btn-delete-confirm:active {
         transform: scale(0.97);
@@ -375,22 +408,26 @@
       </div>
     </section>
 
-<!-- ===== MODAL: Confirmación de Eliminación (Portal Raíz - Cubre toda la pantalla) ===== -->
+<!-- ===== MODAL: Confirmación de Eliminación ===== -->
 <div id="delete-confirm-modal">
   <div class="modal-inner">
-    <!-- Icono de Basura -->
-    <div class="del-icon-wrap">
-      <span class="material-symbols-outlined" style="font-size:26px; font-variation-settings: 'FILL' 0, 'wght' 600;">delete</span>
+    <!-- Header con gradiente premium -->
+    <div class="del-header">
+      <div class="del-header-text">
+        <span class="del-header-label">Confirmar Acción</span>
+        <p class="del-header-title">¿Eliminar salida?</p>
+      </div>
     </div>
-    <!-- Texto -->
-    <div>
-      <p class="del-title">¿Eliminar salida?</p>
+    <!-- Cuerpo -->
+    <div class="del-body">
+      <div class="del-icon-wrap">
+        <span class="material-symbols-outlined" style="font-size:28px;">delete_forever</span>
+      </div>
       <p class="del-desc">Esta acción no se puede deshacer y revertirá el stock de prendas de inmediato.</p>
-    </div>
-    <!-- Botones -->
-    <div class="del-actions">
-      <button type="button" id="btn-delete-cancel">Cancelar</button>
-      <button type="button" id="btn-delete-confirm">Sí, eliminar</button>
+      <div class="del-actions">
+        <button type="button" id="btn-delete-cancel">Cancelar</button>
+        <button type="button" id="btn-delete-confirm">Sí, eliminar</button>
+      </div>
     </div>
   </div>
 </div>
