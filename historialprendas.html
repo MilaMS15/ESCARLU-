@@ -87,8 +87,8 @@
     .table-container { flex: 1; overflow-y: auto; }
 
     /* Modales */
-    #edit-modal, #success-modal-hp { display: none; }
-    #edit-modal.open, #success-modal-hp.open { display: flex; }
+    #edit-modal, #success-modal-hp, #delete-confirm-modal { display: none; }
+    #edit-modal.open, #success-modal-hp.open, #delete-confirm-modal.open { display: flex; }
     @keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
     .modal-card { animation: slideUp 0.25s ease; }
 
@@ -272,10 +272,33 @@
       </div>
     </section>
 
-  </div><!-- /dashboard-content -->
-</main>
-
-
+<!-- ===== MODAL: Confirmación de Eliminación Personalizado (Premium) ===== -->
+<div id="delete-confirm-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-50 items-center justify-center p-4">
+  <div class="modal-card bg-white rounded-[24px] shadow-2xl w-full max-w-[400px] overflow-hidden p-8 flex flex-col items-center text-center gap-6">
+    <!-- Icono de Basura Rojo -->
+    <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-600 shadow-inner">
+      <span class="material-symbols-outlined text-3xl font-bold">delete</span>
+    </div>
+    
+    <!-- Texto informativo -->
+    <div>
+      <h3 class="font-sans font-black text-xl text-on-surface mb-2">¿Eliminar egreso?</h3>
+      <p class="text-sm text-on-surface-variant leading-relaxed">Esta acción no se puede deshacer y actualizará los balances inmediatamente.</p>
+    </div>
+    
+    <!-- Botones de Acción -->
+    <div class="flex gap-4 w-full">
+      <button type="button" id="btn-delete-cancel"
+        class="flex-1 h-11 border border-[#F8C8D4] text-on-surface font-bold rounded-xl text-xs bg-white hover:bg-[#FCECEE] transition-colors">
+        Cancelar
+      </button>
+      <button type="button" id="btn-delete-confirm"
+        class="flex-1 h-11 bg-[#D32F2F] hover:bg-[#B71C1C] text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm">
+        Sí, eliminar
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
     const user = getCurrentUser();
@@ -495,9 +518,18 @@
         });
     }
 
-    // ── ELIMINAR MOVIMIENTO ──────────────────────────────────────
-    async function handleDeleteMovimiento(movId) {
-        if (!confirm("¿Estás seguro de que deseas eliminar este registro de movimiento? Se revertirá la cantidad de stock afectada en las sedes correspondientes.")) return;
+    // ── ELIMINAR MOVIMIENTO (MODAL PREMIUM) ──────────────────────
+    let pendingDeleteMovId = null;
+
+    function handleDeleteMovimiento(movId) {
+        pendingDeleteMovId = movId;
+        document.getElementById("delete-confirm-modal").classList.add("open");
+    }
+
+    async function confirmDeleteMovimiento(movId) {
+        // Cerrar modal
+        document.getElementById("delete-confirm-modal").classList.remove("open");
+        pendingDeleteMovId = null;
 
         const movs = getMovimientos();
         const mov = movs.find(m => m.id === movId);
@@ -560,6 +592,44 @@
         const now = new Date();
         document.getElementById("current-date-label").textContent =
             now.toLocaleDateString("es-PE", { day: "numeric", month: "long", year: "numeric" });
+
+        // Preseleccionar mes actual
+        const currentYear = now.getFullYear();
+        const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+        const defaultMonth = `${currentYear}-${currentMonth}`;
+        const mesInput = document.getElementById("hp-filter-mes");
+        if (mesInput) {
+            mesInput.value = defaultMonth;
+        }
+
+        // Hacer click completo en el botón de calendario
+        const mesWrapper = document.getElementById("hp-filter-mes")?.parentElement;
+        if (mesWrapper && mesInput) {
+            mesWrapper.addEventListener("click", (e) => {
+                if (e.target !== mesInput) {
+                    if (typeof mesInput.showPicker === 'function') {
+                        mesInput.showPicker();
+                    }
+                }
+            });
+            mesInput.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (typeof mesInput.showPicker === 'function') {
+                    mesInput.showPicker();
+                }
+            });
+        }
+
+        // Eventos del modal de eliminación personalizado
+        document.getElementById("btn-delete-cancel").addEventListener("click", () => {
+            document.getElementById("delete-confirm-modal").classList.remove("open");
+            pendingDeleteMovId = null;
+        });
+        document.getElementById("btn-delete-confirm").addEventListener("click", () => {
+            if (pendingDeleteMovId) {
+                confirmDeleteMovimiento(pendingDeleteMovId);
+            }
+        });
 
         renderHPTable();
 
