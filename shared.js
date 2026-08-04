@@ -88,9 +88,14 @@ let supabaseClient = null;
           background-color: var(--dark-text) !important;
           color: var(--white) !important;
           border: 1px solid var(--accent-gold) !important;
-          font-weight: 700 !important;
+          font-family: 'Source Sans 3', sans-serif !important;
+          font-weight: 600 !important;
+          font-size: 14px !important;
+          letter-spacing: 0.3px !important;
           border-radius: 12px !important;
-          transition: all 0.2s ease-in-out !important;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          padding: 8px 18px !important;
         }
         .bg-primary:hover, 
         button[type="submit"]:hover, 
@@ -102,6 +107,28 @@ let supabaseClient = null;
         #btnExportarExcelTienda:hover {
           background-color: var(--accent-gold) !important;
           color: var(--dark-text) !important;
+          box-shadow: 0 6px 14px rgba(197, 155, 39, 0.25) !important;
+          transform: translateY(-1px) !important;
+        }
+        /* Botón de exportar con un estilo secundario de lujo */
+        #btnExportarExcel, #btnExportarExcelTienda {
+          background-color: var(--white) !important;
+          color: var(--dark-text) !important;
+          border: 2px solid var(--primary-pink) !important;
+          box-shadow: 0 2px 6px rgba(248, 200, 212, 0.2) !important;
+        }
+        #btnExportarExcel:hover, #btnExportarExcelTienda:hover {
+          background-color: var(--primary-pink-light) !important;
+          border-color: var(--accent-gold) !important;
+          color: var(--dark-text) !important;
+        }
+        
+        /* Ocultar barra de búsqueda global redundante */
+        #global-search-input, 
+        header .flex-1.max-w-md,
+        [placeholder*="Buscar transacción"],
+        [placeholder*="Buscar producto"] {
+          display: none !important;
         }
 
         /* Tarjetas y Tablas */
@@ -190,6 +217,39 @@ let supabaseClient = null;
           background-color: var(--primary-pink-light) !important;
           color: var(--accent-gold) !important;
           border: 1px solid var(--primary-pink) !important;
+        }
+
+        /* Estilo Exclusivo de Distinción para la Tarjeta de Balance Neto */
+        #kpi-utilidad {
+          font-family: 'Libre Caslon Text', serif !important;
+          font-size: 34px !important;
+          font-weight: 700 !important;
+          text-shadow: 0 1px 2px rgba(116, 84, 117, 0.08);
+        }
+        /* Contenedor padre de la tarjeta de Balance Neto */
+        #kpi-utilidad.text-primary {
+          color: var(--accent-gold) !important; /* Dorado si es positivo */
+        }
+        #kpi-utilidad.text-error {
+          color: #D32F2F !important; /* Rojo elegante si es negativo */
+        }
+        main .grid.grid-cols-1.md\\:grid-cols-3 > div:last-child {
+          border: 2px solid var(--accent-gold) !important;
+          background: linear-gradient(135deg, var(--white) 60%, var(--primary-pink-light) 100%) !important;
+          box-shadow: 0 8px 25px rgba(197, 155, 39, 0.15) !important;
+          position: relative;
+          overflow: hidden;
+        }
+        main .grid.grid-cols-1.md\\:grid-cols-3 > div:last-child::after {
+          content: "account_balance";
+          font-family: 'Material Symbols Outlined';
+          position: absolute;
+          right: 15px;
+          bottom: 10px;
+          font-size: 48px;
+          color: var(--accent-gold);
+          opacity: 0.15;
+          pointer-events: none;
         }
 
         /* Sobrescribir gradientes y fondos de cabeceras */
