@@ -406,29 +406,6 @@
 
     function saveMovimientos(movs) {
         localStorage.setItem(MOV_KEY, JSON.stringify(movs));
-        syncMovimientosToSupabase(movs);
-    }
-
-    async function syncMovimientosToSupabase(movs) {
-        const client = getSupabaseClient ? getSupabaseClient() : null;
-        if (!client) return;
-        for (const mov of movs) {
-            try {
-                await client.from('movimientos_inventario').upsert({
-                    id: mov.id,
-                    fecha_hora: mov.fecha_hora,
-                    origen_id: mov.origen_id,
-                    destino_id: mov.destino_id,
-                    modelo_id: mov.modelo_id,
-                    talla: mov.talla,
-                    cantidad: mov.cantidad,
-                    tipo: mov.tipo || 'salida_tienda',
-                    editado: mov.editado || false,
-                    fecha_edicion: mov.fecha_edicion || null,
-                    cantidad_original: mov.cantidad_original || mov.cantidad
-                });
-            } catch(e) { /* tabla puede no existir aún */ }
-        }
     }
 
     function getMisMovimientos() {
