@@ -446,7 +446,13 @@ function exportToExcel() {
             // Inicializar objeto de estilo
             ws[cell_ref].s = {
                 font: { name: "Calibri", sz: 11 },
-                alignment: { vertical: "center" }
+                alignment: { vertical: "center" },
+                border: {
+                    top: { style: "thin", color: { rgb: "F8C8D4" } },
+                    bottom: { style: "thin", color: { rgb: "F8C8D4" } },
+                    left: { style: "thin", color: { rgb: "F8C8D4" } },
+                    right: { style: "thin", color: { rgb: "F8C8D4" } }
+                }
             };
 
             // Fila de cabecera principal (Fila 1)
@@ -465,6 +471,13 @@ function exportToExcel() {
                 } else {
                     ws[cell_ref].s.alignment.horizontal = "left";
                 }
+                // Sin bordes para los datos superiores
+                ws[cell_ref].s.border = {};
+            }
+
+            // Fila vacía entre cabecera y tabla
+            if (R === 3) {
+                ws[cell_ref].s.border = {};
             }
 
             // Título de Sección "INDICADORES PRINCIPALES"
@@ -472,7 +485,11 @@ function exportToExcel() {
                 ws[cell_ref].s = {
                     font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
                     fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } }, // Rosa claro
-                    alignment: { horizontal: "left", vertical: "center" }
+                    alignment: { horizontal: "left", vertical: "center" },
+                    border: {
+                        top: { style: "thin", color: { rgb: "F8C8D4" } },
+                        bottom: { style: "thin", color: { rgb: "F8C8D4" } }
+                    }
                 };
             }
 
@@ -500,12 +517,21 @@ function exportToExcel() {
                 }
             }
 
+            // Fila vacía entre secciones
+            if (R === 10) {
+                ws[cell_ref].s.border = {};
+            }
+
             // Título de Sección "ÚLTIMOS MOVIMIENTOS"
             if (R === 11) {
                 ws[cell_ref].s = {
                     font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
                     fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } },
-                    alignment: { horizontal: "left", vertical: "center" }
+                    alignment: { horizontal: "left", vertical: "center" },
+                    border: {
+                        top: { style: "thin", color: { rgb: "F8C8D4" } },
+                        bottom: { style: "thin", color: { rgb: "F8C8D4" } }
+                    }
                 };
             }
 
@@ -514,7 +540,13 @@ function exportToExcel() {
                 ws[cell_ref].s = {
                     font: { name: "Calibri", sz: 10, bold: true, color: { rgb: "745475" } },
                     fill: { patternType: "solid", fgColor: { rgb: "F8C8D4" } },
-                    alignment: { horizontal: C === 3 ? "right" : "left", vertical: "center" }
+                    alignment: { horizontal: C === 3 ? "right" : "left", vertical: "center" },
+                    border: {
+                        top: { style: "medium", color: { rgb: "745475" } },
+                        bottom: { style: "medium", color: { rgb: "745475" } },
+                        left: { style: "thin", color: { rgb: "F8C8D4" } },
+                        right: { style: "thin", color: { rgb: "F8C8D4" } }
+                    }
                 };
             }
 
