@@ -118,6 +118,38 @@ document.addEventListener('DOMContentLoaded', () => {
         // pero actualizará el label del Excel al exportar
     }
 
+    // --- VARIABLES DE PAGINACIÓN ---
+    let currentPage = 1;
+    const rowsPerPage = 5;
+
+    // Vincular controles de paginación
+    const btnPrev = document.getElementById("btn-prev-page");
+    const btnNext = document.getElementById("btn-next-page");
+
+    if (btnPrev) {
+        btnPrev.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+    }
+    if (btnNext) {
+        btnNext.addEventListener("click", () => {
+            currentPage++;
+            renderTable();
+        });
+    }
+
+    // Resetear página al escribir en filtros o búsqueda
+    const resetPaging = () => { currentPage = 1; };
+    if (filterTipo) filterTipo.addEventListener("change", resetPaging);
+    if (filterModelo) filterModelo.addEventListener("change", resetPaging);
+    if (filterColor) filterColor.addEventListener("change", resetPaging);
+    if (tableSearchInput) tableSearchInput.addEventListener("input", resetPaging);
+    if (globalSearchInput) globalSearchInput.addEventListener("input", resetPaging);
+    if (storeSelect) storeSelect.addEventListener("change", resetPaging);
+
     function renderTable() {
         if (!invData || Object.keys(invData).length === 0) return;
 
@@ -269,7 +301,34 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- ORDENAR DE MAYOR A MENOR STOCK ---
         variantsData.sort((a, b) => b.totalRow - a.totalRow);
 
-        variantsData.forEach(v => {
+        // --- LÓGICA DE PAGINACIÓN ---
+        const totalVariantes = variantsData.length;
+        const totalPages = Math.ceil(totalVariantes / rowsPerPage) || 1;
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIdx = (currentPage - 1) * rowsPerPage;
+        const endIdx = Math.min(startIdx + rowsPerPage, totalVariantes);
+        const pagedData = variantsData.slice(startIdx, endIdx);
+
+        // Actualizar textos de paginador
+        const paginationInfo = document.getElementById("pagination-info");
+        const paginationCurrent = document.getElementById("pagination-current");
+        if (paginationInfo) {
+            paginationInfo.textContent = totalVariantes > 0
+                ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalVariantes} variantes`
+                : "Mostrando 0-0 de 0 variantes";
+        }
+        if (paginationCurrent) {
+            paginationCurrent.textContent = `Página ${currentPage} de ${totalPages}`;
+        }
+
+        // Habilitar/deshabilitar botones
+        if (btnPrev) btnPrev.disabled = currentPage === 1;
+        if (btnNext) btnNext.disabled = currentPage === totalPages;
+
+        pagedData.forEach(v => {
             // Estado de Stock
             let statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-[11px] font-bold">Disponible</span>`;
             if (v.totalRow === 0) {

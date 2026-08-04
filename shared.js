@@ -45,10 +45,16 @@ let supabaseClient = null;
           --white: #FFFFFF;               /* Blanco para contraste en tablas e inputs */
         }
 
+        @keyframes fadeInPage {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
         body, html, main, .bg-background {
           background-color: var(--bg-main) !important;
           color: var(--dark-text) !important;
           font-family: 'Source Sans 3', sans-serif !important;
+          animation: fadeInPage 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
         }
 
         /* Sidebar (Menú Lateral) */
