@@ -114,8 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const yyyy = now.getFullYear();
         const mm = String(now.getMonth() + 1).padStart(2, "0");
         periodInput.value = `${yyyy}-${mm}`;
-        // No hace falta re-renderizar la tabla al cambiar el mes (el stock es un snapshot),
-        // pero actualizará el label del Excel al exportar
+        
+        // Vincular para que actualice la tabla en vivo al cambiar el mes
+        periodInput.addEventListener("change", () => {
+            renderTable();
+        });
     }
 
     // --- VARIABLES DE PAGINACIÓN ---
@@ -174,11 +177,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const colors = Object.entries(COLOR_NAMES).map(([key, name]) => {
             let badge = "bg-surface-variant text-on-surface-variant";
-            if (key === "COL-01") badge = "bg-black text-white";
-            else if (key === "COL-02") badge = "bg-white border border-outline-variant text-on-surface";
-            else if (key === "COL-03") badge = "bg-amber-100 text-amber-800";
-            else if (key === "COL-14") badge = "bg-rose-100 text-rose-800";
-            else if (key === "COL-18") badge = "bg-purple-100 text-purple-800";
+            if (key === "COL-01") badge = "bg-black text-white"; // Negro
+            else if (key === "COL-02") badge = "bg-[#FFFDF9] border-2 border-[#EAD0D8] text-on-surface"; // Perla
+            else if (key === "COL-03") badge = "bg-[#F3E5AB]/30 border border-[#F3E5AB] text-[#7A6B24]"; // Beige
+            else if (key === "COL-04") badge = "bg-[#1E4D2B] text-white"; // Botella
+            else if (key === "COL-05") badge = "bg-[#5C4033] text-white"; // Marron
+            else if (key === "COL-06") badge = "bg-[#708090]/20 border border-[#708090] text-[#2F4F4F]"; // Acero
+            else if (key === "COL-07") badge = "bg-[#C19A6B]/20 border border-[#C19A6B] text-[#5C4033]"; // Camello
+            else if (key === "COL-08") badge = "bg-red-100 border border-red-300 text-red-800"; // Rojo
+            else if (key === "COL-09") badge = "bg-[#FF007F]/10 border border-[#FF007F] text-[#C71585]"; // Fucsia
+            else if (key === "COL-10") badge = "bg-[#811414] text-white"; // Lacre
+            else if (key === "COL-11") badge = "bg-[#1C2833] text-white"; // Azul noche
+            else if (key === "COL-12") badge = "bg-yellow-100 border border-yellow-300 text-yellow-800"; // Amarillo
+            else if (key === "COL-13") badge = "bg-orange-100 border border-orange-300 text-orange-800"; // Naranja
+            else if (key === "COL-14") badge = "bg-rose-100 border border-rose-300 text-rose-800"; // Palo rosa
+            else if (key === "COL-15") badge = "bg-[#8C8275]/20 border border-[#8C8275] text-[#4A433A]"; // Topo
+            else if (key === "COL-16") badge = "bg-[#2E5A88]/20 border border-[#2E5A88] text-[#1B365D]"; // Italiano
+            else if (key === "COL-17") badge = "bg-[#E0F7FA] border border-[#B2EBF2] text-[#006064]"; // Celeste
+            else if (key === "COL-18") badge = "bg-purple-100 border border-purple-300 text-purple-800"; // Lila
+            else if (key === "COL-19") badge = "bg-[#E0E0E0] border border-[#BDBDBD] text-[#424242]"; // Melange
             return { key, name, badge };
         });
 
@@ -361,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${renderSizeCell("XL", v.xlSum)}
                     <td class="px-4 py-4 text-center font-extrabold text-primary text-sm">${v.totalRow}</td>
                     <td class="px-4 py-4">${statusBadge}</td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-4 text-center">
                         <button onclick="showSedesModal('${v.modelName}', '${v.colorName}', '${v.detailStr}')" class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary-container/20 text-[10px] font-bold transition-colors">
                             Ver Sedes
                         </button>
