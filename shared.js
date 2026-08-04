@@ -61,6 +61,10 @@ let supabaseClient = null;
         aside, nav, .bg-surface-container, [class*="bg-surface-container"] {
           background-color: var(--primary-pink-light) !important;
         }
+        aside.hidden.md\:flex, nav.hidden.md\:flex {
+          padding-left: 12px !important;
+          padding-right: 12px !important;
+        }
         aside a, nav a {
           transition: all 0.2s ease-in-out !important;
         }
@@ -75,6 +79,7 @@ let supabaseClient = null;
           background-color: var(--primary-pink) !important;
           color: var(--dark-text) !important;
           border-left: 4px solid var(--accent-gold) !important;
+          padding-left: 12px !important; /* Compensa los 4px de border-left para que los iconos no se desplacen a la derecha */
           font-weight: 700 !important;
           border-radius: 12px !important;
         }
@@ -2031,6 +2036,32 @@ function getAllowedSizesForModel(modelId) {
         dropdown.className = "escarlu-select-dropdown";
         wrapper.appendChild(dropdown);
 
+        function updateWrapperWidth() {
+            let maxText = "";
+            Array.from(select.options).forEach(opt => {
+                if (opt.text.length > maxText.length) {
+                    maxText = opt.text;
+                }
+            });
+            if (!maxText) return;
+
+            const tempSpan = document.createElement("span");
+            tempSpan.style.visibility = "hidden";
+            tempSpan.style.position = "absolute";
+            tempSpan.style.whiteSpace = "nowrap";
+            tempSpan.style.fontFamily = '"Source Sans 3", sans-serif';
+            tempSpan.style.fontSize = "14px";
+            tempSpan.style.fontWeight = "600";
+            tempSpan.textContent = maxText;
+            document.body.appendChild(tempSpan);
+            
+            const idealWidth = tempSpan.offsetWidth + 50; 
+            document.body.removeChild(tempSpan);
+
+            // Asegurar un ancho mínimo para que se vea consistente, pero permitir que crezca si el texto es muy largo
+            wrapper.style.width = Math.max(160, idealWidth) + "px";
+        }
+
         function populateOptions() {
             dropdown.innerHTML = "";
             Array.from(select.options).forEach((opt, index) => {
@@ -2050,10 +2081,12 @@ function getAllowedSizesForModel(modelId) {
         }
 
         populateOptions();
+        updateWrapperWidth();
 
         // Reconstruir opciones e iniciar sincronización si cambian dinámicamente en el select original
         const observer = new MutationObserver(() => {
             populateOptions();
+            updateWrapperWidth();
             const selectedOpt = select.options[select.selectedIndex];
             trigger.textContent = selectedOpt ? selectedOpt.text : "Seleccionar...";
         });
