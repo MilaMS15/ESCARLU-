@@ -45,17 +45,10 @@ let supabaseClient = null;
           --white: #FFFFFF;               /* Blanco para contraste en tablas e inputs */
         }
 
-        @keyframes fadeInPage {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
         body, html, main, .bg-background {
           background-color: var(--bg-main) !important;
           color: var(--dark-text) !important;
           font-family: 'Source Sans 3', sans-serif !important;
-          /* Animación nativa segura: si falla JS, la animación igual corre */
-          animation: fadeInPage 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
         }
 
         /* Sidebar (Menú Lateral) */
@@ -283,24 +276,6 @@ let supabaseClient = null;
     `;
     document.head.appendChild(styleEl);
 
-    // Interceptar clics en enlaces locales para transición de salida (fade-out)
-    document.addEventListener('click', function(e) {
-        const anchor = e.target.closest('a');
-        if (anchor && anchor.href && 
-            anchor.getAttribute('href') !== '#' && 
-            !anchor.getAttribute('href').startsWith('javascript:') &&
-            anchor.target !== '_blank' &&
-            anchor.host === window.location.host) {
-            
-            e.preventDefault();
-            const targetUrl = anchor.href;
-            document.body.style.transition = 'opacity 0.25s ease-out';
-            document.body.style.opacity = '0';
-            setTimeout(() => {
-                window.location.href = targetUrl;
-            }, 250); // Esperar a que la transición de salida termine (250ms)
-        }
-    });
 })();
 
 function getSupabaseClient() {
