@@ -1477,6 +1477,7 @@ window.alert = function(message) {
     const lowerMsg = message.toLowerCase();
     const isSuccess = lowerMsg.includes('éxito') || lowerMsg.includes('exito') || lowerMsg.includes('aprobado') || lowerMsg.includes('creada') || lowerMsg.includes('enviada') || lowerMsg.includes('correcto');
     const isError = lowerMsg.includes('error') || lowerMsg.includes('insuficiente') || lowerMsg.includes('inválid') || lowerMsg.includes('invalidad') || lowerMsg.includes('incorrecto') || lowerMsg.includes('no tiene') || lowerMsg.includes('excede');
+    const isInfo = lowerMsg.includes('sedes') || lowerMsg.includes('uds') || lowerMsg.includes('tallas') || lowerMsg.includes('existencias');
     
     const card = modal.querySelector('#custom-alert-card');
     const header = modal.querySelector('#custom-alert-header');
@@ -1493,6 +1494,11 @@ window.alert = function(message) {
         header.className = "flex items-center gap-3 mb-3 text-red-600";
         icon.textContent = "error";
         title.textContent = "Error";
+    } else if (isInfo) {
+        card.className = "bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200";
+        header.className = "flex items-center gap-3 mb-3 text-primary";
+        icon.textContent = "info";
+        title.textContent = "Información de Stock";
     } else {
         card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200";
         header.className = "flex items-center gap-3 mb-3 text-primary";
@@ -1502,6 +1508,99 @@ window.alert = function(message) {
     
     // Set message and show
     modal.querySelector('#custom-alert-message').textContent = message;
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    setTimeout(() => {
+        modal.firstElementChild.classList.remove('scale-95');
+    }, 10);
+};
+
+// Modal Premium de Detalle de Sedes
+window.showSedesModal = function(modelName, colorName, detailString) {
+    const modalId = 'custom-sedes-modal';
+    let modal = document.getElementById(modalId);
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = modalId;
+        modal.className = "fixed inset-0 bg-black/60 flex items-center justify-center z-[99999] opacity-0 transition-opacity duration-200 pointer-events-none";
+        document.body.appendChild(modal);
+    }
+
+    // Parsear el string plano desordenado a un HTML estructurado y elegante
+    let rowsHtml = '';
+    const lines = detailString.split('\\n').filter(line => line.trim().startsWith('-'));
+    
+    if (lines.length === 0) {
+        rowsHtml = `<tr><td colspan="2" class="px-4 py-6 text-center text-on-surface-variant font-semibold text-xs">Sin existencias registradas en ninguna sede.</td></tr>`;
+    } else {
+        lines.forEach(line => {
+            // Ejemplo: "- Tienda Aviación: 170 uds (St:2, L:168)"
+            const cleanLine = line.replace(/^- /, '').trim();
+            const parts = cleanLine.split(':');
+            const storeName = parts[0] || 'Sede';
+            const rest = parts.slice(1).join(':').trim();
+            
+            // Separar cantidad y desglose por tallas
+            const qtyMatch = rest.match(/^(\d+)\s+uds/);
+            const qty = qtyMatch ? qtyMatch[1] : '0';
+            
+            const sizesMatch = rest.match(/\(([^)]+)\)/);
+            const sizesDetail = sizesMatch ? sizesMatch[1] : '';
+
+            rowsHtml += `
+                <tr class="border-b border-outline-variant/30 hover:bg-surface-container-low transition-colors">
+                    <td class="px-4 py-3">
+                        <div class="font-bold text-xs text-on-surface">${storeName}</div>
+                    </td>
+                    <td class="px-4 py-3 text-right">
+                        <div class="font-bold text-xs text-primary">${qty} uds</div>
+                        <div class="text-[10px] text-on-surface-variant/80 mt-0.5">${sizesDetail}</div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl max-w-md w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200 overflow-hidden" id="custom-sedes-card">
+            <!-- Cabecera -->
+            <div class="p-6 pb-4 border-b border-outline-variant/20 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">storefront</span>
+                    <div>
+                        <h4 class="font-headline-md text-sm font-bold text-black">${modelName}</h4>
+                        <p class="text-[10px] text-on-surface-variant font-semibold mt-0.5">Color: ${colorName}</p>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('custom-sedes-modal').classList.add('opacity-0', 'pointer-events-none')" class="text-on-surface-variant hover:text-black transition-colors">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+            
+            <!-- Cuerpo con la Tabla Premium -->
+            <div class="p-6 max-h-[350px] overflow-y-auto">
+                <p class="text-[10.5px] text-on-surface-variant/80 uppercase font-bold tracking-wider mb-3">Distribución por Sede</p>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-primary-container/40 text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">
+                            <th class="px-4 py-2 rounded-l-lg">Sede / Tienda</th>
+                            <th class="px-4 py-2 text-right rounded-r-lg">Cantidad (Tallas)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Botón Cerrar en el Pie -->
+            <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/30 flex justify-end">
+                <button onclick="document.getElementById('custom-sedes-modal').classList.add('opacity-0', 'pointer-events-none')" class="bg-primary text-on-primary hover:bg-primary/95 px-6 py-2 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    `;
+
     modal.classList.remove('opacity-0', 'pointer-events-none');
     setTimeout(() => {
         modal.firstElementChild.classList.remove('scale-95');
