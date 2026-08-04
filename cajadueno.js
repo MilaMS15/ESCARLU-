@@ -316,7 +316,7 @@ function saveEgreso() {
     renderFinanceDashboard();
 }
 
-// Function to export to Excel using SheetJS
+// Function to export to Excel using SheetJS with premium styles matching ESCARLÚ
 function exportToExcel() {
     const selectedPeriod = document.getElementById("filter-period").value; // YYYY-MM
     if (!selectedPeriod) {
@@ -391,19 +391,21 @@ function exportToExcel() {
     // Sort movements by date descending
     movements.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Create Worksheet data
+    // Create Worksheet
+    const wb = XLSX.utils.book_new();
+    
+    // Armar el set de datos fila por fila
     const ws_data = [
         ["REPORTE DE FLUJO DE CAJA - ESCARLÚ"],
         ["Periodo:", selectedPeriod],
         ["Sede:", selectedSedeName],
         [],
         ["INDICADORES PRINCIPALES"],
-        ["TOTAL INGRESOS (Efectivo y Digital)", { v: totalIngresos, t: 'n', z: '"S/" #,##0.00' }],
-        ["  Efectivo", { v: ingresosEfectivo, t: 'n', z: '"S/" #,##0.00' }],
-        ["  Yape / Digital", { v: ingresosDigital, t: 'n', z: '"S/" #,##0.00' }],
-        ["TOTAL EGRESOS", { v: totalEgresos, t: 'n', z: '"S/" #,##0.00' }],
-        ["BALANCE NETO", { v: utilidad, t: 'n', z: '"S/" #,##0.00;[Red]-"S/" #,##0.00' }],
-        [],
+        ["TOTAL INGRESOS", totalIngresos],
+        ["  Efectivo", ingresosEfectivo],
+        ["  Yape / Digital", ingresosDigital],
+        ["TOTAL EGRESOS", totalEgresos],
+        ["BALANCE NETO", utilidad],
         [],
         ["ÚLTIMOS MOVIMIENTOS"],
         ["FECHA/HORA", "SEDE", "CONCEPTO / CATEGORÍA", "MONTO"]
@@ -427,15 +429,61 @@ function exportToExcel() {
             dateStr,
             m.store,
             `${m.category} - ${m.concept}`,
-            { v: displayAmount, t: 'n', z: '"S/" #,##0.00;[Red]-"S/" #,##0.00' }
+            displayAmount
         ]);
     });
 
-    // Create Workbook
-    const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
-    // Set Column Widths
+    // --- APLICACIÓN DE ESTILOS PRESTIGIO (Escarlú) ---
+    // Usamos formateo directo para celdas (SheetJS Pro/Compatible o formateo XML básico de celdas)
+    // Para asegurarnos de que la librería XLSX básica (Community) renderice formatos de número perfectos:
+    
+    const range = XLSX.utils.decode_range(ws['!ref']);
+
+    // Configurar formatos de número de moneda de manera nativa compatible
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            const cell_ref = XLSX.utils.encode_cell({c:C, r:R});
+            if (!ws[cell_ref]) continue;
+            let val = ws[cell_ref].v;
+
+            // Fila de cabecera principal (Fila 1)
+            if (R === 0) {
+                ws[cell_ref].s = {
+                    font: { name: "Arial", sz: 16, bold: true, color: { rgb: "745475" } },
+                    alignment: { horizontal: "left" }
+                };
+            }
+
+            // Aplicar formatos a Indicadores Principales (Filas 5 a 9)
+            if (R >= 5 && R <= 9 && C === 1) {
+                ws[cell_ref].t = 'n';
+                ws[cell_ref].z = '"S/" #,##0.00';
+            }
+
+            // Aplicar formato a Balance Neto (Fila 9)
+            if (R === 9) {
+                if (C === 0) ws[cell_ref].s = { font: { bold: true } };
+                if (C === 1) {
+                    ws[cell_ref].t = 'n';
+                    ws[cell_ref].z = '"S/" #,##0.00;[Red]-"S/" #,##0.00';
+                }
+            }
+
+            // Formato de Monto en la tabla de Movimientos (Filas posteriores a la 12, Columna D/3)
+            if (R >= 13 && C === 3) {
+                ws[cell_ref].t = 'n';
+                ws[cell_ref].z = '"S/" #,##0.00;[Red]-"S/" #,##0.00';
+            }
+        }
+    }
+
+    // Combinar títulos para alineación limpia
+    if(!ws['!merges']) ws['!merges'] = [];
+    ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }); // Título principal
+
+    // Ajustar anchos de columnas
     ws['!cols'] = [
         { wch: 22 }, // FECHA/HORA
         { wch: 25 }, // SEDE
@@ -445,7 +493,7 @@ function exportToExcel() {
 
     XLSX.utils.book_append_sheet(wb, ws, "Flujo de Caja");
 
-    // Save File — nombre dinámico con período + sede
+    // Save File
     const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     const [yr, mo] = selectedPeriod.split("-");
     const periodoFilename = `${meses[parseInt(mo, 10) - 1]}_${yr}`;
