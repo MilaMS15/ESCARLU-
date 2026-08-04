@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td class="px-4 py-4 text-center font-extrabold text-primary text-sm">${v.totalRow}</td>
                     <td class="px-4 py-4">${statusBadge}</td>
                     <td class="px-6 py-4 text-right">
-                        <button onclick="alert('${v.modelName} (${v.colorName}):${v.detailStr}')" class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary-container/20 text-[10px] font-bold transition-colors">
+                        <button onclick="showSedesModal('${v.modelName}', '${v.colorName}', '${v.detailStr}')" class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary-container/20 text-[10px] font-bold transition-colors">
                             Ver Sedes
                         </button>
                     </td>
