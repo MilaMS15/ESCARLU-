@@ -371,6 +371,10 @@ localStorage.setItem = function(key, value) {
         syncRequestsToSupabase(JSON.parse(value));
     } else if (key === 'escarlu_expenses') {
         syncExpensesToSupabase(JSON.parse(value));
+    } else if (key === 'escarlu_warehouse_entries') {
+        syncWarehouseEntriesToSupabase(JSON.parse(value));
+    } else if (key === 'escarlu_movimientos') {
+        syncStoreMovementsToSupabase(JSON.parse(value));
     }
 };
 
@@ -538,6 +542,50 @@ async function syncExpensesToSupabase(localExpenses) {
     }
 }
 
+async function syncWarehouseEntriesToSupabase(entries) {
+    const client = getSupabaseClient();
+    if (!client) return;
+    for (const ent of entries) {
+        await client.from('movimientos_inventario').upsert({
+            id: ent.id,
+            fecha_hora: ent.date,
+            origen_id: null,
+            destino_id: 'ALM-01',
+            modelo_id: ent.model,
+            color_id: ent.color || 'COL-01',
+            talla: ent.size,
+            cantidad: ent.qty,
+            tipo: 'ingreso',
+            user_label: ent.user || 'Jefe de Almacén',
+            editado: false,
+            fecha_edicion: null,
+            cantidad_original: ent.qty
+        });
+    }
+}
+
+async function syncStoreMovementsToSupabase(movs) {
+    const client = getSupabaseClient();
+    if (!client) return;
+    for (const mov of movs) {
+        await client.from('movimientos_inventario').upsert({
+            id: mov.id,
+            fecha_hora: mov.fecha_hora,
+            origen_id: mov.origen_id,
+            destino_id: mov.destino_id,
+            modelo_id: mov.modelo_id,
+            color_id: mov.color || 'COL-01',
+            talla: mov.talla,
+            cantidad: mov.cantidad,
+            tipo: mov.tipo || 'salida_tienda',
+            user_label: mov.user || 'Vendedora',
+            editado: mov.editado || false,
+            fecha_edicion: mov.fecha_edicion || null,
+            cantidad_original: mov.cantidad_original || mov.cantidad
+        });
+    }
+}
+
 function triggerStorageUpdate(key, value) {
     const event = new Event('storage');
     event.key = key;
@@ -655,6 +703,58 @@ async function downloadFromSupabase() {
         }
     } catch (e) {
         console.error("Error downloading models from Supabase:", e);
+    }
+
+    // 6. Download Movimientos de Inventario (Entradas de almacén e historial de tiendas)
+    try {
+        const { data: movsData } = await client.from('movimientos_inventario').select('*');
+        if (movsData) {
+            const warehouseEntries = [];
+            const storeMovements = [];
+
+            movsData.forEach(row => {
+                const mov = {
+                    id: row.id,
+                    fecha_hora: row.fecha_hora,
+                    origen_id: row.origen_id,
+                    destino_id: row.destino_id,
+                    modelo_id: row.modelo_id,
+                    color: row.color_id,
+                    talla: row.talla,
+                    cantidad: row.cantidad,
+                    tipo: row.tipo,
+                    editado: row.editado,
+                    fecha_edicion: row.fecha_edicion,
+                    cantidad_original: row.cantidad_original,
+                    user: row.user_label
+                };
+
+                if (row.tipo === 'ingreso') {
+                    warehouseEntries.push({
+                        id: row.id,
+                        type: 'ingreso',
+                        model: row.modelo_id,
+                        color: row.color_id,
+                        size: row.talla,
+                        qty: row.cantidad,
+                        date: row.fecha_hora,
+                        user: row.user_label || 'Jefe de Almacén'
+                    });
+                } else {
+                    storeMovements.push(mov);
+                }
+            });
+
+            const entriesStr = JSON.stringify(warehouseEntries);
+            originalSetItem.call(localStorage, 'escarlu_warehouse_entries', entriesStr);
+            triggerStorageUpdate('escarlu_warehouse_entries', entriesStr);
+
+            const movsStr = JSON.stringify(storeMovements);
+            originalSetItem.call(localStorage, 'escarlu_movimientos', movsStr);
+            triggerStorageUpdate('escarlu_movimientos', movsStr);
+        }
+    } catch (e) {
+        console.error("Error downloading inventory movements from Supabase:", e);
     }
 }
 
