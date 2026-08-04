@@ -260,8 +260,7 @@ let supabaseClient = null;
         /* Botones de Eliminar (Rojo legible) */
         button.bg-error,
         #btn-confirm-delete,
-        #btn-confirm-tienda-delete,
-        .text-error {
+        #btn-confirm-tienda-delete {
           background-color: #D32F2F !important;
           color: var(--white) !important;
           border: 1px solid #C62828 !important;
@@ -272,6 +271,10 @@ let supabaseClient = null;
         #btn-confirm-tienda-delete:hover {
           background-color: #B71C1C !important;
           color: var(--white) !important;
+        }
+        .text-error {
+          color: #D32F2F !important;
+          background-color: transparent !important;
         }
     `;
     document.head.appendChild(styleEl);
