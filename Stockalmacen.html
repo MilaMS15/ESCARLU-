@@ -416,16 +416,24 @@
 </tbody>
 </table>
 </div>
-<!-- Pagination / Footer -->
-<div class="p-4 bg-surface-container flex justify-between items-center">
-<p class="text-body-sm text-on-surface-variant italic">Mostrando 3 de 145 modelos de polos disponibles.</p>
-<div class="flex gap-2">
-<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
-<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold">1</button>
-<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors">2</button>
-<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors">3</button>
-<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
-</div>
+<!-- Paginación Premium al pie de la tarjeta -->
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/60 flex items-center justify-between shrink-0">
+  <span class="text-xs text-on-surface-variant font-semibold" id="pagination-info">
+    Mostrando 0-0 de 0 modelos
+  </span>
+  <div class="flex items-center gap-3">
+    <button type="button" id="btn-prev-page"
+      class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+      <span class="material-symbols-outlined text-sm">chevron_left</span> Anterior
+    </button>
+    <div id="pagination-numbers" class="flex items-center gap-1.5">
+      <!-- Números de página inyectados dinámicamente -->
+    </div>
+    <button type="button" id="btn-next-page"
+      class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+      Siguiente <span class="material-symbols-outlined text-sm">chevron_right</span>
+    </button>
+  </div>
 </div>
 </section>
 
@@ -490,6 +498,8 @@
         const user = getCurrentUser();
         let invData = {};
         let reqsData = [];
+        let currentPage = 1;
+        const rowsPerPage = 8;
 
         function loadData() {
             const rawInv = localStorage.getItem("escarlu_inventory");
@@ -521,6 +531,7 @@
             let lowStockCount = 0;
 
             const targetInventory = invData[selectedStore] || {};
+            const allRows = [];
 
             for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
                 // Filter by selected model
@@ -553,87 +564,131 @@
                         lowStockCount++;
                     }
 
-                    function renderSizeCell(sz) {
-                        if (!allowedSizes.includes(sz)) {
-                            return `<td class="px-3 py-3 text-center text-on-surface/20 font-medium text-sm">-</td>`;
-                        }
-                        const val = sizes[sz] || 0;
-                        const isLow = val < 5;
-                        return `<td class="px-3 py-3 text-center font-bold text-sm ${isLow ? 'text-error font-extrabold' : ''}">${val}</td>`;
-                    }
-
-                    let statusBadge = "";
-                    let actionButton = "";
-
-                    if (totalRow > 15) {
-                        statusBadge = `
-                            <div class="flex items-center gap-1.5">
-                                <div class="w-2 h-2 rounded-full bg-[#4CAF50]"></div>
-                                <span class="text-xs font-medium">Stock Óptimo</span>
-                            </div>
-                        `;
-                    } else if (totalStockIsLow(sizes, allowedSizes)) {
-                        statusBadge = `
-                            <div class="flex items-center gap-1.5">
-                                <div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
-                                <span class="text-xs font-medium text-error font-bold">Stock Crítico</span>
-                            </div>
-                        `;
-                    } else {
-                        statusBadge = `
-                            <div class="flex items-center gap-1.5">
-                                <div class="w-2 h-2 rounded-full bg-tertiary-container"></div>
-                                <span class="text-xs font-medium">Stock Moderado</span>
-                            </div>
-                        `;
-                    }
-
-                    // Check if Almacén Central (ALM-01) has stock to send
-                    const centralStock = invData["ALM-01"]?.[modelKey]?.[colorKey] || {};
-                    const centralTotal = allowedSizes.reduce((sum, sz) => sum + (centralStock[sz] || 0), 0);
-
-                    if (centralTotal > 0) {
-                        actionButton = `
-                            <button onclick="openSendStockModal('${modelKey}', '${colorKey}', '${selectedStore}')" class="bg-primary text-on-primary px-3 py-1.5 rounded-lg font-label-md shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95 text-xs uppercase font-bold">
-                                Enviar Stock
-                            </button>
-                        `;
-                    } else {
-                        actionButton = `
-                            <button class="bg-outline text-on-surface-variant px-3 py-1.5 rounded-lg font-label-md cursor-not-allowed text-xs font-bold" disabled>
-                                Sin Stock Central
-                            </button>
-                        `;
-                    }
-
-                    const tr = document.createElement("tr");
-                    tr.className = "hover:bg-surface-container-low transition-colors group";
-                    tr.innerHTML = `
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-primary-fixed rounded-lg flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-primary text-base">apparel</span>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-sm text-on-surface">${modelName}</p>
-                                    <p class="text-xs text-on-surface-variant">REF: ESC-2026-${modelKey}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-3 py-3">
-                            <span class="px-2 py-0.5 bg-surface-container-high text-on-surface rounded-full text-xs font-semibold">${colorName}</span>
-                        </td>
-                        ${renderSizeCell("St")}
-                        ${renderSizeCell("S")}
-                        ${renderSizeCell("M")}
-                        ${renderSizeCell("L")}
-                        ${renderSizeCell("XL")}
-                        <td class="px-3 py-3">${statusBadge}</td>
-                        <td class="px-4 py-3 text-right">${actionButton}</td>
-                    `;
-                    tbody.appendChild(tr);
+                    allRows.push({
+                        modelKey,
+                        modelName,
+                        colorKey,
+                        colorName,
+                        allowedSizes,
+                        sizes,
+                        totalRow
+                    });
                 }
             }
+
+            // Lógica de Paginación Real
+            const totalItems = allRows.length;
+            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIdx = (currentPage - 1) * rowsPerPage;
+            const endIdx = Math.min(startIdx + rowsPerPage, totalItems);
+            const pagedRows = allRows.slice(startIdx, endIdx);
+
+            // Actualizar panel de información y controles
+            document.getElementById("pagination-info").textContent = totalItems > 0 
+                ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalItems} modelos`
+                : "Mostrando 0-0 de 0 modelos";
+
+            setupPaginationNumbers("pagination-numbers", currentPage, totalPages, (page) => {
+                currentPage = page;
+                renderInventory();
+            });
+
+            document.getElementById("btn-prev-page").disabled = currentPage === 1;
+            document.getElementById("btn-next-page").disabled = currentPage === totalPages;
+
+            if (pagedRows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="py-10 text-center text-xs text-on-surface-variant font-medium">No se encontraron resultados.</td></tr>`;
+                document.getElementById("stat-selected-stock").textContent = `${selectedStoreTotal.toLocaleString('es-PE')} Unidades`;
+                document.getElementById("stat-alerts").textContent = `${lowStockCount} Modelos`;
+                return;
+            }
+
+            pagedRows.forEach(row => {
+                const { modelKey, modelName, colorKey, colorName, allowedSizes, sizes, totalRow } = row;
+
+                function renderSizeCell(sz) {
+                    if (!allowedSizes.includes(sz)) {
+                        return `<td class="px-3 py-3 text-center text-on-surface/20 font-medium text-sm">-</td>`;
+                    }
+                    const val = sizes[sz] || 0;
+                    const isLow = val < 5;
+                    return `<td class="px-3 py-3 text-center font-bold text-sm ${isLow ? 'text-error font-extrabold' : ''}">${val}</td>`;
+                }
+
+                let statusBadge = "";
+                let actionButton = "";
+
+                if (totalRow > 15) {
+                    statusBadge = `
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+                            <span class="text-xs font-medium">Stock Óptimo</span>
+                        </div>
+                    `;
+                } else if (totalStockIsLow(sizes, allowedSizes)) {
+                    statusBadge = `
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+                            <span class="text-xs font-medium text-error font-bold">Stock Crítico</span>
+                        </div>
+                    `;
+                } else {
+                    statusBadge = `
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-tertiary-container"></div>
+                            <span class="text-xs font-medium">Stock Moderado</span>
+                        </div>
+                    `;
+                }
+
+                // Check if Almacén Central (ALM-01) has stock to send
+                const centralStock = invData["ALM-01"]?.[modelKey]?.[colorKey] || {};
+                const centralTotal = allowedSizes.reduce((sum, sz) => sum + (centralStock[sz] || 0), 0);
+
+                if (centralTotal > 0) {
+                    actionButton = `
+                        <button onclick="openSendStockModal('${modelKey}', '${colorKey}', '${selectedStore}')" class="bg-primary text-on-primary px-3 py-1.5 rounded-lg font-label-md shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95 text-xs uppercase font-bold">
+                            Enviar Stock
+                        </button>
+                    `;
+                } else {
+                    actionButton = `
+                        <button class="bg-outline text-on-surface-variant px-3 py-1.5 rounded-lg font-label-md cursor-not-allowed text-xs font-bold" disabled>
+                            Sin Stock Central
+                        </button>
+                    `;
+                }
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-surface-container-low transition-colors group";
+                tr.innerHTML = `
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-primary-fixed rounded-lg flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-primary text-base">apparel</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-on-surface">${modelName}</p>
+                                <p class="text-xs text-on-surface-variant">REF: ESC-2026-${modelKey}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 py-3">
+                        <span class="px-2 py-0.5 bg-surface-container-high text-on-surface rounded-full text-xs font-semibold">${colorName}</span>
+                    </td>
+                    ${renderSizeCell("St")}
+                    ${renderSizeCell("S")}
+                    ${renderSizeCell("M")}
+                    ${renderSizeCell("L")}
+                    ${renderSizeCell("XL")}
+                    <td class="px-3 py-3">${statusBadge}</td>
+                    <td class="px-4 py-3 text-right">${actionButton}</td>
+                `;
+                tbody.appendChild(tr);
+            });
 
             document.getElementById("stat-selected-stock").textContent = `${selectedStoreTotal.toLocaleString('es-PE')} Unidades`;
             document.getElementById("stat-alerts").textContent = `${lowStockCount} Modelos`;
@@ -769,22 +824,37 @@
                 renderInventory();
             }
 
+            const resetPaging = () => { currentPage = 1; };
+
             if (filterTipo) {
-                filterTipo.addEventListener("change", updateFilterModels);
+                filterTipo.addEventListener("change", () => { resetPaging(); updateFilterModels(); });
             }
             if (filterModelo) {
-                filterModelo.addEventListener("change", renderInventory);
+                filterModelo.addEventListener("change", () => { resetPaging(); renderInventory(); });
             }
             if (filterColor) {
-                filterColor.addEventListener("change", renderInventory);
+                filterColor.addEventListener("change", () => { resetPaging(); renderInventory(); });
             }
 
             const tableSearchInput = document.getElementById("inventory-search-table");
             if (tableSearchInput) {
                 tableSearchInput.addEventListener('input', () => {
+                    resetPaging();
                     renderInventory();
                 });
             }
+
+            // Pagination Events
+            document.getElementById("btn-prev-page").addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderInventory();
+                }
+            });
+            document.getElementById("btn-next-page").addEventListener("click", () => {
+                currentPage++;
+                renderInventory();
+            });
 
             updateFilterModels(); // init models dropdown
 
@@ -860,7 +930,10 @@
             renderInventory();
 
             if (storeSelect) {
-                storeSelect.addEventListener("change", renderInventory);
+                storeSelect.addEventListener("change", () => {
+                    currentPage = 1;
+                    renderInventory();
+                });
             }
         });
 
@@ -872,5 +945,68 @@
                 renderInventory();
             }
         });
+
+        function setupPaginationNumbers(containerId, currentPage, totalPages, onPageClick) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = "";
+
+            const maxVisible = 5;
+            let startPage = 1;
+            let endPage = totalPages;
+
+            if (totalPages > maxVisible) {
+                const half = Math.floor(maxVisible / 2);
+                if (currentPage <= half) {
+                    startPage = 1;
+                    endPage = maxVisible;
+                } else if (currentPage + half >= totalPages) {
+                    startPage = totalPages - maxVisible + 1;
+                    endPage = totalPages;
+                } else {
+                    startPage = currentPage - half;
+                    endPage = currentPage + half;
+                }
+            }
+
+            if (startPage > 1) {
+                createPageButton(1, container, currentPage, onPageClick);
+                if (startPage > 2) {
+                    const ellipsis = document.createElement("span");
+                    ellipsis.textContent = "...";
+                    ellipsis.className = "px-1.5 text-xs text-on-surface-variant font-bold";
+                    container.appendChild(ellipsis);
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                createPageButton(i, container, currentPage, onPageClick);
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement("span");
+                    ellipsis.textContent = "...";
+                    ellipsis.className = "px-1.5 text-xs text-on-surface-variant font-bold";
+                    container.appendChild(ellipsis);
+                }
+                createPageButton(totalPages, container, currentPage, onPageClick);
+            }
+        }
+
+        function createPageButton(page, container, currentPage, onPageClick) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = page;
+            btn.className = `w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all border-2 ${
+                page === currentPage
+                    ? "bg-[#C59B27] text-white border-[#C59B27] shadow-sm"
+                    : "border-[#F8C8D4]/40 text-[#4C4C4C] hover:bg-[#FCECEE]"
+            }`;
+            btn.addEventListener("click", () => {
+                onPageClick(page);
+            });
+            container.appendChild(btn);
+        }
     </script>
 </body></html>

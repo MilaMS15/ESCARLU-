@@ -446,19 +446,23 @@
 </table>
 </div>
 <!-- Pagination -->
-<div class="p-4 border-t border-outline-variant flex justify-between items-center bg-surface-container-low">
-<span class="font-body-sm text-body-sm text-on-surface-variant">Mostrando 1-10 de 125 movimientos</span>
-<div class="flex gap-2">
-<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all disabled:opacity-50" disabled="">
-<span class="material-symbols-outlined">chevron_left</span>
-</button>
-<button class="w-10 h-10 rounded-lg border border-primary bg-primary text-on-primary flex items-center justify-center font-bold">1</button>
-<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all">2</button>
-<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all">3</button>
-<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container-highest transition-all">
-<span class="material-symbols-outlined">chevron_right</span>
-</button>
-</div>
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/60 flex items-center justify-between shrink-0">
+  <span class="text-xs text-on-surface-variant font-semibold" id="pagination-info">
+    Mostrando 0-0 de 0 movimientos
+  </span>
+  <div class="flex items-center gap-3">
+    <button type="button" id="btn-prev-page"
+      class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+      <span class="material-symbols-outlined text-sm">chevron_left</span> Anterior
+    </button>
+    <div id="pagination-numbers" class="flex items-center gap-1.5">
+      <!-- Números de página inyectados dinámicamente -->
+    </div>
+    <button type="button" id="btn-next-page"
+      class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+      Siguiente <span class="material-symbols-outlined text-sm">chevron_right</span>
+    </button>
+  </div>
 </div>
 </div>
 <!-- Footer Decorative Element -->
@@ -476,6 +480,8 @@
 </button>
 <script>
     const user = getCurrentUser();
+    let currentPage = 1;
+    const rowsPerPage = 8;
 
     document.addEventListener('DOMContentLoaded', () => {
         checkAuth();
@@ -486,10 +492,22 @@
         updateSummaryCards();
 
         // Apply filters in real-time on any change
-        const applyRealTime = () => renderHistory();
+        const applyRealTime = () => { currentPage = 1; renderHistory(); };
         document.getElementById('date-filter').addEventListener('change', applyRealTime);
         document.getElementById('type-filter').addEventListener('change', applyRealTime);
         document.getElementById('store-filter').addEventListener('change', applyRealTime);
+
+        // Pagination events
+        document.getElementById("btn-prev-page").addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderHistory();
+            }
+        });
+        document.getElementById("btn-next-page").addEventListener("click", () => {
+            currentPage++;
+            renderHistory();
+        });
 
         // Bind FAB click to redirect to ingresoprendalmacen.html
         const fab = document.querySelector('button.fixed.bottom-10');
@@ -548,12 +566,36 @@
             return true;
         });
 
-        if (filtered.length === 0) {
+        // Lógica de Paginación Real
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIdx = (currentPage - 1) * rowsPerPage;
+        const endIdx = Math.min(startIdx + rowsPerPage, totalItems);
+        const pagedData = filtered.slice(startIdx, endIdx);
+
+        // Actualizar textos y números de paginación
+        document.getElementById("pagination-info").textContent = totalItems > 0 
+            ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalItems} movimientos`
+            : "Mostrando 0-0 de 0 movimientos";
+
+        setupPaginationNumbers("pagination-numbers", currentPage, totalPages, (page) => {
+            currentPage = page;
+            renderHistory();
+        });
+
+        // Habilitar/deshabilitar botones
+        document.getElementById("btn-prev-page").disabled = currentPage === 1;
+        document.getElementById("btn-next-page").disabled = currentPage === totalPages;
+
+        if (pagedData.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" class="p-5 text-center text-on-surface-variant font-medium">No se encontraron movimientos registrados.</td></tr>`;
             return;
         }
 
-        filtered.forEach(m => {
+        pagedData.forEach(m => {
             const dateObj = new Date(m.date);
             const dateStr = isNaN(dateObj) ? m.date.slice(0, 10) : dateObj.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
             const timeStr = isNaN(dateObj) ? "" : dateObj.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
@@ -742,5 +784,68 @@
             });
         });
     });
+
+    function setupPaginationNumbers(containerId, currentPage, totalPages, onPageClick) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = "";
+
+        const maxVisible = 5;
+        let startPage = 1;
+        let endPage = totalPages;
+
+        if (totalPages > maxVisible) {
+            const half = Math.floor(maxVisible / 2);
+            if (currentPage <= half) {
+                startPage = 1;
+                endPage = maxVisible;
+            } else if (currentPage + half >= totalPages) {
+                startPage = totalPages - maxVisible + 1;
+                endPage = totalPages;
+            } else {
+                startPage = currentPage - half;
+                endPage = currentPage + half;
+            }
+        }
+
+        if (startPage > 1) {
+            createPageButton(1, container, currentPage, onPageClick);
+            if (startPage > 2) {
+                const ellipsis = document.createElement("span");
+                ellipsis.textContent = "...";
+                ellipsis.className = "px-1.5 text-xs text-on-surface-variant font-bold";
+                container.appendChild(ellipsis);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            createPageButton(i, container, currentPage, onPageClick);
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement("span");
+                ellipsis.textContent = "...";
+                ellipsis.className = "px-1.5 text-xs text-on-surface-variant font-bold";
+                container.appendChild(ellipsis);
+            }
+            createPageButton(totalPages, container, currentPage, onPageClick);
+        }
+    }
+
+    function createPageButton(page, container, currentPage, onPageClick) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = page;
+        btn.className = `w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all border-2 ${
+            page === currentPage
+                ? "bg-[#C59B27] text-white border-[#C59B27] shadow-sm"
+                : "border-[#F8C8D4]/40 text-[#4C4C4C] hover:bg-[#FCECEE]"
+        }`;
+        btn.addEventListener("click", () => {
+            onPageClick(page);
+        });
+        container.appendChild(btn);
+    }
 </script>
 </body></html>
