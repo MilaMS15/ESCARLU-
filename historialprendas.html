@@ -86,11 +86,114 @@
     .dashboard-content { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 8px 16px !important; gap: 8px !important; }
     .table-container { flex: 1; overflow-y: auto; }
 
-    /* Modales */
-    #edit-modal, #success-modal-hp, #delete-confirm-modal { display: none; }
-    #edit-modal.open, #success-modal-hp.open, #delete-confirm-modal.open { display: flex; }
+    /* Modales secundarios */
+    #edit-modal, #success-modal-hp { display: none; }
+    #edit-modal.open, #success-modal-hp.open { display: flex; }
     @keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
     .modal-card { animation: slideUp 0.25s ease; }
+
+    /* ─── Modal de confirmación de eliminación (Portal de nivel raíz) ─── */
+    #delete-confirm-modal {
+        display: none;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(0, 0, 0, 0.55) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+        z-index: 9999 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 16px !important;
+    }
+    #delete-confirm-modal.open {
+        display: flex !important;
+    }
+    #delete-confirm-modal .modal-inner {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 24px 64px rgba(116, 84, 117, 0.18), 0 4px 16px rgba(0,0,0,0.12);
+        border: 1px solid rgba(248, 200, 212, 0.4);
+        width: 100%;
+        max-width: 360px;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+        animation: slideUp 0.25s ease;
+    }
+    #delete-confirm-modal .del-icon-wrap {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #FFF0F3;
+        border: 1px solid rgba(248, 200, 212, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #C52A2A;
+    }
+    #delete-confirm-modal .del-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1c1b1b;
+        margin: 0;
+        letter-spacing: -0.2px;
+    }
+    #delete-confirm-modal .del-desc {
+        font-size: 13px;
+        color: #4c444b;
+        font-weight: 500;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0 4px;
+    }
+    #delete-confirm-modal .del-actions {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        margin-top: 4px;
+    }
+    #btn-delete-cancel {
+        flex: 1;
+        height: 44px;
+        border: 1.5px solid #F8C8D4 !important;
+        background: #ffffff !important;
+        color: #1c1b1b !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        border-radius: 12px !important;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    #btn-delete-cancel:hover {
+        background: #FCECEE !important;
+    }
+    #btn-delete-confirm {
+        flex: 1;
+        height: 44px;
+        background: #C52A2A !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        border-radius: 12px !important;
+        border: none !important;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        box-shadow: 0 2px 8px rgba(197, 42, 42, 0.3) !important;
+    }
+    #btn-delete-confirm:hover {
+        background: #A82020 !important;
+    }
+    #btn-delete-confirm:active {
+        transform: scale(0.97);
+    }
 
     /* Table row hover */
     tbody tr:hover { background-color: #f6f3f2; }
@@ -272,30 +375,22 @@
       </div>
     </section>
 
-<!-- ===== MODAL: Confirmación de Eliminación Personalizado (Premium) ===== -->
-<div id="delete-confirm-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-50 items-center justify-center p-4">
-  <div class="modal-card bg-white rounded-[24px] shadow-2xl w-full max-w-[360px] p-8 flex flex-col items-center text-center gap-6" style="border: 1px solid rgba(248, 200, 212, 0.4);">
-    <!-- Icono de Basura Rojo en Círculo Premium -->
-    <div class="w-14 h-14 rounded-full bg-[#FFF0F3] flex items-center justify-center text-[#C52A2A] border border-[#F8C8D4]/30 shadow-inner">
-      <span class="material-symbols-outlined text-2xl font-bold" style="font-variation-settings: 'FILL' 0, 'wght' 600;">delete</span>
+<!-- ===== MODAL: Confirmación de Eliminación (Portal Raíz - Cubre toda la pantalla) ===== -->
+<div id="delete-confirm-modal">
+  <div class="modal-inner">
+    <!-- Icono de Basura -->
+    <div class="del-icon-wrap">
+      <span class="material-symbols-outlined" style="font-size:26px; font-variation-settings: 'FILL' 0, 'wght' 600;">delete</span>
     </div>
-    
-    <!-- Texto informativo -->
-    <div class="flex flex-col gap-2">
-      <h3 class="font-sans font-bold text-lg text-[#1c1b1b]" style="letter-spacing: -0.2px;">¿Eliminar salida?</h3>
-      <p class="text-xs text-on-surface-variant font-medium leading-relaxed px-1">Esta acción no se puede deshacer y revertirá el stock de prendas de inmediato.</p>
+    <!-- Texto -->
+    <div>
+      <p class="del-title">¿Eliminar salida?</p>
+      <p class="del-desc">Esta acción no se puede deshacer y revertirá el stock de prendas de inmediato.</p>
     </div>
-    
-    <!-- Botones de Acción -->
-    <div class="flex gap-3 w-full mt-1">
-      <button type="button" id="btn-delete-cancel"
-        class="flex-1 h-10 border border-[#F8C8D4] text-[#1c1b1b] font-bold rounded-xl text-xs bg-white hover:bg-[#FCECEE] transition-all cursor-pointer">
-        Cancelar
-      </button>
-      <button type="button" id="btn-delete-confirm"
-        class="flex-1 h-10 bg-[#C52A2A] hover:bg-[#B02020] text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm cursor-pointer border-none">
-        Sí, eliminar
-      </button>
+    <!-- Botones -->
+    <div class="del-actions">
+      <button type="button" id="btn-delete-cancel">Cancelar</button>
+      <button type="button" id="btn-delete-confirm">Sí, eliminar</button>
     </div>
   </div>
 </div>

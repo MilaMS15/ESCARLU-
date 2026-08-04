@@ -63,6 +63,27 @@
             border-color: #F8C8D4 !important;
             box-shadow: 0 0 0 4px rgba(248, 200, 212, 0.25) !important;
         }
+        /* ---- Evitar FOUC de íconos Material Symbols ---- */
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            display: inline-flex;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            /* Oculto hasta que la fuente cargue */
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        /* La clase .icons-ready se añade por JS cuando la fuente está lista */
+        body.icons-ready .material-symbols-outlined {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="h-screen overflow-hidden flex items-center justify-center p-4 antialiased">
@@ -197,6 +218,20 @@
             togglePasswordBtn.textContent = isPassword ? 'visibility_off' : 'visibility';
         });
     }
+
+    // Detectar cuando la fuente Material Symbols está disponible y mostrar íconos
+    (function checkMaterialFontLoaded() {
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => {
+                document.body.classList.add('icons-ready');
+            });
+        } else {
+            // Fallback para navegadores sin document.fonts
+            window.addEventListener('load', () => {
+                document.body.classList.add('icons-ready');
+            });
+        }
+    })();
 </script>
 </body>
 </html>
