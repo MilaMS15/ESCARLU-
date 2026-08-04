@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Sans+3:ital,wght@0,200..900;1,200..900&amp;display=swap" rel="stylesheet"/>
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <!-- SheetJS (XLSX) CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- SheetJS with Styles (xlsx-js-style) CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Tailwind Config -->
@@ -591,9 +591,9 @@
                 ["Sede:", storeName],
                 [],
                 ["RESUMEN FINANCIERO"],
-                ["TOTAL INGRESOS", { v: totalIngresos, t: 'n', z: '"S/" #,##0.00' }],
-                ["TOTAL EGRESOS", { v: totalEgresos, t: 'n', z: '"S/" #,##0.00' }],
-                ["BALANCE NETO", { v: totalIngresos - totalEgresos, t: 'n', z: '"S/" #,##0.00;[Red]-"S/" #,##0.00' }],
+                ["TOTAL INGRESOS", totalIngresos],
+                ["TOTAL EGRESOS", totalEgresos],
+                ["BALANCE NETO", totalIngresos - totalEgresos],
                 [],
                 ["DETALLE DE MOVIMIENTOS"],
                 ["ID", "CLIENTE / CONCEPTO", "MONTO", "MÉTODO / CATEGORÍA", "ESTADO", "FECHA"]
@@ -630,7 +630,7 @@
                 ws_data.push([
                     m.id,
                     m.concept,
-                    { v: m.amount, t: 'n', z: '"S/" #,##0.00;[Red]-"S/" #,##0.00' },
+                    m.amount,
                     m.method,
                     m.status,
                     dateStr
@@ -640,13 +640,146 @@
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
+            const range = XLSX.utils.decode_range(ws['!ref']);
+
+            for (let R = range.s.r; R <= range.e.r; ++R) {
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const cell_ref = XLSX.utils.encode_cell({c:C, r:R});
+                    if (!ws[cell_ref]) continue;
+
+                    // Inicializar estilo por defecto
+                    ws[cell_ref].s = {
+                        font: { name: "Calibri", sz: 11, color: { rgb: "1C1B1B" } },
+                        alignment: { vertical: "center" },
+                        border: {
+                            top: { style: "thin", color: { rgb: "F8C8D4" } },
+                            bottom: { style: "thin", color: { rgb: "F8C8D4" } },
+                            left: { style: "thin", color: { rgb: "F8C8D4" } },
+                            right: { style: "thin", color: { rgb: "F8C8D4" } }
+                        }
+                    };
+
+                    // Fila 0: Título Principal
+                    if (R === 0) {
+                        ws[cell_ref].s = {
+                            font: { name: "Cambria", sz: 16, bold: true, color: { rgb: "745475" } },
+                            alignment: { horizontal: "left", vertical: "center" }
+                        };
+                    }
+
+                    // Filas 1 y 2: Metadatos
+                    if (R === 1 || R === 2) {
+                        if (C === 0) {
+                            ws[cell_ref].s.font.bold = true;
+                            ws[cell_ref].s.font.color = { rgb: "4C444B" };
+                        } else {
+                            ws[cell_ref].s.alignment.horizontal = "left";
+                        }
+                        ws[cell_ref].s.border = {}; // Sin bordes
+                    }
+
+                    // Filas 3 y 8: Filas vacías
+                    if (R === 3 || R === 8) {
+                        ws[cell_ref].s.border = {};
+                    }
+
+                    // Fila 4: Título "RESUMEN FINANCIERO"
+                    if (R === 4) {
+                        ws[cell_ref].s = {
+                            font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
+                            fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } },
+                            alignment: { horizontal: "left", vertical: "center" },
+                            border: {
+                                top: { style: "thin", color: { rgb: "F8C8D4" } },
+                                bottom: { style: "thin", color: { rgb: "F8C8D4" } }
+                            }
+                        };
+                    }
+
+                    // Filas 5 a 7: Resumen Financiero
+                    if (R >= 5 && R <= 7) {
+                        const isNeto = (R === 7);
+                        ws[cell_ref].s.font.bold = isNeto;
+                        ws[cell_ref].s.fill = { patternType: "solid", fgColor: { rgb: isNeto ? "F8C8D4" : "FFFFFF" } };
+
+                        if (C === 0) {
+                            ws[cell_ref].s.font.color = { rgb: isNeto ? "745475" : "1C1B1B" };
+                        }
+                        
+                        if (C === 1) {
+                            ws[cell_ref].t = 'n';
+                            ws[cell_ref].z = '"S/" #,##0.00';
+                            ws[cell_ref].s.alignment.horizontal = "right";
+                            ws[cell_ref].s.font.bold = true;
+                            if (isNeto) {
+                                ws[cell_ref].z = '"S/" #,##0.00;[Red]-"S/" #,##0.00';
+                                if (ws[cell_ref].v < 0) {
+                                    ws[cell_ref].s.font.color = { rgb: "FF0000" };
+                                }
+                            }
+                        }
+                    }
+
+                    // Fila 9: Título "DETALLE DE MOVIMIENTOS"
+                    if (R === 9) {
+                        ws[cell_ref].s = {
+                            font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
+                            fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } },
+                            alignment: { horizontal: "left", vertical: "center" },
+                            border: {
+                                top: { style: "thin", color: { rgb: "F8C8D4" } },
+                                bottom: { style: "thin", color: { rgb: "F8C8D4" } }
+                            }
+                        };
+                    }
+
+                    // Fila 10: Cabeceras de tabla
+                    if (R === 10) {
+                        ws[cell_ref].s = {
+                            font: { name: "Calibri", sz: 10, bold: true, color: { rgb: "745475" } },
+                            fill: { patternType: "solid", fgColor: { rgb: "F8C8D4" } },
+                            alignment: { horizontal: C === 2 ? "right" : "left", vertical: "center" },
+                            border: {
+                                top: { style: "medium", color: { rgb: "745475" } },
+                                bottom: { style: "medium", color: { rgb: "745475" } },
+                                left: { style: "thin", color: { rgb: "F8C8D4" } },
+                                right: { style: "thin", color: { rgb: "F8C8D4" } }
+                            }
+                        };
+                    }
+
+                    // Filas 11+: Datos de movimientos
+                    if (R >= 11) {
+                        const zebraColor = (R % 2 === 0) ? "FAF5F6" : "FFFFFF";
+                        ws[cell_ref].s.fill = { patternType: "solid", fgColor: { rgb: zebraColor } };
+
+                        // Formateo de Monto (C === 2)
+                        if (C === 2) {
+                            ws[cell_ref].t = 'n';
+                            ws[cell_ref].z = '"S/" #,##0.00;[Red]-"S/" #,##0.00';
+                            ws[cell_ref].s.alignment.horizontal = "right";
+                            ws[cell_ref].s.font.bold = true;
+                            if (ws[cell_ref].v < 0) {
+                                ws[cell_ref].s.font.color = { rgb: "FF0000" };
+                            } else {
+                                ws[cell_ref].s.font.color = { rgb: "2E7D32" };
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Combinar título
+            if(!ws['!merges']) ws['!merges'] = [];
+            ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } });
+
             ws['!cols'] = [
-                { wch: 15 },
-                { wch: 45 },
-                { wch: 18 },
-                { wch: 22 },
-                { wch: 15 },
-                { wch: 22 }
+                { wch: 15 }, // ID
+                { wch: 45 }, // CLIENTE / CONCEPTO
+                { wch: 18 }, // MONTO
+                { wch: 22 }, // MÉTODO / CATEGORÍA
+                { wch: 15 }, // ESTADO
+                { wch: 22 }  // FECHA
             ];
 
             XLSX.utils.book_append_sheet(wb, ws, "Reporte Tienda");

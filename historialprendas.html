@@ -274,26 +274,26 @@
 
 <!-- ===== MODAL: Confirmación de Eliminación Personalizado (Premium) ===== -->
 <div id="delete-confirm-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-50 items-center justify-center p-4">
-  <div class="modal-card bg-white rounded-[24px] shadow-2xl w-full max-w-[400px] overflow-hidden p-8 flex flex-col items-center text-center gap-6">
-    <!-- Icono de Basura Rojo -->
-    <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-600 shadow-inner">
-      <span class="material-symbols-outlined text-3xl font-bold">delete</span>
+  <div class="modal-card bg-white rounded-[24px] shadow-2xl w-full max-w-[360px] p-8 flex flex-col items-center text-center gap-6" style="border: 1px solid rgba(248, 200, 212, 0.4);">
+    <!-- Icono de Basura Rojo en Círculo Premium -->
+    <div class="w-14 h-14 rounded-full bg-[#FFF0F3] flex items-center justify-center text-[#C52A2A] border border-[#F8C8D4]/30 shadow-inner">
+      <span class="material-symbols-outlined text-2xl font-bold" style="font-variation-settings: 'FILL' 0, 'wght' 600;">delete</span>
     </div>
     
     <!-- Texto informativo -->
-    <div>
-      <h3 class="font-sans font-black text-xl text-on-surface mb-2">¿Eliminar egreso?</h3>
-      <p class="text-sm text-on-surface-variant leading-relaxed">Esta acción no se puede deshacer y actualizará los balances inmediatamente.</p>
+    <div class="flex flex-col gap-2">
+      <h3 class="font-sans font-bold text-lg text-[#1c1b1b]" style="letter-spacing: -0.2px;">¿Eliminar salida?</h3>
+      <p class="text-xs text-on-surface-variant font-medium leading-relaxed px-1">Esta acción no se puede deshacer y revertirá el stock de prendas de inmediato.</p>
     </div>
     
     <!-- Botones de Acción -->
-    <div class="flex gap-4 w-full">
+    <div class="flex gap-3 w-full mt-1">
       <button type="button" id="btn-delete-cancel"
-        class="flex-1 h-11 border border-[#F8C8D4] text-on-surface font-bold rounded-xl text-xs bg-white hover:bg-[#FCECEE] transition-colors">
+        class="flex-1 h-10 border border-[#F8C8D4] text-[#1c1b1b] font-bold rounded-xl text-xs bg-white hover:bg-[#FCECEE] transition-all cursor-pointer">
         Cancelar
       </button>
       <button type="button" id="btn-delete-confirm"
-        class="flex-1 h-11 bg-[#D32F2F] hover:bg-[#B71C1C] text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm">
+        class="flex-1 h-10 bg-[#C52A2A] hover:bg-[#B02020] text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm cursor-pointer border-none">
         Sí, eliminar
       </button>
     </div>
