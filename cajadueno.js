@@ -435,46 +435,107 @@ function exportToExcel() {
 
     const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
-    // --- APLICACIÓN DE ESTILOS PRESTIGIO (Escarlú) ---
-    // Usamos formateo directo para celdas (SheetJS Pro/Compatible o formateo XML básico de celdas)
-    // Para asegurarnos de que la librería XLSX básica (Community) renderice formatos de número perfectos:
-    
     const range = XLSX.utils.decode_range(ws['!ref']);
 
-    // Configurar formatos de número de moneda de manera nativa compatible
+    // Configurar formatos de número de moneda de manera nativa compatible y aplicar estilos premium
     for (let R = range.s.r; R <= range.e.r; ++R) {
         for (let C = range.s.c; C <= range.e.c; ++C) {
             const cell_ref = XLSX.utils.encode_cell({c:C, r:R});
             if (!ws[cell_ref]) continue;
-            let val = ws[cell_ref].v;
+
+            // Inicializar objeto de estilo
+            ws[cell_ref].s = {
+                font: { name: "Calibri", sz: 11 },
+                alignment: { vertical: "center" }
+            };
 
             // Fila de cabecera principal (Fila 1)
             if (R === 0) {
                 ws[cell_ref].s = {
-                    font: { name: "Arial", sz: 16, bold: true, color: { rgb: "745475" } },
-                    alignment: { horizontal: "left" }
+                    font: { name: "Cambria", sz: 16, bold: true, color: { rgb: "745475" } },
+                    alignment: { horizontal: "left", vertical: "center" }
                 };
             }
 
-            // Aplicar formatos a Indicadores Principales (Filas 5 a 9)
-            if (R >= 5 && R <= 9 && C === 1) {
-                ws[cell_ref].t = 'n';
-                ws[cell_ref].z = '"S/" #,##0.00';
-            }
-
-            // Aplicar formato a Balance Neto (Fila 9)
-            if (R === 9) {
-                if (C === 0) ws[cell_ref].s = { font: { bold: true } };
-                if (C === 1) {
-                    ws[cell_ref].t = 'n';
-                    ws[cell_ref].z = '"S/" #,##0.00;[Red]-"S/" #,##0.00';
+            // Datos de cabecera (Periodo y Sede)
+            if (R === 1 || R === 2) {
+                if (C === 0) {
+                    ws[cell_ref].s.font.bold = true;
+                    ws[cell_ref].s.font.color = { rgb: "4C444B" };
+                } else {
+                    ws[cell_ref].s.alignment.horizontal = "left";
                 }
             }
 
-            // Formato de Monto en la tabla de Movimientos (Filas posteriores a la 12, Columna D/3)
-            if (R >= 13 && C === 3) {
-                ws[cell_ref].t = 'n';
-                ws[cell_ref].z = '"S/" #,##0.00;[Red]-"S/" #,##0.00';
+            // Título de Sección "INDICADORES PRINCIPALES"
+            if (R === 4) {
+                ws[cell_ref].s = {
+                    font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
+                    fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } }, // Rosa claro
+                    alignment: { horizontal: "left", vertical: "center" }
+                };
+            }
+
+            // Filas de Indicadores (Filas 6 a 10 en base 0, osea ws_data indices 5 a 9)
+            if (R >= 5 && R <= 9) {
+                // Alternar filas de indicadores
+                const isNeto = (R === 9);
+                ws[cell_ref].s.font.bold = isNeto;
+                ws[cell_ref].s.fill = { patternType: "solid", fgColor: { rgb: isNeto ? "F8C8D4" : "FFFFFF" } }; // Rosa palo para neto
+
+                if (C === 0) {
+                    ws[cell_ref].s.font.color = { rgb: isNeto ? "745475" : "1C1B1B" };
+                }
+                
+                if (C === 1) {
+                    ws[cell_ref].t = 'n';
+                    ws[cell_ref].z = '"S/" #,##0.00';
+                    ws[cell_ref].s.alignment.horizontal = "right";
+                    if (isNeto) {
+                        ws[cell_ref].z = '"S/" #,##0.00;[Red]-"S/" #,##0.00';
+                        if (ws[cell_ref].v < 0) {
+                            ws[cell_ref].s.font.color = { rgb: "FF0000" };
+                        }
+                    }
+                }
+            }
+
+            // Título de Sección "ÚLTIMOS MOVIMIENTOS"
+            if (R === 11) {
+                ws[cell_ref].s = {
+                    font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
+                    fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } },
+                    alignment: { horizontal: "left", vertical: "center" }
+                };
+            }
+
+            // Cabeceras de la tabla de movimientos (Fila 13, index 12)
+            if (R === 12) {
+                ws[cell_ref].s = {
+                    font: { name: "Calibri", sz: 10, bold: true, color: { rgb: "745475" } },
+                    fill: { patternType: "solid", fgColor: { rgb: "F8C8D4" } },
+                    alignment: { horizontal: C === 3 ? "right" : "left", vertical: "center" }
+                };
+            }
+
+            // Datos de la tabla de movimientos
+            if (R >= 13) {
+                // Filas alternas estilo cebra (rosa muy claro / blanco)
+                const zebraColor = (R % 2 === 0) ? "FAF5F6" : "FFFFFF";
+                ws[cell_ref].s.fill = { patternType: "solid", fgColor: { rgb: zebraColor } };
+                
+                if (C === 3) {
+                    ws[cell_ref].t = 'n';
+                    ws[cell_ref].z = '"S/" #,##0.00;[Red]-"S/" #,##0.00';
+                    ws[cell_ref].s.alignment.horizontal = "right";
+                    ws[cell_ref].s.font.bold = true;
+                    // Colorear texto de egresos directamente en rojo
+                    if (ws[cell_ref].v < 0) {
+                        ws[cell_ref].s.font.color = { rgb: "FF0000" };
+                    } else {
+                        ws[cell_ref].s.font.color = { rgb: "2E7D32" }; // Verde
+                    }
+                }
             }
         }
     }
