@@ -511,6 +511,18 @@
 
         const tbody = document.getElementById("inventory-tbody");
         const storeSelect = document.getElementById("store-select");
+        if (storeSelect) {
+            storeSelect.innerHTML = "";
+            for (const [id, name] of Object.entries(STORE_NAMES)) {
+                if (id !== "CTR-01") { // Exclude general admin
+                    const opt = document.createElement("option");
+                    opt.value = id;
+                    opt.textContent = name;
+                    if (id === "ALM-01") opt.selected = true;
+                    storeSelect.appendChild(opt);
+                }
+            }
+        }
         const searchInput = document.querySelector('input[placeholder="Buscar producto o sede..."]');
         const tableTitle = document.getElementById("table-header-title");
 
