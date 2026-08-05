@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Gestionar Tiendas | ESCARLÚ</title>
+    <script src="shared.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(200, 162, 200, 0.25);
+        }
+        .gold-accent {
+            border-top: 4px solid #cfaa32;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .text-xs { font-size: 13.5px !important; }
+        .text-sm { font-size: 15.5px !important; }
+        .text-[10px] { font-size: 11px !important; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen">
+
+<!-- SideNavBar (Cargado por shared.js) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
+
+<!-- Main Content Area -->
+<main class="md:ml-72 min-h-screen bg-background">
+    <!-- Unified Top Bar Header -->
+    <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto">
+        <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+                <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">storefront</span>
+                <span class="text-xs font-bold text-primary">Administrador / Dueño</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button aria-label="Notifications" class="text-primary hover:bg-surface-container transition-colors duration-200 rounded-full p-2 flex items-center justify-center min-h-[36px] min-w-[36px]">
+                <span class="material-symbols-outlined text-xl">notifications</span>
+            </button>
+            <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+                <span class="text-xs font-bold text-on-surface">Administrador</span>
+                <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+                    <img alt="Perfil" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-6 max-w-[1440px] mx-auto space-y-6">
+        <!-- Section Header -->
+        <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-black tracking-tight">Gestión de Tiendas y Accesos</h2>
+                <p class="text-xs text-on-surface-variant">Visualiza tus tiendas existentes y crea nuevos accesos para expandir tu negocio.</p>
+            </div>
+            <button onclick="openModal()" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-on-primary font-semibold text-sm shadow-md hover:bg-primary/95 transition-all">
+                <span class="material-symbols-outlined text-sm">add_home</span>
+                <span>Registrar Nueva Tienda</span>
+            </button>
+        </section>
+
+        <!-- Tiendas Grid/Table -->
+        <section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
+            <div class="p-6 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+                <h3 class="font-headline-md text-primary font-bold flex items-center gap-3">
+                    <span class="material-symbols-outlined">store</span>
+                    Sedes y Cuentas Activas
+                </h3>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-surface-container text-on-surface-variant font-label-md text-xs uppercase tracking-wider">
+                            <th class="px-6 py-4 border-b border-outline-variant">Código Sede</th>
+                            <th class="px-6 py-4 border-b border-outline-variant">Nombre Sede / Ubicación</th>
+                            <th class="px-6 py-4 border-b border-outline-variant">Usuario Asignado</th>
+                            <th class="px-6 py-4 border-b border-outline-variant">Email de Login</th>
+                            <th class="px-6 py-4 border-b border-outline-variant">Dirección</th>
+                            <th class="px-6 py-4 border-b border-outline-variant">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant text-sm font-body-md" id="tiendas-tbody">
+                        <!-- Loaded Dynamically -->
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-on-surface-variant font-semibold">Cargando tiendas...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- Modal: Registrar Sede / Cuenta -->
+<div id="new-store-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
+        <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-bold">Registrar Nueva Tienda</h3>
+                <p class="text-[11px] opacity-80">Crea una nueva tienda y su cuenta de acceso asociada.</p>
+            </div>
+            <button onclick="closeModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
+                <span class="material-symbols-outlined text-sm">close</span>
+            </button>
+        </header>
+
+        <form id="new-store-form" class="p-6 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1 col-span-2">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-name">Nombre / Ubicación de Tienda</label>
+                    <input type="text" id="store-name" required placeholder="Ej. Tienda Aviación 2" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-id">Código de Sede</label>
+                    <input type="text" id="store-id" required readonly class="border border-outline-variant rounded-xl px-3 py-2 text-sm bg-gray-50 text-gray-500 font-bold outline-none" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-phone">Teléfono Tienda</label>
+                    <input type="text" id="store-phone" placeholder="Ej. 987654321" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+                <div class="flex flex-col gap-1 col-span-2">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-address">Dirección Completa</label>
+                    <input type="text" id="store-address" placeholder="Ej. Av. Aviación 1540, San Borja" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+            </div>
+
+            <hr class="border-outline-variant/50 my-2">
+
+            <div class="space-y-4">
+                <h4 class="text-xs font-bold text-primary uppercase">Datos de la Cuenta de Acceso</h4>
+                
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="user-fullname">Nombre de Encargado(a)</label>
+                    <input type="text" id="user-fullname" required placeholder="Ej. Vendedora Aviación 2" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="user-email">Correo Electrónico (Login)</label>
+                    <input type="email" id="user-email" required placeholder="Ej. tienda5@escarlu.com" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/50">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 border border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">
+                    Registrar Tienda y Cuenta
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        checkAuth();
+        renderSideNav("tiendasdueno");
+        setupMobileMenu("tiendasdueno");
+        loadSedesAndUsers();
+    });
+
+    let currentSedes = [];
+
+    async function loadSedesAndUsers() {
+        const client = window.supabaseClient;
+        const tbody = document.getElementById("tiendas-tbody");
+
+        if (!client) {
+            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-error font-semibold">Error: Cliente Supabase no inicializado.</td></tr>`;
+            return;
+        }
+
+        try {
+            // Cargar Sedes
+            const { data: sedes, error: errSedes } = await client.from("sedes").select("*").order("id_sede", { ascending: true });
+            if (errSedes) throw errSedes;
+            currentSedes = sedes || [];
+
+            // Cargar Usuarios
+            const { data: usuarios, error: errUsers } = await client.from("usuarios").select("*").eq("rol", "tienda");
+            if (errUsers) throw errUsers;
+
+            // Renderizar
+            tbody.innerHTML = "";
+
+            if (sedes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-on-surface-variant font-semibold">No hay sedes registradas.</td></tr>`;
+                return;
+            }
+
+            sedes.forEach(s => {
+                // Almacén o Admin no se gestionan en este grid típicamente, pero los mostramos o filtramos
+                if (s.id_sede === "CTR-01") return; // saltar admin general
+
+                const user = usuarios.find(u => u.id_sede_asignada === s.id_sede);
+                const userFullName = user ? user.nombre_completo : '<span class="text-gray-400 italic">No asignado</span>';
+                const userEmail = user ? user.email : '<span class="text-gray-400 italic">No asignado</span>';
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="px-6 py-4 font-bold text-primary">${s.id_sede}</td>
+                        <td class="px-6 py-4 font-bold text-on-surface">${s.ubicacion}</td>
+                        <td class="px-6 py-4">${userFullName}</td>
+                        <td class="px-6 py-4 font-semibold text-xs text-on-surface-variant">${userEmail}</td>
+                        <td class="px-6 py-4 text-xs">${s.direccion_completa || "-"}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${s.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${s.activo ? 'Activa' : 'Inactiva'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Sugerir ID de la siguiente tienda
+            suggestNextStoreId();
+
+        } catch (e) {
+            console.error("Error al cargar sedes y usuarios:", e);
+            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-error font-semibold">Error al conectar con la base de datos.</td></tr>`;
+        }
+    }
+
+    function suggestNextStoreId() {
+        const storeIdInput = document.getElementById("store-id");
+        if (!storeIdInput) return;
+
+        // Filtrar tiendas (TDA-xx)
+        const tdaSedes = currentSedes.filter(s => s.id_sede.startsWith("TDA-"));
+        let maxNum = 0;
+        tdaSedes.forEach(s => {
+            const num = parseInt(s.id_sede.replace("TDA-", ""), 10);
+            if (!isNaN(num) && num > maxNum) {
+                maxNum = num;
+            }
+        });
+
+        const nextNum = maxNum + 1;
+        const nextId = "TDA-" + String(nextNum).padStart(2, "0");
+        storeIdInput.value = nextId;
+    }
+
+    function openModal() {
+        document.getElementById("new-store-modal").classList.remove("hidden");
+        document.getElementById("new-store-modal").classList.add("flex");
+        suggestNextStoreId();
+    }
+
+    function closeModal() {
+        document.getElementById("new-store-modal").classList.add("hidden");
+        document.getElementById("new-store-modal").classList.remove("flex");
+        document.getElementById("new-store-form").reset();
+    }
+
+    document.getElementById("new-store-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const client = window.supabaseClient;
+
+        if (!client) {
+            alert("Error: El cliente de Supabase no está configurado.");
+            return;
+        }
+
+        const storeId = document.getElementById("store-id").value;
+        const storeName = document.getElementById("store-name").value.trim();
+        const storePhone = document.getElementById("store-phone").value.trim();
+        const storeAddress = document.getElementById("store-address").value.trim();
+
+        const userFullName = document.getElementById("user-fullname").value.trim();
+        const userEmail = document.getElementById("user-email").value.trim().toLowerCase();
+
+        // Generar ID único de usuario
+        const uniqueUserId = "USR-" + Math.random().toString(36).substring(2, 9).toUpperCase();
+
+        try {
+            // 1. Insertar Sede
+            const { error: errSede } = await client.from("sedes").insert([{
+                id_sede: storeId,
+                ubicacion: storeName,
+                tipo: "tienda",
+                direccion_completa: storeAddress || null,
+                telefono: storePhone || null,
+                activo: true
+            }]);
+
+            if (errSede) throw errSede;
+
+            // 2. Insertar Usuario asignado
+            const { error: errUser } = await client.from("usuarios").insert([{
+                id_usuario: uniqueUserId,
+                nombre_completo: userFullName,
+                email: userEmail,
+                rol: "tienda",
+                id_sede_asignada: storeId,
+                activo: true
+            }]);
+
+            if (errUser) throw errUser;
+
+            alert(`Sede "${storeName}" y cuenta para "${userFullName}" creadas correctamente.`);
+            
+            // Recargar datos locales
+            await downloadFromSupabase();
+            
+            // Cerrar modal y refrescar la tabla
+            closeModal();
+            loadSedesAndUsers();
+
+        } catch (err) {
+            console.error("Error al registrar sede y usuario:", err);
+            alert("Hubo un error al registrar en la base de datos: " + err.message);
+        }
+    });
+</script>
+</body>
+</html>
