@@ -418,6 +418,9 @@
             updateSizesDropdown();
         }
 
+        window.updateModelsDropdown = updateModelsDropdown;
+        window.updateSizesDropdown = updateSizesDropdown;
+
         if (tipoSelect && modelSelect) {
             tipoSelect.addEventListener('change', updateModelsDropdown);
             modelSelect.addEventListener('change', () => {

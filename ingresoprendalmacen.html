@@ -459,6 +459,12 @@
         if (createModelForm) {
             createModelForm.addEventListener('submit', handleSaveModelSubmit);
         }
+
+        // Bind m-tipo change to dynamically filter sizes in modal
+        const mTipoSelect = document.getElementById('m-tipo');
+        if (mTipoSelect) {
+            mTipoSelect.addEventListener('change', updateModalTallas);
+        }
     });
 
     function updateQtyInput(delta) {
@@ -620,7 +626,7 @@
             renderPendingRequests();
         }
         if (e.key === 'escarlu_modelos') {
-            updateModelsDropdown();
+            if (window.updateModelsDropdown) window.updateModelsDropdown();
         }
     });
 
@@ -629,8 +635,9 @@
         const modal = document.getElementById('create-model-modal');
         if (!modal) return;
         
-        // Render dynamic colors
+        // Render dynamic colors and sizes
         renderModalColors();
+        updateModalTallas();
         
         modal.classList.remove('opacity-0', 'pointer-events-none');
         setTimeout(() => {
@@ -646,6 +653,29 @@
             modal.classList.add('opacity-0', 'pointer-events-none');
             document.getElementById('create-model-form').reset();
         }, 150);
+    };
+
+    window.updateModalTallas = function() {
+        const garmentType = document.getElementById('m-tipo').value;
+        const container = document.getElementById('m-tallas-container');
+        if (!container) return;
+        
+        let allowed = ["St", "L"];
+        if (garmentType === "Short") {
+            allowed = ["S", "M", "L", "XL"];
+        }
+        
+        container.innerHTML = "";
+        allowed.forEach(size => {
+            const isChecked = size === "St" || size === "S" ? "checked" : "";
+            const label = document.createElement('label');
+            label.className = "flex items-center gap-2 text-xs font-semibold cursor-pointer select-none px-3 py-1.5 bg-white border border-outline-variant/30 rounded-lg hover:bg-primary/5 transition-all";
+            label.innerHTML = `
+                <input type="checkbox" name="m-tallas" value="${size}" ${isChecked} class="rounded border-outline-variant text-primary focus:ring-0"/>
+                <span>${size === "St" ? "St (Standard)" : size}</span>
+            `;
+            container.appendChild(label);
+        });
     };
     
     function renderModalColors() {
@@ -870,7 +900,7 @@
             closeCreateModelModal();
             
             // Refresh local dropdowns
-            updateModelsDropdown();
+            if (window.updateModelsDropdown) window.updateModelsDropdown();
             
         } catch (err) {
             console.error("Error creating new model:", err);
@@ -920,7 +950,7 @@
 
         <div class="flex flex-col gap-1.5">
             <label class="block font-label-md text-xs mb-1.5">Seleccionar Tallas Habilitadas</label>
-            <div class="flex flex-wrap gap-3 p-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
+            <div id="m-tallas-container" class="flex flex-wrap gap-3 p-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
                 <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
                     <input type="checkbox" name="m-tallas" value="St" checked class="rounded border-outline-variant text-primary focus:ring-0"/>
                     <span>St (Standard)</span>

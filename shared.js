@@ -2345,7 +2345,7 @@ function getAllowedSizesForModel(modelId) {
         
         .escarlu-select-wrapper {
             position: relative;
-            display: inline-block;
+            display: block;
             width: 100%;
         }
         
@@ -2474,8 +2474,8 @@ function getAllowedSizesForModel(modelId) {
             const idealWidth = tempSpan.offsetWidth + 50; 
             document.body.removeChild(tempSpan);
 
-            // Asegurar un ancho mínimo para que se vea consistente, pero permitir que crezca si el texto es muy largo
-            wrapper.style.width = Math.max(160, idealWidth) + "px";
+            // Usar el ancho responsivo del contenedor (100%) para ajustarse perfectamente al grid
+            wrapper.style.width = "100%";
         }
 
         function populateOptions() {

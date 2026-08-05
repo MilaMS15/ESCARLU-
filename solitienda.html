@@ -500,6 +500,8 @@ Agregar a la Lista
             }
         }
 
+        window.updateModelsDropdown = updateModelsDropdown;
+
         // Listen for selector changes to update stock and tallas
         if (selectTipo && selectModel) {
             selectTipo.addEventListener('change', updateModelsDropdown);
@@ -897,7 +899,7 @@ Agregar a la Lista
             updateSelectedStock();
         }
         if (e.key === 'escarlu_modelos') {
-            updateModelsDropdown();
+            if (window.updateModelsDropdown) window.updateModelsDropdown();
         }
     });
 </script>
