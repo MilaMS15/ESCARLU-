@@ -381,6 +381,9 @@
             updateTallaDropdown();
         }
 
+        window.updateModelsDropdown = updateModelsDropdown;
+        window.updateTallaDropdown = updateTallaDropdown;
+
         if (selectTipo && selectModel) {
             selectTipo.addEventListener('change', updateModelsDropdown);
             selectModel.addEventListener('change', updateTallaDropdown);
@@ -920,7 +923,7 @@
             <div class="flex flex-wrap gap-3 p-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
                 <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
                     <input type="checkbox" name="m-tallas" value="St" checked class="rounded border-outline-variant text-primary focus:ring-0"/>
-                    <span>St (Sin Talla)</span>
+                    <span>St (Standard)</span>
                 </label>
                 <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
                     <input type="checkbox" name="m-tallas" value="S" class="rounded border-outline-variant text-primary focus:ring-0"/>
