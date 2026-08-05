@@ -1117,15 +1117,11 @@ function renderSideNav(activePage) {
     let linksHtml = "";
     
     if (user.role === "admin") {
-        // DUEÑO: cajadueno.html, cortesdueno.html, stockgeneraldueno.html, tiendasdueno.html
+        // DUEÑO: cajadueno.html, stockgeneraldueno.html, tiendasdueno.html
         linksHtml += `
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cajadueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cajadueno.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'cajadueno' ? 1 : 0};">account_balance_wallet</span>
                 <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Caja</span>
-            </a>
-            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cortesdueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cortesdueno.html">
-                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'cortesdueno' ? 1 : 0};">content_cut</span>
-                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Cortes</span>
             </a>
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'stockgeneraldueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="stockgeneraldueno.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'stockgeneraldueno' ? 1 : 0};">inventory_2</span>
