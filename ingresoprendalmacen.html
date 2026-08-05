@@ -378,7 +378,10 @@
                 opt.textContent = m.nombre;
                 selectModel.appendChild(opt);
             });
-            updateTallaDropdown();
+            if (filtered.length > 0) {
+                selectModel.selectedIndex = 0;
+            }
+            selectModel.dispatchEvent(new Event('change'));
         }
 
         window.updateModelsDropdown = updateModelsDropdown;
