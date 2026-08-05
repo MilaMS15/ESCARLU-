@@ -338,7 +338,7 @@
 <script>
     const user = getCurrentUser();
     let cart = [];
-    const MODEL_PRICES = {
+    const MODEL_PRICES = window.MODEL_PRICES || {
         "MOD-001": 60.00, "MOD-002": 60.00, "MOD-003": 55.00,
         "MOD-004": 55.00, "MOD-005": 58.00, "MOD-006": 58.00,
         "MOD-007": 62.00, "MOD-008": 62.00, "MOD-009": 57.00,
@@ -561,6 +561,9 @@
         window.addEventListener('storage', (e) => {
             if (!e.key || e.key === 'escarlu_inventory') {
                 console.log("Inventory synced in background.");
+            }
+            if (e.key === 'escarlu_modelos') {
+                updateModelsDropdown();
             }
         });
     });

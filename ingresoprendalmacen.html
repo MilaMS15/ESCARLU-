@@ -215,10 +215,16 @@
 <span class="material-symbols-outlined text-[80px]">app_registration</span>
 </div>
 <form id="ingreso-lote-form" class="space-y-6 relative z-10" onsubmit="event.preventDefault();">
-<h3 class="font-headline-md text-xl text-primary font-bold mb-4 flex items-center gap-2">
-    <span class="material-symbols-outlined">add_circle</span>
-    Detalles del Lote
-</h3>
+<div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+    <h3 class="font-headline-md text-xl text-primary font-bold flex items-center gap-2">
+        <span class="material-symbols-outlined">add_circle</span>
+        Detalles del Lote
+    </h3>
+    <button type="button" id="btn-open-create-model" class="h-9 px-4 bg-primary text-on-primary font-bold rounded-xl text-xs uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-sm border-none">
+        <span class="material-symbols-outlined text-sm">add</span>
+        <span>Crear Nuevo Modelo</span>
+    </button>
+</div>
 <div class="grid grid-cols-12 gap-3 items-end w-full">
     <div class="col-span-12 md:col-span-3">
         <label class="block font-label-md text-sm mb-1.5" for="select-tipo">Tipo de Prenda</label>
@@ -598,6 +604,359 @@
             updateCentralStockKPI();
             renderPendingRequests();
         }
+        if (e.key === 'escarlu_modelos') {
+            updateModelsDropdown();
+        }
     });
+
+    // ===== MODAL CREAR NUEVO MODELO =====
+    const createModelModal = document.getElementById('create-model-modal');
+    
+    window.openCreateModelModal = function() {
+        if (!createModelModal) return;
+        
+        // Render dynamic colors
+        renderModalColors();
+        
+        createModelModal.classList.remove('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+            createModelModal.firstElementChild.classList.remove('scale-95');
+        }, 10);
+    };
+    
+    window.closeCreateModelModal = function() {
+        if (!createModelModal) return;
+        createModelModal.firstElementChild.classList.add('scale-95');
+        setTimeout(() => {
+            createModelModal.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('create-model-form').reset();
+        }, 150);
+    };
+
+    // Bind trigger button
+    const btnOpenCreateModel = document.getElementById('btn-open-create-model');
+    if (btnOpenCreateModel) {
+        btnOpenCreateModel.addEventListener('click', openCreateModelModal);
+    }
+    
+    function renderModalColors() {
+        const container = document.getElementById('m-colores-container');
+        if (!container) return;
+        
+        container.innerHTML = "";
+        
+        // Render all colors as checkboxes
+        Object.entries(COLOR_NAMES).forEach(([id, name]) => {
+            const label = document.createElement('label');
+            label.className = "flex items-center gap-2 text-xs font-semibold cursor-pointer select-none px-3 py-1.5 bg-white border border-outline-variant/30 rounded-lg hover:bg-primary/5 transition-all";
+            label.innerHTML = `
+                <input type="checkbox" name="m-colores" value="${id}" class="rounded border-outline-variant text-primary focus:ring-0"/>
+                <span>${name}</span>
+            `;
+            container.appendChild(label);
+        });
+
+        // Add custom color input field and button
+        const divAddColor = document.createElement('div');
+        divAddColor.className = "w-full flex gap-2 items-center mt-2 pt-2 border-t border-outline-variant/20";
+        divAddColor.innerHTML = `
+            <input type="text" id="m-new-color-name" placeholder="Agregar otro color..." class="h-9 px-3 text-xs bg-white border border-outline-variant rounded-lg focus:border-primary focus:ring-0 flex-1 min-w-0"/>
+            <button type="button" id="m-btn-add-color" class="h-9 px-3 bg-secondary text-on-secondary font-bold text-xs rounded-lg hover:brightness-110 active:scale-[0.98] transition-all border-none flex items-center justify-center">
+                <span class="material-symbols-outlined text-sm">add</span>
+            </button>
+        `;
+        container.appendChild(divAddColor);
+
+        // Bind custom color add button
+        const btnAddColor = divAddColor.querySelector('#m-btn-add-color');
+        const inputNewColor = divAddColor.querySelector('#m-new-color-name');
+        if (btnAddColor && inputNewColor) {
+            btnAddColor.addEventListener('click', () => {
+                const name = inputNewColor.value.trim();
+                if (!name) return;
+                
+                // Generate next color id
+                const colorKeys = Object.keys(COLOR_NAMES);
+                const nextNum = colorKeys.length + 1;
+                const newId = 'COL-' + String(nextNum).padStart(2, '0');
+                
+                // Add to COLOR_NAMES
+                COLOR_NAMES[newId] = name;
+                
+                // Save in escarlu_colores local cache
+                const localColors = JSON.parse(localStorage.getItem("escarlu_colores")) || {};
+                localColors[newId] = name;
+                localStorage.setItem("escarlu_colores", JSON.stringify(localColors));
+                
+                // Rerender colors checkboxes
+                renderModalColors();
+                
+                // Auto check the newly added color
+                const newlyAddedCheckbox = container.querySelector(`input[value="${newId}"]`);
+                if (newlyAddedCheckbox) newlyAddedCheckbox.checked = true;
+            });
+        }
+    }
+    
+    // Save model catálogo
+    const createModelForm = document.getElementById('create-model-form');
+    if (createModelForm) {
+        createModelForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const garmentType = document.getElementById('m-tipo').value;
+            const modelName = document.getElementById('m-nombre').value.trim();
+            const modelPrice = parseFloat(document.getElementById('m-precio').value) || 0;
+            
+            // Selected sizes
+            const sizeCheckboxes = document.querySelectorAll('input[name="m-tallas"]:checked');
+            const selectedSizes = Array.from(sizeCheckboxes).map(cb => cb.value);
+            
+            // Selected colors
+            const colorCheckboxes = document.querySelectorAll('input[name="m-colores"]:checked');
+            const selectedColors = Array.from(colorCheckboxes).map(cb => cb.value);
+            
+            if (selectedSizes.length === 0) {
+                alert("Por favor seleccione al menos una talla habilitada.");
+                return;
+            }
+            if (selectedColors.length === 0) {
+                alert("Por favor seleccione al menos un color.");
+                return;
+            }
+            
+            const client = getSupabaseClient();
+            if (!client) {
+                alert("Error: No se pudo establecer conexión con Supabase.");
+                return;
+            }
+            
+            try {
+                // Show loading status
+                const btnSave = document.getElementById('btn-save-model');
+                const origHtml = btnSave.innerHTML;
+                btnSave.disabled = true;
+                btnSave.innerHTML = `<span class="material-symbols-outlined animate-spin text-sm">sync</span> Guardando...`;
+                
+                // 1. Generate model id
+                const { data: existingModels, error: fetchError } = await client.from('modelos').select('id_modelo');
+                if (fetchError) throw fetchError;
+                
+                const count = existingModels ? existingModels.length : 0;
+                let modelId = 'MOD-' + String(count + 1).padStart(3, '0');
+                while (existingModels && existingModels.some(m => m.id_modelo === modelId)) {
+                    const currentNum = parseInt(modelId.split('-')[1]);
+                    modelId = 'MOD-' + String(currentNum + 1).padStart(3, '0');
+                }
+                
+                // 2. Ensure new colors are registered in public.colores table
+                for (const colorId of selectedColors) {
+                    const colorName = COLOR_NAMES[colorId];
+                    const { data: colCheck } = await client.from('colores').select('id_color').eq('id_color', colorId);
+                    if (!colCheck || colCheck.length === 0) {
+                        await client.from('colores').insert({ id_color: colorId, nombre: colorName, activo: true });
+                    }
+                }
+                
+                // 3. Insert new model to models table (with price fallback support)
+                const insertData = {
+                    id_modelo: modelId,
+                    tipo: garmentType,
+                    nombre: modelName,
+                    tela: 'Algodón Pima',
+                    activo: true,
+                    precio: modelPrice
+                };
+                
+                const { error: insertError } = await client.from('modelos').insert(insertData);
+                if (insertError) {
+                    if (insertError.message.includes('precio')) {
+                        // Fallback in case table has no precio column
+                        delete insertData.precio;
+                        const { error: fallbackError } = await client.from('modelos').insert(insertData);
+                        if (fallbackError) throw fallbackError;
+                    } else {
+                        throw insertError;
+                    }
+                }
+                
+                // 4. Save price to local storage escarlu_model_prices
+                const localPrices = JSON.parse(localStorage.getItem("escarlu_model_prices")) || {};
+                localPrices[modelId] = modelPrice;
+                localStorage.setItem("escarlu_model_prices", JSON.stringify(localPrices));
+                
+                // 5. Generate stock variants for all stores
+                const stockRecords = [];
+                const storeIds = ['ALM-01', 'TDA-01', 'TDA-02', 'TDA-03', 'TDA-04'];
+                for (const colorId of selectedColors) {
+                    for (const sizeName of selectedSizes) {
+                        const tallaId = TALLA_KEYS[sizeName];
+                        if (!tallaId) continue;
+                        for (const storeId of storeIds) {
+                            stockRecords.push({
+                                id_stock: `STK-${modelId}-${colorId}-${tallaId}-${storeId}`,
+                                id_sede: storeId,
+                                id_modelo: modelId,
+                                id_color: colorId,
+                                id_talla: tallaId,
+                                cantidad: 0,
+                                stock_minimo: 0,
+                                ultima_actualizacion: new Date().toISOString()
+                            });
+                        }
+                    }
+                }
+                
+                if (stockRecords.length > 0) {
+                    const { error: stockError } = await client.from('stock').insert(stockRecords);
+                    if (stockError) console.error("Error inserting stock variants:", stockError);
+                }
+                
+                // 6. Update local caches immediately
+                const currentModels = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+                currentModels.push({
+                    id_modelo: modelId,
+                    tipo: garmentType,
+                    nombre: modelName,
+                    tela: 'Algodón Pima',
+                    activo: true,
+                    precio: modelPrice,
+                    tallas: selectedSizes
+                });
+                localStorage.setItem("escarlu_modelos", JSON.stringify(currentModels));
+                
+                // Update mappings in memory
+                MODEL_NAMES[modelId] = modelName;
+                MODEL_PRICES[modelId] = modelPrice;
+                
+                const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+                const tiendaStock = JSON.parse(localStorage.getItem("escarlu_tienda_stock")) || {};
+                
+                storeIds.forEach(storeId => {
+                    if (!inventory[storeId]) inventory[storeId] = {};
+                    if (!inventory[storeId][modelId]) inventory[storeId][modelId] = {};
+                    
+                    if (!tiendaStock[storeId]) tiendaStock[storeId] = {};
+                    if (!tiendaStock[storeId][modelId]) tiendaStock[storeId][modelId] = {};
+                    
+                    selectedColors.forEach(colorId => {
+                        if (!inventory[storeId][modelId][colorId]) inventory[storeId][modelId][colorId] = {};
+                        selectedSizes.forEach(sizeName => {
+                            inventory[storeId][modelId][colorId][sizeName] = 0;
+                            tiendaStock[storeId][modelId][sizeName] = (tiendaStock[storeId][modelId][sizeName] || 0);
+                        });
+                    });
+                });
+                localStorage.setItem("escarlu_inventory", JSON.stringify(inventory));
+                localStorage.setItem("escarlu_tienda_stock", JSON.stringify(tiendaStock));
+                
+                // Trigger updates to other pages/tabs
+                triggerStorageUpdate('escarlu_modelos', JSON.stringify(currentModels));
+                triggerStorageUpdate('escarlu_inventory', JSON.stringify(inventory));
+                triggerStorageUpdate('escarlu_tienda_stock', JSON.stringify(tiendaStock));
+                
+                // 7. Success notification and clean up
+                btnSave.disabled = false;
+                btnSave.innerHTML = origHtml;
+                
+                alert(`¡Modelo ${modelName} (${modelId}) creado exitosamente en el catálogo!`);
+                closeCreateModelModal();
+                
+                // Refresh local dropdowns
+                updateModelsDropdown();
+                
+            } catch (err) {
+                console.error("Error creating new model:", err);
+                alert("Ocurrió un error al registrar el nuevo modelo: " + (err.message || err));
+                const btnSave = document.getElementById('btn-save-model');
+                btnSave.disabled = false;
+                btnSave.innerHTML = `<span class="material-symbols-outlined text-sm">save</span> Guardar Modelo en Catálogo`;
+            }
+        });
+    }
 </script>
+
+<!-- ===== MODAL: Crear Nuevo Modelo ===== -->
+<div id="create-model-modal" class="fixed inset-0 bg-black/55 backdrop-blur-[6px] -webkit-backdrop-blur-[6px] z-[9999] flex items-center justify-center p-4 transition-all opacity-0 pointer-events-none">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden transform scale-95 transition-all duration-300">
+    <!-- Header -->
+    <div class="bg-gradient-to-br from-primary to-[#FFE088] p-5 relative">
+        <h3 class="text-lg font-bold text-dark-text flex items-center gap-2 font-headline-md">
+            <span class="material-symbols-outlined text-xl">apparel</span>
+            Crear Nuevo Modelo / Prenda
+        </h3>
+        <button type="button" onclick="closeCreateModelModal()" class="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full hover:bg-black/10 flex items-center justify-center text-dark-text transition-colors">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+    <!-- Body -->
+    <form id="create-model-form" class="p-6 space-y-4 max-h-[75vh] overflow-y-auto" onsubmit="event.preventDefault();">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+                <label class="block font-label-md text-xs mb-1.5" for="m-tipo">Tipo de Prenda</label>
+                <select id="m-tipo" class="w-full h-11 bg-white border border-outline-variant rounded-lg pl-3 pr-8 text-sm font-semibold focus:border-primary focus:ring-0 cursor-pointer">
+                    <option value="Polo">Polo</option>
+                    <option value="Short">Short</option>
+                    <option value="Chompa">Chompa</option>
+                    <option value="Buzo">Buzo</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1.5">
+                <label class="block font-label-md text-xs mb-1.5" for="m-nombre">Nombre del Modelo / SKU</label>
+                <input type="text" id="m-nombre" placeholder="Ej. Camisero Slim" required class="w-full h-11 bg-white border border-outline-variant rounded-lg px-3 text-sm focus:border-primary focus:ring-0"/>
+            </div>
+        </div>
+        
+        <div class="flex flex-col gap-1.5">
+            <label class="block font-label-md text-xs mb-1.5" for="m-precio">Precio Lista Referencial (S/)</label>
+            <input type="number" id="m-precio" placeholder="Ej. 65" min="0" step="0.5" required class="w-full h-11 bg-white border border-outline-variant rounded-lg px-3 text-sm focus:border-primary focus:ring-0"/>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+            <label class="block font-label-md text-xs mb-1.5">Seleccionar Tallas Habilitadas</label>
+            <div class="flex flex-wrap gap-3 p-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
+                    <input type="checkbox" name="m-tallas" value="St" checked class="rounded border-outline-variant text-primary focus:ring-0"/>
+                    <span>St (Sin Talla)</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
+                    <input type="checkbox" name="m-tallas" value="S" class="rounded border-outline-variant text-primary focus:ring-0"/>
+                    <span>S</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
+                    <input type="checkbox" name="m-tallas" value="M" class="rounded border-outline-variant text-primary focus:ring-0"/>
+                    <span>M</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
+                    <input type="checkbox" name="m-tallas" value="L" class="rounded border-outline-variant text-primary focus:ring-0"/>
+                    <span>L</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
+                    <input type="checkbox" name="m-tallas" value="XL" class="rounded border-outline-variant text-primary focus:ring-0"/>
+                    <span>XL</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+            <label class="block font-label-md text-xs mb-1.5">Seleccionar/Agregar Colores</label>
+            <div class="flex flex-wrap gap-3 p-3 bg-surface-container-low rounded-xl border border-outline-variant/30 max-h-[120px] overflow-y-auto" id="m-colores-container">
+                <!-- Se inyectan dinámicamente con checkboxes desde COLOR_NAMES -->
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="pt-4 flex justify-end gap-3 border-t border-outline-variant/30">
+            <button type="button" onclick="closeCreateModelModal()" class="px-5 h-11 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary/5 transition-all text-xs uppercase tracking-wider">
+                Cancelar
+            </button>
+            <button type="submit" id="btn-save-model" class="px-6 h-11 bg-primary text-on-primary font-bold rounded-xl shadow-md hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                <span class="material-symbols-outlined text-sm">save</span>
+                <span>Guardar Modelo en Catálogo</span>
+            </button>
+        </div>
+    </form>
+  </div>
+</div>
+
 </body></html>

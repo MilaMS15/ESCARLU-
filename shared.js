@@ -758,6 +758,22 @@ async function downloadFromSupabase() {
         console.error("Error downloading models from Supabase:", e);
     }
 
+    // 5.5 Download Colors (public.colores)
+    try {
+        const { data: colorsData } = await client.from('colores').select('*');
+        if (colorsData && colorsData.length > 0) {
+            const localColors = {};
+            colorsData.forEach(c => {
+                localColors[c.id_color] = c.nombre;
+                COLOR_NAMES[c.id_color] = c.nombre;
+            });
+            originalSetItem.call(localStorage, 'escarlu_colores', JSON.stringify(localColors));
+            triggerStorageUpdate('escarlu_colores', JSON.stringify(localColors));
+        }
+    } catch (e) {
+        console.error("Error downloading colors from Supabase:", e);
+    }
+
     // 6. Download Movimientos de Inventario (Entradas de almacén e historial de tiendas)
     try {
         const { data: movsData } = await client.from('movimientos_inventario').select('*');
@@ -939,6 +955,17 @@ const MODEL_NAMES = {
     "MOD-020": "Corazon MC",
     "MOD-021": "Corazon ML"
 };
+
+const MODEL_PRICES = {
+    "MOD-001": 60.00, "MOD-002": 60.00, "MOD-003": 55.00,
+    "MOD-004": 55.00, "MOD-005": 58.00, "MOD-006": 58.00,
+    "MOD-007": 62.00, "MOD-008": 62.00, "MOD-009": 57.00,
+    "MOD-010": 57.00, "MOD-011": 65.00, "MOD-012": 65.00,
+    "MOD-013": 63.00, "MOD-014": 63.00, "MOD-015": 45.00,
+    "MOD-016": 45.00, "MOD-017": 85.00, "MOD-018": 85.00,
+    "MOD-019": 75.00, "MOD-020": 58.00, "MOD-021": 58.00
+};
+window.MODEL_PRICES = MODEL_PRICES;
 
 const COLOR_NAMES = {
     "COL-01": "Negro",
@@ -1135,17 +1162,17 @@ function renderSideNav(activePage) {
     } else if (user.role === "almacen") {
         // ALMACÉN
         linksHtml += `
-            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'historialmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="historialmacen.html">
-                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'historialmacen' ? 1 : 0};">history</span>
-                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Historial Almacén</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="Stockalmacen.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'Stockalmacen' ? 1 : 0};">inventory_2</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Stock Almacén</span>
             </a>
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'ingresoprendalmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="ingresoprendalmacen.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'ingresoprendalmacen' ? 1 : 0};">add_box</span>
                 <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Ingreso de Prendas</span>
             </a>
-            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="Stockalmacen.html">
-                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'Stockalmacen' ? 1 : 0};">inventory_2</span>
-                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Stock Almacén</span>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'historialmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="historialmacen.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'historialmacen' ? 1 : 0};">history</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Historial Prendas</span>
             </a>
         `;
     } else {
@@ -1244,17 +1271,17 @@ function setupMobileMenu(activePage) {
         `;
     } else if (user.role === "almacen") {
         linksHtml += `
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'historialmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="historialmacen.html">
-                <span class="material-symbols-outlined">history</span>
-                <span class="font-label-lg">Historial Almacén</span>
+            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="Stockalmacen.html">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span class="font-label-lg">Stock Almacén</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'ingresoprendalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="ingresoprendalmacen.html">
                 <span class="material-symbols-outlined">add_box</span>
                 <span class="font-label-lg">Ingreso de Prendas</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="Stockalmacen.html">
-                <span class="material-symbols-outlined">inventory_2</span>
-                <span class="font-label-lg">Stock Almacén</span>
+            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'historialmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="historialmacen.html">
+                <span class="material-symbols-outlined">history</span>
+                <span class="font-label-lg">Historial Prendas</span>
             </a>
         `;
     } else {
@@ -1359,6 +1386,14 @@ function initRealtimeSubscription() {
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'gastos' }, (payload) => {
             console.log("Realtime: Cambio en gastos recibido", payload);
+            triggerDebouncedDownload();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'modelos' }, (payload) => {
+            console.log("Realtime: Cambio en modelos recibido", payload);
+            triggerDebouncedDownload();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'colores' }, (payload) => {
+            console.log("Realtime: Cambio en colores recibido", payload);
             triggerDebouncedDownload();
         })
         .subscribe((status) => {
@@ -2183,9 +2218,24 @@ function updateModelNamesFromLocalStorage() {
             const models = JSON.parse(local);
             models.forEach(m => {
                 MODEL_NAMES[m.id_modelo] = m.nombre;
+                if (m.precio !== undefined && m.precio !== null) {
+                    MODEL_PRICES[m.id_modelo] = Number(m.precio);
+                }
             });
         } catch(e) {}
     }
+    try {
+        const savedPrices = localStorage.getItem("escarlu_model_prices");
+        if (savedPrices) {
+            Object.assign(MODEL_PRICES, JSON.parse(savedPrices));
+        }
+    } catch(e) {}
+    try {
+        const savedColors = localStorage.getItem("escarlu_colores");
+        if (savedColors) {
+            Object.assign(COLOR_NAMES, JSON.parse(savedColors));
+        }
+    } catch(e) {}
 }
 
 // Initial call to sync MODEL_NAMES with localStorage cache
@@ -2247,11 +2297,33 @@ async function getStockForProduct(model, color, storeId) {
 function getAllowedSizesForModel(modelId) {
     const models = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
     const model = models.find(m => m.id_modelo === modelId);
+    
+    // Check if the model has a custom sizes attribute saved
+    if (model && model.tallas) {
+        if (Array.isArray(model.tallas)) return model.tallas;
+        if (typeof model.tallas === 'string') return model.tallas.split(',').map(s => s.trim());
+    }
+
+    // Try checking if size configurations exist in local inventory
+    const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+    const sizesFound = new Set();
+    Object.values(inventory).forEach(store => {
+        const modelStock = store[modelId];
+        if (modelStock) {
+            Object.values(modelStock).forEach(colorStock => {
+                Object.keys(colorStock).forEach(sz => sizesFound.add(sz));
+            });
+        }
+    });
+    if (sizesFound.size > 0) {
+        return Array.from(sizesFound);
+    }
+
     if (!model) {
         if (modelId === "MOD-015" || modelId === "MOD-016") {
-            return ["S", "M", "L", "XL"]; // Shorts
+            return ["S", "M", "L", "XL"];
         }
-        return ["St", "L"]; // Polos, Chompas, Buzos
+        return ["St", "L"];
     }
     
     const category = model.tipo.toLowerCase();
