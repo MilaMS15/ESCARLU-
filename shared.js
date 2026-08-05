@@ -352,6 +352,7 @@ let supabaseClient = null;
 function getSupabaseClient() {
     if (!supabaseClient && window.supabase && typeof SUPABASE_URL !== 'undefined') {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        window.supabaseClient = supabaseClient;
     }
     return supabaseClient;
 }

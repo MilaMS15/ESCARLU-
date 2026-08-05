@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 errorDiv.textContent = "";
             }
 
-            const client = window.supabaseClient;
+            const client = getSupabaseClient();
             if (!client) {
                 alert("Error: El cliente de Supabase no esta inicializado.");
                 return;
