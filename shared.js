@@ -1454,6 +1454,319 @@ function setupHeaderProfile() {
             el.textContent = user.label;
         }
     });
+
+    // 3. Configurar Menú Desplegable (Dropdown) de Perfil
+    const avatarImg = document.querySelector("header img");
+    const profileContainer = avatarImg ? avatarImg.closest(".flex") : null;
+    if (profileContainer && !profileContainer.id) {
+        profileContainer.id = "header-profile-trigger";
+        profileContainer.classList.add("cursor-pointer", "hover:opacity-90", "transition-all", "relative");
+
+        // Crear Dropdown HTML si no existe
+        let dropdown = document.getElementById("profile-dropdown");
+        if (!dropdown) {
+            dropdown = document.createElement("div");
+            dropdown.id = "profile-dropdown";
+            dropdown.className = "absolute right-0 top-full mt-2 w-48 bg-white border border-outline-variant rounded-xl shadow-lg py-2 hidden z-50 text-xs font-semibold text-left";
+            dropdown.innerHTML = `
+                <a href="#" id="dropdown-my-profile" class="flex items-center gap-2 px-4 py-2 text-on-surface hover:bg-surface-container-low transition-colors">
+                    <span class="material-symbols-outlined text-sm">person</span>
+                    <span>Mi Perfil</span>
+                </a>
+                <a href="#" id="dropdown-logout" class="flex items-center gap-2 px-4 py-2 text-error hover:bg-red-50 transition-colors border-t border-outline-variant/50">
+                    <span class="material-symbols-outlined text-sm text-error">logout</span>
+                    <span>Cerrar Sesión</span>
+                </a>
+            `;
+            profileContainer.appendChild(dropdown);
+
+            // Toggle Dropdown al hacer click en el Perfil
+            profileContainer.addEventListener("click", (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle("hidden");
+            });
+
+            // Cerrar Dropdown al hacer click fuera
+            document.addEventListener("click", () => {
+                dropdown.classList.add("hidden");
+            });
+
+            // Enlazar Acciones
+            document.getElementById("dropdown-my-profile").addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.add("hidden");
+                openGlobalProfileModal();
+            });
+
+            document.getElementById("dropdown-logout").addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentUser(null);
+                window.location.href = "index.html";
+            });
+        }
+    }
+
+    // Inyectar el Modal Global de Mi Cuenta si no existe
+    injectGlobalProfileModal();
+}
+
+function injectGlobalProfileModal() {
+    if (document.getElementById("global-profile-modal")) return;
+
+    const modalHtml = `
+    <div id="global-profile-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] hidden items-center justify-center p-6 text-on-background">
+        <div class="bg-white rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
+            <header class="bg-gradient-to-br from-[#F8C8D4] to-[#f0b3c0] p-6 border-b border-outline-variant text-on-surface flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="text-lg font-bold text-on-surface">Mi Cuenta</h3>
+                    <p class="text-[11px] text-on-surface-variant font-medium">Configura tus datos de perfil y contraseña.</p>
+                </div>
+                <span id="close-global-profile-btn" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors cursor-pointer select-none">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                </span>
+            </header>
+            
+            <form id="global-profile-form" class="p-6 space-y-4 overflow-y-auto flex-1 min-h-0 text-left">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase">Nombre Completo</label>
+                    <input type="text" id="gprof-fullname" required class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none bg-white text-on-background" />
+                </div>
+                
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase">Correo Electrónico (Solo Lectura)</label>
+                    <input type="email" id="gprof-email" readonly class="border border-outline-variant rounded-xl px-3 py-2 text-sm bg-gray-50 text-gray-500 font-bold outline-none cursor-not-allowed" />
+                </div>
+                
+                <hr class="border-outline-variant/50 my-2">
+                
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold text-[#745475] uppercase">Cambiar Contraseña</h4>
+                    
+                    <div class="flex flex-col gap-1 relative">
+                        <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="gprof-old-password">Contraseña Actual</label>
+                        <div class="relative flex items-center">
+                            <input type="password" id="gprof-old-password" placeholder="Contraseña actual para validar" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none bg-white text-on-background" />
+                            <span id="toggle-gprof-old-btn" class="absolute right-3 text-on-surface-variant hover:text-primary cursor-pointer flex items-center justify-center select-none" style="z-index: 10;">
+                                <span class="material-symbols-outlined text-lg" id="gprof-old-icon">visibility</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1 relative">
+                        <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="gprof-new-password">Nueva Contraseña</label>
+                        <div class="relative flex items-center">
+                            <input type="password" id="gprof-new-password" placeholder="Mínimo 8 caracteres" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none bg-white text-on-background" />
+                            <span id="toggle-gprof-new-btn" class="absolute right-3 text-on-surface-variant hover:text-primary cursor-pointer flex items-center justify-center select-none" style="z-index: 10;">
+                                <span class="material-symbols-outlined text-lg" id="gprof-new-icon">visibility</span>
+                            </span>
+                        </div>
+                        <!-- Requisitos de Contraseña -->
+                        <div class="mt-2 space-y-1 text-xs">
+                            <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                                <span id="gprof-req-len-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                                <span>Mínimo 8 caracteres</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                                <span id="gprof-req-upper-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                                <span>Una letra mayúscula</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                                <span id="gprof-req-num-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                                <span>Un número</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1 relative">
+                        <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="gprof-confirm-password">Confirmar Nueva Contraseña</label>
+                        <div class="relative flex items-center">
+                            <input type="password" id="gprof-confirm-password" placeholder="Confirmar nueva contraseña" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none bg-white text-on-background" />
+                            <span id="toggle-gprof-confirm-btn" class="absolute right-3 text-on-surface-variant hover:text-primary cursor-pointer flex items-center justify-center select-none" style="z-index: 10;">
+                                <span class="material-symbols-outlined text-lg" id="gprof-confirm-icon">visibility</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/50">
+                    <button type="button" id="cancel-gprof-btn" class="px-4 py-2 border border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/95 transition-colors">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    `;
+
+    const div = document.createElement("div");
+    div.innerHTML = modalHtml;
+    document.body.appendChild(div.firstElementChild);
+
+    // Enlazar Eventos del modal
+    document.getElementById("close-global-profile-btn").addEventListener("click", closeGlobalProfileModal);
+    document.getElementById("cancel-gprof-btn").addEventListener("click", closeGlobalProfileModal);
+
+    // Toggles de contraseña
+    setupGprofPasswordToggle("gprof-old-password", "toggle-gprof-old-btn", "gprof-old-icon");
+    setupGprofPasswordToggle("gprof-new-password", "toggle-gprof-new-btn", "gprof-new-icon");
+    setupGprofPasswordToggle("gprof-confirm-password", "toggle-gprof-confirm-btn", "gprof-confirm-icon");
+
+    // Validador de contraseña en tiempo real
+    const newPassInput = document.getElementById("gprof-new-password");
+    newPassInput.addEventListener("input", () => {
+        const val = newPassInput.value;
+        updateGprofDot("gprof-req-len-dot", val.length >= 8);
+        updateGprofDot("gprof-req-upper-dot", /[A-Z]/.test(val));
+        updateGprofDot("gprof-req-num-dot", /[0-9]/.test(val));
+    });
+
+    // Formulario Submit
+    document.getElementById("global-profile-form").addEventListener("submit", handleGlobalProfileSubmit);
+}
+
+function setupGprofPasswordToggle(inputId, buttonId, iconId) {
+    const passInput = document.getElementById(inputId);
+    const toggleBtn = document.getElementById(buttonId);
+    const eyeIcon = document.getElementById(iconId);
+    if (toggleBtn && passInput && eyeIcon) {
+        toggleBtn.addEventListener("click", () => {
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                eyeIcon.textContent = "visibility_off";
+            } else {
+                passInput.type = "password";
+                eyeIcon.textContent = "visibility";
+            }
+        });
+    }
+}
+
+function updateGprofDot(dotId, condition) {
+    const dot = document.getElementById(dotId);
+    if (dot) {
+        if (condition) {
+            dot.classList.remove("bg-gray-300");
+            dot.classList.add("bg-green-500");
+        } else {
+            dot.classList.remove("bg-green-500");
+            dot.classList.add("bg-gray-300");
+        }
+    }
+}
+
+function openGlobalProfileModal() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    document.getElementById("gprof-fullname").value = user.label || "";
+    document.getElementById("gprof-email").value = user.email || "";
+
+    // Reset password fields
+    document.getElementById("gprof-old-password").value = "";
+    document.getElementById("gprof-new-password").value = "";
+    document.getElementById("gprof-confirm-password").value = "";
+
+    updateGprofDot("gprof-req-len-dot", false);
+    updateGprofDot("gprof-req-upper-dot", false);
+    updateGprofDot("gprof-req-num-dot", false);
+
+    const modal = document.getElementById("global-profile-modal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+
+function closeGlobalProfileModal() {
+    const modal = document.getElementById("global-profile-modal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.getElementById("global-profile-form").reset();
+}
+
+async function handleGlobalProfileSubmit(e) {
+    e.preventDefault();
+    const client = getSupabaseClient();
+    if (!client) {
+        alert("Error: Supabase no inicializado.");
+        return;
+    }
+
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const newName = document.getElementById("gprof-fullname").value.trim();
+    const oldPassword = document.getElementById("gprof-old-password").value.trim();
+    const newPassword = document.getElementById("gprof-new-password").value.trim();
+    const confirmPassword = document.getElementById("gprof-confirm-password").value.trim();
+
+    let wantsPasswordChange = newPassword.length > 0;
+
+    try {
+        // Consultar el usuario en la tabla "usuarios" de Supabase para validar clave actual
+        const { data: dbUsers, error: errFetch } = await client
+            .from("usuarios")
+            .select("*")
+            .eq("id_usuario", user.id_usuario);
+
+        if (errFetch) throw errFetch;
+        if (!dbUsers || dbUsers.length === 0) {
+            alert("Error: Usuario no encontrado en la base de datos.");
+            return;
+        }
+
+        const dbUser = dbUsers[0];
+
+        // Si desea cambiar la contraseña
+        if (wantsPasswordChange) {
+            if (!oldPassword) {
+                alert("Debe ingresar su contraseña actual para confirmar el cambio.");
+                return;
+            }
+            if (dbUser.contrasena !== oldPassword) {
+                alert("La contraseña actual es incorrecta.");
+                return;
+            }
+            if (newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+                alert("La nueva contraseña no cumple con los requisitos mínimos.");
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                alert("La confirmación de la contraseña no coincide.");
+                return;
+            }
+        }
+
+        // Ejecutar la actualización en Supabase
+        const updateData = { nombre_completo: newName };
+        if (wantsPasswordChange) {
+            updateData.contrasena = newPassword;
+        }
+
+        const { error: errUpdate } = await client
+            .from("usuarios")
+            .update(updateData)
+            .eq("id_usuario", user.id_usuario);
+
+        if (errUpdate) throw errUpdate;
+
+        // Actualizar datos de sesión local
+        user.label = newName;
+        setCurrentUser(user);
+
+        alert("Datos actualizados correctamente.");
+        closeGlobalProfileModal();
+
+        // Actualizar el header inmediatamente en caliente
+        setupHeaderProfile();
+
+    } catch (err) {
+        console.error("Error al actualizar perfil:", err);
+        alert("Error al actualizar los datos: " + err.message);
+    }
 }
 
 // Dynamic Notification System
