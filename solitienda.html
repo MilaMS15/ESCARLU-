@@ -473,7 +473,10 @@ Agregar a la Lista
                 opt.textContent = m.nombre;
                 selectModel.appendChild(opt);
             });
-            updateTallaButtons();
+            if (filtered.length > 0) {
+                selectModel.selectedIndex = 0;
+            }
+            selectModel.dispatchEvent(new Event('change'));
         }
 
         // Populate select-color from COLOR_NAMES

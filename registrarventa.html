@@ -413,9 +413,10 @@
                 modelSelect.appendChild(opt);
             });
             
-            const firstModel = modelSelect.value;
-            priceInput.value = MODEL_PRICES[firstModel] || 0;
-            updateSizesDropdown();
+            if (filtered.length > 0) {
+                modelSelect.selectedIndex = 0;
+            }
+            modelSelect.dispatchEvent(new Event('change'));
         }
 
         window.updateModelsDropdown = updateModelsDropdown;

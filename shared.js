@@ -2445,6 +2445,9 @@ function getAllowedSizesForModel(modelId) {
 
         const trigger = document.createElement("div");
         trigger.className = "escarlu-select-trigger";
+        if (select.selectedIndex === -1 && select.options.length > 0) {
+            select.selectedIndex = 0;
+        }
         trigger.textContent = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : "Seleccionar...";
         wrapper.appendChild(trigger);
 
@@ -2501,6 +2504,9 @@ function getAllowedSizesForModel(modelId) {
 
         // Reconstruir opciones e iniciar sincronización si cambian dinámicamente en el select original
         const observer = new MutationObserver(() => {
+            if (select.selectedIndex === -1 && select.options.length > 0) {
+                select.selectedIndex = 0;
+            }
             populateOptions();
             updateWrapperWidth();
             const selectedOpt = select.options[select.selectedIndex];
@@ -2510,6 +2516,9 @@ function getAllowedSizesForModel(modelId) {
 
         // Evento change en el select original para actualizar visualmente la opción seleccionada
         select.addEventListener("change", () => {
+            if (select.selectedIndex === -1 && select.options.length > 0) {
+                select.selectedIndex = 0;
+            }
             const selectedOpt = select.options[select.selectedIndex];
             trigger.textContent = selectedOpt ? selectedOpt.text : "Seleccionar...";
             populateOptions();
