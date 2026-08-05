@@ -165,7 +165,6 @@ let supabaseClient = null;
         /* Inputs y Selects */
         input[type="text"], input[type="number"], input[type="password"], input[type="email"], input[type="date"], select, textarea {
           border: 2px solid var(--primary-pink) !important;
-          background-color: var(--white) !important;
           border-radius: 12px !important;
           color: var(--dark-text) !important;
         }
@@ -1241,10 +1240,6 @@ function setupMobileMenu(activePage) {
                 <span class="material-symbols-outlined">account_balance_wallet</span>
                 <span class="font-label-lg">Caja</span>
             </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'cortesdueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="cortesdueno.html">
-                <span class="material-symbols-outlined">content_cut</span>
-                <span class="font-label-lg">Cortes</span>
-            </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'stockgeneraldueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="stockgeneraldueno.html">
                 <span class="material-symbols-outlined">inventory_2</span>
                 <span class="font-label-lg">Stock General</span>
@@ -1263,10 +1258,6 @@ function setupMobileMenu(activePage) {
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'ingresoprendalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="ingresoprendalmacen.html">
                 <span class="material-symbols-outlined">add_box</span>
                 <span class="font-label-lg">Ingreso de Prendas</span>
-            </a>
-            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'solicitudpendientealmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="solicitudpendientealmacen.html">
-                <span class="material-symbols-outlined">pending_actions</span>
-                <span class="font-label-lg">Solicitudes Pendientes</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="Stockalmacen.html">
                 <span class="material-symbols-outlined">inventory_2</span>
