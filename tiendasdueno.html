@@ -86,12 +86,13 @@
                             <th class="px-6 py-4 border-b border-outline-variant">Email de Login</th>
                             <th class="px-6 py-4 border-b border-outline-variant">Dirección</th>
                             <th class="px-6 py-4 border-b border-outline-variant">Estado</th>
+                            <th class="px-6 py-4 border-b border-outline-variant text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant text-sm font-body-md" id="tiendas-tbody">
                         <!-- Loaded Dynamically -->
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-on-surface-variant font-semibold">Cargando tiendas...</td>
+                            <td colspan="7" class="p-8 text-center text-on-surface-variant font-semibold">Cargando tiendas...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -148,9 +149,14 @@
                     <input type="email" id="user-email" required placeholder="Ej. tienda5@escarlu.com" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
                 </div>
 
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 relative">
                     <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="user-password">Contraseña de la Cuenta</label>
-                    <input type="text" id="user-password" required placeholder="Ej. claveSecreta123" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                    <div class="relative">
+                        <input type="password" id="user-password" required placeholder="Ej. claveSecreta123" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                        <button type="button" id="toggle-password-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary flex items-center justify-center">
+                            <span class="material-symbols-outlined text-lg" id="password-visibility-icon">visibility</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -166,22 +172,134 @@
     </div>
 </div>
 
+<!-- Modal: Editar Tienda -->
+<div id="edit-store-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
+        <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-bold">Editar Tienda</h3>
+                <p class="text-[11px] opacity-80">Actualiza los datos informativos de la sede y el encargado.</p>
+            </div>
+            <button onclick="closeEditModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
+                <span class="material-symbols-outlined text-sm">close</span>
+            </button>
+        </header>
+
+        <form id="edit-store-form" class="p-6 space-y-4">
+            <input type="hidden" id="edit-store-id" />
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1 col-span-2">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-store-name">Nombre / Ubicación de Tienda</label>
+                    <input type="text" id="edit-store-name" required class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+                <div class="flex flex-col gap-1 col-span-2">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-store-address">Dirección Completa</label>
+                    <input type="text" id="edit-store-address" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-store-phone">Teléfono Tienda</label>
+                    <input type="text" id="edit-store-phone" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-user-fullname">Nombre de Encargado(a)</label>
+                    <input type="text" id="edit-user-fullname" required class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/50">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Restablecer Contraseña -->
+<div id="reset-password-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
+        <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-bold">Restablecer Contraseña</h3>
+                <p class="text-[11px] opacity-80">Asigna una nueva clave para esta cuenta.</p>
+            </div>
+            <button onclick="closeResetModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
+                <span class="material-symbols-outlined text-sm">close</span>
+            </button>
+        </header>
+
+        <form id="reset-password-form" class="p-6 space-y-4">
+            <input type="hidden" id="reset-user-store-id" />
+            <div class="flex flex-col gap-1 relative">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="reset-password-input">Nueva Contraseña</label>
+                <div class="relative">
+                    <input type="password" id="reset-password-input" required placeholder="Mínimo 6 caracteres" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                    <button type="button" id="toggle-reset-password-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg" id="reset-password-visibility-icon">visibility</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/50">
+                <button type="button" onclick="closeResetModal()" class="px-4 py-2 border border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">
+                    Actualizar Contraseña
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         checkAuth();
         renderSideNav("tiendasdueno");
         setupMobileMenu("tiendasdueno");
         loadSedesAndUsers();
+
+        // Configurar toggles de mostrar/ocultar contraseña
+        setupPasswordToggle("user-password", "toggle-password-btn", "password-visibility-icon");
+        setupPasswordToggle("reset-password-input", "toggle-reset-password-btn", "reset-password-visibility-icon");
+
+        // Escuchar cambios en LocalStorage / Supabase real-time
+        window.addEventListener("storage", (e) => {
+            if (!e.key || e.key === "escarlu_sedes") {
+                loadSedesAndUsers();
+            }
+        });
     });
 
+    function setupPasswordToggle(inputId, buttonId, iconId) {
+        const passInput = document.getElementById(inputId);
+        const toggleBtn = document.getElementById(buttonId);
+        const eyeIcon = document.getElementById(iconId);
+        if (toggleBtn && passInput && eyeIcon) {
+            toggleBtn.addEventListener("click", () => {
+                if (passInput.type === "password") {
+                    passInput.type = "text";
+                    eyeIcon.textContent = "visibility_off";
+                } else {
+                    passInput.type = "password";
+                    eyeIcon.textContent = "visibility";
+                }
+            });
+        }
+    }
+
     let currentSedes = [];
+    let currentUsuarios = [];
 
     async function loadSedesAndUsers() {
         const client = window.supabaseClient;
         const tbody = document.getElementById("tiendas-tbody");
 
         if (!client) {
-            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-error font-semibold">Error: Cliente Supabase no inicializado.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-error font-semibold">Error: Cliente Supabase no inicializado.</td></tr>`;
             return;
         }
 
@@ -194,12 +312,13 @@
             // Cargar Usuarios
             const { data: usuarios, error: errUsers } = await client.from("usuarios").select("*").eq("rol", "tienda");
             if (errUsers) throw errUsers;
+            currentUsuarios = usuarios || [];
 
             // Renderizar
             tbody.innerHTML = "";
 
             if (sedes.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-on-surface-variant font-semibold">No hay sedes registradas.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-on-surface-variant font-semibold">No hay sedes registradas.</td></tr>`;
                 return;
             }
 
@@ -208,9 +327,18 @@
                 if (s.id_sede === "CTR-01") return; // saltar admin general
 
                 const user = usuarios.find(u => u.id_sede_asignada === s.id_sede);
-                const userFullName = user ? user.nombre_completo : '<span class="text-gray-400 italic">No asignado</span>';
-                const userEmail = user ? user.email : '<span class="text-gray-400 italic">No asignado</span>';
+                const userFullName = user ? user.nombre_completo : '<span class="text-gray-400 italic text-xs">No asignado</span>';
+                const userEmail = user ? user.email : '<span class="text-gray-400 italic text-xs">No asignado</span>';
                 
+                // Botón del Switch según el estado activo
+                const switchHtml = `
+                    <button onclick="toggleSedeStatus('${s.id_sede}', ${s.activo})" 
+                        class="w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${s.activo ? 'bg-green-500' : 'bg-gray-300'}" 
+                        title="${s.activo ? 'Desactivar tienda' : 'Activar tienda'}">
+                        <div class="bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${s.activo ? 'translate-x-6' : 'translate-x-0'}"></div>
+                    </button>
+                `;
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-surface-container-low transition-colors">
                         <td class="px-6 py-4 font-bold text-primary">${s.id_sede}</td>
@@ -223,6 +351,21 @@
                                 ${s.activo ? 'Activa' : 'Inactiva'}
                             </span>
                         </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-center gap-3">
+                                ${switchHtml}
+                                <button onclick="openEditModal('${s.id_sede}')" 
+                                    class="w-9 h-9 rounded-lg flex items-center justify-center text-primary hover:bg-primary/10 transition-all" 
+                                    title="Editar datos de Tienda">
+                                    <span class="material-symbols-outlined" style="font-size:20px;">edit</span>
+                                </button>
+                                <button onclick="openResetModal('${s.id_sede}')" 
+                                    class="w-9 h-9 rounded-lg flex items-center justify-center text-[#cfaa32] hover:bg-amber-100 transition-all" 
+                                    title="Restablecer Contraseña">
+                                    <span class="material-symbols-outlined" style="font-size:20px;">lock_reset</span>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 `;
             });
@@ -232,7 +375,7 @@
 
         } catch (e) {
             console.error("Error al cargar sedes y usuarios:", e);
-            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-error font-semibold">Error al conectar con la base de datos.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-error font-semibold">Error al conectar con la base de datos.</td></tr>`;
         }
     }
 
@@ -255,6 +398,7 @@
         storeIdInput.value = nextId;
     }
 
+    // Modal Crear
     function openModal() {
         document.getElementById("new-store-modal").classList.remove("hidden");
         document.getElementById("new-store-modal").classList.add("flex");
@@ -267,6 +411,42 @@
         document.getElementById("new-store-form").reset();
     }
 
+    // Modal Editar
+    function openEditModal(storeId) {
+        const s = currentSedes.find(x => x.id_sede === storeId);
+        if (!s) return;
+        const u = currentUsuarios.find(x => x.id_sede_asignada === storeId);
+
+        document.getElementById("edit-store-id").value = storeId;
+        document.getElementById("edit-store-name").value = s.ubicacion || "";
+        document.getElementById("edit-store-address").value = s.direccion_completa || "";
+        document.getElementById("edit-store-phone").value = s.telefono || "";
+        document.getElementById("edit-user-fullname").value = u ? u.nombre_completo : "";
+
+        document.getElementById("edit-store-modal").classList.remove("hidden");
+        document.getElementById("edit-store-modal").classList.add("flex");
+    }
+
+    function closeEditModal() {
+        document.getElementById("edit-store-modal").classList.add("hidden");
+        document.getElementById("edit-store-modal").classList.remove("flex");
+        document.getElementById("edit-store-form").reset();
+    }
+
+    // Modal Restablecer Password
+    function openResetModal(storeId) {
+        document.getElementById("reset-user-store-id").value = storeId;
+        document.getElementById("reset-password-modal").classList.remove("hidden");
+        document.getElementById("reset-password-modal").classList.add("flex");
+    }
+
+    function closeResetModal() {
+        document.getElementById("reset-password-modal").classList.add("hidden");
+        document.getElementById("reset-password-modal").classList.remove("flex");
+        document.getElementById("reset-password-form").reset();
+    }
+
+    // Registro de Nueva Tienda y Cuenta (Formulario Crear)
     document.getElementById("new-store-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const client = window.supabaseClient;
@@ -319,13 +499,127 @@
             // Recargar datos locales
             await downloadFromSupabase();
             
-            // Cerrar modal y refrescar la tabla
             closeModal();
             loadSedesAndUsers();
 
         } catch (err) {
             console.error("Error al registrar sede y usuario:", err);
             alert("Hubo un error al registrar en la base de datos: " + err.message);
+        }
+    });
+
+    // Guardar cambios del formulario Editar
+    document.getElementById("edit-store-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const client = window.supabaseClient;
+        if (!client) return;
+
+        const storeId = document.getElementById("edit-store-id").value;
+        const storeName = document.getElementById("edit-store-name").value.trim();
+        const storeAddress = document.getElementById("edit-store-address").value.trim();
+        const storePhone = document.getElementById("edit-store-phone").value.trim();
+        const userFullName = document.getElementById("edit-user-fullname").value.trim();
+
+        try {
+            // 1. Actualizar Sede
+            const { error: errSede } = await client.from("sedes").update({
+                ubicacion: storeName,
+                direccion_completa: storeAddress || null,
+                telefono: storePhone || null
+            }).eq("id_sede", storeId);
+
+            if (errSede) throw errSede;
+
+            // 2. Actualizar Nombre de Usuario asignado
+            const { error: errUser } = await client.from("usuarios").update({
+                nombre_completo: userFullName
+            }).eq("id_sede_asignada", storeId);
+
+            if (errUser) throw errUser;
+
+            alert("Datos de la tienda actualizados correctamente.");
+            
+            // Recargar datos locales
+            await downloadFromSupabase();
+            
+            closeEditModal();
+            loadSedesAndUsers();
+
+        } catch (err) {
+            console.error("Error al actualizar la tienda:", err);
+            alert("Error al actualizar: " + err.message);
+        }
+    });
+
+    // Cambiar estado activo/inactivo (Switch)
+    async function toggleSedeStatus(storeId, currentStatus) {
+        const client = window.supabaseClient;
+        if (!client) return;
+
+        const newStatus = !currentStatus;
+        const confirmMsg = `¿Estás seguro de que deseas ${newStatus ? 'ACTIVAR' : 'DESACTIVAR'} la tienda con código ${storeId}?`;
+        if (!confirm(confirmMsg)) return;
+
+        try {
+            // 1. Actualizar Sede
+            const { error: errSede } = await client.from("sedes").update({
+                activo: newStatus
+            }).eq("id_sede", storeId);
+
+            if (errSede) throw errSede;
+
+            // 2. Actualizar Usuario
+            const { error: errUser } = await client.from("usuarios").update({
+                activo: newStatus
+            }).eq("id_sede_asignada", storeId);
+
+            if (errUser) throw errUser;
+
+            alert(`Tienda ${newStatus ? 'activada' : 'desactivada'} correctamente.`);
+            
+            // Recargar datos locales
+            await downloadFromSupabase();
+            
+            loadSedesAndUsers();
+
+        } catch (err) {
+            console.error("Error al cambiar estado de la tienda:", err);
+            alert("Error al cambiar estado: " + err.message);
+        }
+    }
+
+    // Restablecer contraseña
+    document.getElementById("reset-password-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const client = window.supabaseClient;
+        if (!client) return;
+
+        const storeId = document.getElementById("reset-user-store-id").value;
+        const newPassword = document.getElementById("reset-password-input").value.trim();
+
+        if (newPassword.length < 6) {
+            alert("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+
+        try {
+            const { error: errUser } = await client.from("usuarios").update({
+                contrasena: newPassword
+            }).eq("id_sede_asignada", storeId);
+
+            if (errUser) throw errUser;
+
+            alert("Contraseña actualizada con éxito.");
+            
+            // Recargar datos locales
+            await downloadFromSupabase();
+            
+            closeResetModal();
+            loadSedesAndUsers();
+
+        } catch (err) {
+            console.error("Error al restablecer contraseña:", err);
+            alert("Error al restablecer contraseña: " + err.message);
         }
     });
 </script>
