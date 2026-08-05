@@ -1421,6 +1421,14 @@ document.addEventListener("DOMContentLoaded", () => {
         setupHeaderProfile();
         setupNotifications();
     }
+
+    // Intervalo de seguridad: Recargar datos desde Supabase cada 30 segundos
+    setInterval(() => {
+        const user = getCurrentUser();
+        if (user) {
+            downloadFromSupabase();
+        }
+    }, 30000);
 });
 
 function setupHeaderProfile() {

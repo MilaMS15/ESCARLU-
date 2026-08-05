@@ -778,6 +778,13 @@
         // Paginación
         document.getElementById("hp-btn-prev").addEventListener("click", () => { if (currentPage > 1) { currentPage--; renderHPTable(); } });
         document.getElementById("hp-btn-next").addEventListener("click", () => { currentPage++; renderHPTable(); });
+
+        // Sincronización en tiempo real
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'escarlu_movimientos') {
+                renderHPTable();
+            }
+        });
     });
 
     function setupPaginationNumbers(containerId, currentPage, totalPages, onPageClick) {
