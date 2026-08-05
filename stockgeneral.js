@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.getElementById("inventory-tbody");
     const storeSelect = document.getElementById("store-filter-select");
     const globalSearchInput = document.getElementById("global-search-input");
-    const tableSearchInput = document.getElementById("inventory-search-table");
     const filterTipo = document.getElementById("select-filter-tipo");
     const filterModelo = document.getElementById("select-filter-modelo");
     const filterColor = document.getElementById("select-filter-color");
@@ -95,9 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (filterColor) {
         filterColor.addEventListener("change", renderTable);
-    }
-    if (tableSearchInput) {
-        tableSearchInput.addEventListener('input', renderTable);
     }
     if (globalSearchInput) {
         globalSearchInput.addEventListener('input', renderTable);
@@ -158,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterTipo) filterTipo.addEventListener("change", resetPaging);
     if (filterModelo) filterModelo.addEventListener("change", resetPaging);
     if (filterColor) filterColor.addEventListener("change", resetPaging);
-    if (tableSearchInput) tableSearchInput.addEventListener("input", resetPaging);
     if (globalSearchInput) globalSearchInput.addEventListener("input", resetPaging);
     if (storeSelect) storeSelect.addEventListener("change", resetPaging);
 
@@ -166,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!invData || Object.keys(invData).length === 0) return;
 
         const selectedStore = storeSelect ? storeSelect.value : "all";
-        const query = (tableSearchInput?.value || globalSearchInput?.value || "").toLowerCase().trim();
+        const query = (globalSearchInput?.value || "").toLowerCase().trim();
         const selectedTipo = filterTipo ? filterTipo.value : "all";
         const selectedModelo = filterModelo ? filterModelo.value : "all";
         const selectedColor = filterColor ? filterColor.value : "all";

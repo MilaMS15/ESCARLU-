@@ -1467,16 +1467,17 @@ function setupHeaderProfile() {
         if (!dropdown) {
             dropdown = document.createElement("div");
             dropdown.id = "profile-dropdown";
-            dropdown.className = "absolute right-0 top-full mt-2 w-48 bg-white border border-outline-variant rounded-xl shadow-lg py-2 hidden z-50 text-xs font-semibold text-left";
+            dropdown.className = "absolute right-0 top-full mt-2 w-48 border border-outline-variant rounded-xl shadow-lg py-2 hidden text-xs font-semibold text-left";
+            dropdown.setAttribute("style", "background-color: #ffffff !important; z-index: 99999 !important;");
             dropdown.innerHTML = `
-                <a href="#" id="dropdown-my-profile" class="flex items-center gap-2 px-4 py-2 text-on-surface hover:bg-surface-container-low transition-colors">
+                <div id="dropdown-my-profile" class="flex items-center gap-2 px-4 py-2 text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer select-none">
                     <span class="material-symbols-outlined text-sm">person</span>
                     <span>Mi Perfil</span>
-                </a>
-                <a href="#" id="dropdown-logout" class="flex items-center gap-2 px-4 py-2 text-error hover:bg-red-50 transition-colors border-t border-outline-variant/50">
+                </div>
+                <div id="dropdown-logout" class="flex items-center gap-2 px-4 py-2 text-error hover:bg-red-50 transition-colors border-t border-outline-variant/50 cursor-pointer select-none">
                     <span class="material-symbols-outlined text-sm text-error">logout</span>
                     <span>Cerrar Sesión</span>
-                </a>
+                </div>
             `;
             profileContainer.appendChild(dropdown);
 
