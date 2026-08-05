@@ -251,10 +251,10 @@
 </div>
 
 <!-- Barra de Filtros en Cascada (Oculta por defecto) -->
-<div id="filter-bar" class="p-4 bg-surface-container-low border-b border-outline-variant grid grid-cols-1 sm:grid-cols-4 gap-4 shrink-0">
+<div id="filter-bar" class="p-4 bg-surface-container-low border-b border-outline-variant grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0">
   <div class="flex flex-row items-center gap-2">
     <label class="text-[10px] text-on-surface-variant font-bold uppercase whitespace-nowrap">Filtrar por Tipo</label>
-    <select id="select-filter-tipo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+    <select id="select-filter-tipo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg pl-3 pr-8 bg-surface outline-none cursor-pointer text-xs font-semibold">
       <option value="all">Todos los tipos</option>
       <option value="Polo">Polo</option>
       <option value="Short">Short</option>
@@ -264,19 +264,15 @@
   </div>
   <div class="flex flex-row items-center gap-2">
     <label class="text-[10px] text-on-surface-variant font-bold uppercase whitespace-nowrap">Filtrar por Modelo</label>
-    <select id="select-filter-modelo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+    <select id="select-filter-modelo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg pl-3 pr-8 bg-surface outline-none cursor-pointer text-xs font-semibold">
       <option value="all">Todos los modelos</option>
     </select>
   </div>
   <div class="flex flex-row items-center gap-2">
     <label class="text-[10px] text-on-surface-variant font-bold uppercase whitespace-nowrap">Filtrar por Color</label>
-    <select id="select-filter-color" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
+    <select id="select-filter-color" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg pl-3 pr-8 bg-surface outline-none cursor-pointer text-xs font-semibold">
       <option value="all">Todos los colores</option>
     </select>
-  </div>
-  <div class="flex flex-row items-center gap-2">
-    <label class="text-[10px] text-on-surface-variant font-bold uppercase whitespace-nowrap">Buscar Texto</label>
-    <input type="text" id="inventory-search-table" placeholder="Buscar por palabra clave..." class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none text-sm" />
   </div>
 </div>
 
