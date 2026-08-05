@@ -451,15 +451,13 @@
     }
 
     function getDestinos() {
-        // Todas las sedes disponibles excepto la tienda actual
-        const ALL_STORES = [
-            { id: "ALM-01", name: "Almacén Central" },
-            { id: "TDA-01", name: "Tienda Santa Lucía" },
-            { id: "TDA-02", name: "Tienda Generales Suplex" },
-            { id: "TDA-03", name: "Tienda Generales Pasadizo" },
-            { id: "TDA-04", name: "Tienda Aviación" }
-        ];
-        return ALL_STORES.filter(s => s.id !== user.storeId);
+        const list = [];
+        for (const [id, name] of Object.entries(STORE_NAMES)) {
+            if (id !== "CTR-01" && id !== user.storeId) {
+                list.push({ id, name });
+            }
+        }
+        return list;
     }
 
     function getAllowedSizes(modelId) {

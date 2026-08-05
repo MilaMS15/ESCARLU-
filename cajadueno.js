@@ -21,6 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Bind sede filter
     const sedeFilter = document.getElementById("filter-sede");
     if (sedeFilter) {
+        sedeFilter.innerHTML = '<option value="all">Todas las Tiendas y Almacén</option>';
+        for (const [storeId, storeName] of Object.entries(STORE_NAMES)) {
+            if (storeId !== 'CTR-01') {
+                const opt = document.createElement("option");
+                opt.value = storeId;
+                opt.textContent = storeName;
+                sedeFilter.appendChild(opt);
+            }
+        }
         sedeFilter.addEventListener('change', renderFinanceDashboard);
     }
 

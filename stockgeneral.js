@@ -103,6 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
         globalSearchInput.addEventListener('input', renderTable);
     }
     if (storeSelect) {
+        storeSelect.innerHTML = '<option value="all">Consolidado Total (Todas las Sedes)</option>';
+        for (const [id, name] of Object.entries(STORE_NAMES)) {
+            if (id !== "CTR-01") {
+                const opt = document.createElement("option");
+                opt.value = id;
+                opt.textContent = name;
+                storeSelect.appendChild(opt);
+            }
+        }
         storeSelect.addEventListener("change", renderTable);
     }
 
