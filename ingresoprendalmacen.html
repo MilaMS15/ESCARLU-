@@ -210,64 +210,67 @@
 </div>
 <!-- Main Grid Layout (Bento Style) -->
 <div class="space-y-4">
-<div class="bg-surface-container-lowest p-4 rounded-xl shadow-[0px_4px_20px_rgba(116,84,117,0.08)] border-t-2 border-tertiary relative overflow-hidden">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-[#F8C8D4]/40 relative overflow-hidden">
 <div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
 <span class="material-symbols-outlined text-[80px]">app_registration</span>
 </div>
 <form id="ingreso-lote-form" class="space-y-6 relative z-10" onsubmit="event.preventDefault();">
-<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Detalles del Lote</h3>
+<h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+    <span class="material-symbols-outlined">add_circle</span>
+    Detalles del Lote
+</h3>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="space-y-2">
-<label class="block font-label-lg text-on-surface">Tipo de Prenda</label>
-<select id="select-tipo" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-8 text-sm font-semibold focus:border-primary focus:ring-0 transition-colors bg-surface">
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase">Tipo de Prenda</label>
+<select id="select-tipo" class="w-full h-10 border border-[#F8C8D4] rounded-xl pl-3 pr-8 text-sm font-semibold focus:ring-1 focus:ring-primary focus:border-primary bg-white outline-none cursor-pointer">
     <option value="Polo">Polo</option>
     <option value="Short">Short</option>
     <option value="Chompa">Chompa</option>
     <option value="Buzo">Buzo</option>
 </select>
 </div>
-<div class="space-y-2">
-<label class="block font-label-lg text-on-surface">Modelo / SKU</label>
-<select id="select-model" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-8 text-sm font-semibold focus:border-primary focus:ring-0 transition-colors bg-surface">
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase">Modelo / SKU</label>
+<select id="select-model" class="w-full h-10 border border-[#F8C8D4] rounded-xl pl-3 pr-8 text-sm font-semibold focus:ring-1 focus:ring-primary focus:border-primary bg-white outline-none cursor-pointer">
 </select>
 </div>
-<div class="space-y-2">
-<label class="block font-label-lg text-on-surface">Color</label>
-<select id="select-color" class="w-full h-10 border-2 border-outline-variant rounded-lg pl-3 pr-8 text-sm font-semibold focus:border-primary focus:ring-0 transition-colors bg-surface">
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase">Color</label>
+<select id="select-color" class="w-full h-10 border border-[#F8C8D4] rounded-xl pl-3 pr-8 text-sm font-semibold focus:ring-1 focus:ring-primary focus:border-primary bg-white outline-none cursor-pointer">
 </select>
 </div>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="space-y-2">
-<label class="block font-label-lg text-on-surface">Talla</label>
-<div class="flex gap-2" id="talla-buttons-container">
-<button class="talla-btn flex-1 h-10 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all" type="button" data-talla="S">S</button>
-<button class="talla-btn flex-1 h-10 border-2 border-primary bg-primary/5 text-primary font-bold rounded-lg transition-all" type="button" data-talla="M">M</button>
-<button class="talla-btn flex-1 h-10 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all" type="button" data-talla="L">L</button>
-<button class="talla-btn flex-1 h-10 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all" type="button" data-talla="XL">XL</button>
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase">Talla</label>
+<div class="flex gap-2 flex-wrap" id="talla-buttons-container">
+<button class="talla-btn w-12 h-10 border border-outline-variant hover:border-primary/50 rounded-xl transition-all" type="button" data-talla="S">S</button>
+<button class="talla-btn w-12 h-10 border-2 border-primary bg-primary/10 text-primary font-bold rounded-xl transition-all" type="button" data-talla="M">M</button>
+<button class="talla-btn w-12 h-10 border border-outline-variant hover:border-primary/50 rounded-xl transition-all" type="button" data-talla="L">L</button>
+<button class="talla-btn w-12 h-10 border border-outline-variant hover:border-primary/50 rounded-xl transition-all" type="button" data-talla="XL">XL</button>
 </div>
 </div>
-<div class="md:col-span-2 space-y-2">
-<label class="block font-label-lg text-on-surface">Cantidad de Unidades</label>
-<div class="flex items-center">
-<button class="h-10 w-14 border-2 border-outline-variant border-r-0 rounded-l-lg flex items-center justify-center hover:bg-surface-container-high transition-colors" type="button" onclick="updateQtyInput(-10)">
-<span class="material-symbols-outlined">remove</span>
-</button>
-<input id="qty-input" class="w-full h-10 border-2 border-outline-variant text-center text-body-md focus:ring-0 focus:border-outline-variant bg-surface" type="number" value="100" min="1"/>
-<button class="h-10 w-14 border-2 border-outline-variant border-l-0 rounded-r-lg flex items-center justify-center hover:bg-surface-container-high transition-colors" type="button" onclick="updateQtyInput(10)">
-<span class="material-symbols-outlined">add</span>
-</button>
+<div class="md:col-span-2 flex flex-col gap-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase">Cantidad de Unidades</label>
+<div class="flex items-center max-w-[180px] bg-white border border-[#F8C8D4] rounded-xl overflow-hidden shadow-sm h-10">
+    <button class="h-full w-12 hover:bg-gray-100 transition-colors flex items-center justify-center text-[#745475]" type="button" onclick="updateQtyInput(-10)">
+        <span class="material-symbols-outlined text-sm font-bold">remove</span>
+    </button>
+    <input id="qty-input" class="w-12 h-full text-center text-sm font-bold border-none bg-transparent focus:ring-0 focus:outline-none p-0" type="number" value="100" min="1"/>
+    <button class="h-full w-12 hover:bg-gray-100 transition-colors flex items-center justify-center text-[#745475]" type="button" onclick="updateQtyInput(10)">
+        <span class="material-symbols-outlined text-sm font-bold">add</span>
+    </button>
 </div>
 </div>
 </div>
-<div class="pt-4 flex gap-4">
-<button id="btn-submit-ingreso" class="flex-1 h-10 bg-primary text-on-primary font-bold rounded-lg shadow-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-<span class="material-symbols-outlined">save</span>
-                                        Registrar Ingreso
-                                    </button>
-<button id="btn-clear-ingreso" class="px-8 h-10 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary/5 transition-all" type="button">
-                                        Limpiar
-                                    </button>
+<div class="pt-6 flex justify-end gap-3 border-t border-outline-variant/30">
+    <button id="btn-clear-ingreso" class="px-5 h-10 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary/5 transition-all text-xs uppercase tracking-wider" type="button">
+        Limpiar
+    </button>
+    <button id="btn-submit-ingreso" class="px-6 h-10 bg-primary text-on-primary font-bold rounded-xl shadow-md hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+        <span class="material-symbols-outlined text-sm">save</span>
+        <span>Registrar Ingreso</span>
+    </button>
 </div>
 </form>
 </div>
@@ -341,15 +344,15 @@
                 btn.type = 'button';
                 btn.setAttribute('data-talla', size);
                 btn.className = size === selectedTalla
-                    ? 'talla-btn flex-1 h-10 border-2 border-primary bg-primary/5 text-primary font-bold rounded-lg transition-all'
-                    : 'talla-btn flex-1 h-10 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all';
+                    ? 'talla-btn w-12 h-10 border-2 border-primary bg-primary/10 text-primary font-bold rounded-xl transition-all'
+                    : 'talla-btn w-12 h-10 border border-outline-variant hover:border-primary/50 text-on-surface-variant rounded-xl transition-all';
                 btn.textContent = size;
                 
                 btn.addEventListener('click', () => {
                     tallaContainer.querySelectorAll('.talla-btn').forEach(b => {
-                        b.className = 'talla-btn flex-1 h-10 border-2 border-outline-variant hover:border-primary/50 rounded-lg transition-all';
+                        b.className = 'talla-btn w-12 h-10 border border-outline-variant hover:border-primary/50 text-on-surface-variant rounded-xl transition-all';
                     });
-                    btn.className = 'talla-btn flex-1 h-10 border-2 border-primary bg-primary/5 text-primary font-bold rounded-lg transition-all';
+                    btn.className = 'talla-btn w-12 h-10 border-2 border-primary bg-primary/10 text-primary font-bold rounded-xl transition-all';
                     selectedTalla = size;
                 });
                 

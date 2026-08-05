@@ -1,787 +1,784 @@
 <!DOCTYPE html>
-
-<html class="light" lang="es"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>ESCARLÚ - Historial de Movimientos de Almacén</title>
-<script src="shared.js"></script>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Sans+3:ital,wght@0,200..900;1,200..900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Historial Almacén | ESCARLÚ</title>
+    <script src="shared.js"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
             "colors": {
-                    "secondary-fixed-dim": "#ecbaba",
-                    "surface-container": "#f0eded",
-                    "inverse-on-surface": "#f3f0ef",
-                    "secondary": "#7b5455",
-                    "tertiary-fixed-dim": "#e9c349",
-                    "inverse-surface": "#313030",
-                    "surface-dim": "#dcd9d9",
-                    "outline-variant": "#cfc3cc",
-                    "surface-variant": "#e5e2e1",
-                    "tertiary-fixed": "#ffe088",
-                    "on-tertiary-fixed-variant": "#574500",
-                    "error-container": "#ffdad6",
-                    "on-primary-container": "#553757",
-                    "on-secondary-fixed-variant": "#613d3e",
-                    "on-secondary-fixed": "#2f1314",
-                    "on-primary-fixed-variant": "#5a3c5d",
-                    "background": "#fcf9f8",
-                    "outline": "#7e747c",
-                    "inverse-primary": "#e2bae1",
-                    "on-tertiary-container": "#513f00",
-                    "on-tertiary": "#ffffff",
-                    "on-secondary-container": "#7a5354",
-                    "surface-bright": "#fcf9f8",
-                    "surface-container-low": "#f6f3f2",
-                    "on-tertiary-fixed": "#241a00",
-                    "on-surface-variant": "#4c444b",
-                    "on-primary": "#ffffff",
-                    "tertiary": "#735c00",
-                    "surface-container-lowest": "#ffffff",
-                    "on-error": "#ffffff",
-                    "surface": "#fcf9f8",
-                    "on-error-container": "#93000a",
-                    "on-secondary": "#ffffff",
-                    "primary-fixed-dim": "#e2bae1",
-                    "primary-fixed": "#ffd6fe",
-                    "error": "#ba1a1a",
-                    "primary-container": "#c8a2c8",
-                    "surface-container-highest": "#e5e2e1",
-                    "on-primary-fixed": "#2b112f",
-                    "surface-tint": "#745475",
-                    "surface-container-high": "#eae7e7",
-                    "secondary-fixed": "#ffdad9",
-                    "primary": "#745475",
-                    "on-surface": "#1c1b1b",
-                    "on-background": "#1c1b1b",
-                    "secondary-container": "#fecbcb",
-                    "tertiary-container": "#cfaa32"
+                "on-background": "#1c1b1b",
+                "on-secondary": "#ffffff",
+                "surface": "#fcf9f8",
+                "on-surface-variant": "#4c444b",
+                "on-error": "#ffffff",
+                "background": "#fcf9f8",
+                "primary-container": "#c8a2c8",
+                "surface-bright": "#fcf9f8",
+                "on-primary-fixed-variant": "#5a3c5d",
+                "primary-fixed": "#ffd6fe",
+                "secondary-container": "#fecbcb",
+                "on-tertiary-fixed": "#241a00",
+                "on-surface": "#1c1b1b",
+                "inverse-primary": "#e2bae1",
+                "primary-fixed-dim": "#e2bae1",
+                "surface-variant": "#e5e2e1",
+                "on-secondary-container": "#7a5354",
+                "tertiary-container": "#cfaa32",
+                "surface-container-highest": "#e5e2e1",
+                "tertiary-fixed": "#ffe088",
+                "on-primary": "#ffffff",
+                "secondary-fixed": "#ffdad9",
+                "surface-container": "#f0eded",
+                "primary": "#745475",
+                "surface-container-high": "#eae7e7",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#745475",
+                "secondary": "#7b5455",
+                "outline": "#7e747c",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed-dim": "#ecbaba",
+                "tertiary-fixed-dim": "#e9c349",
+                "surface-container-low": "#f6f3f2",
+                "outline-variant": "#cfc3cc",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "on-secondary-fixed-variant": "#613d3e",
+                "tertiary": "#735c00",
+                "on-tertiary-fixed-variant": "#574500",
+                "on-primary-fixed": "#2b112f",
+                "on-primary-container": "#553757",
+                "error": "#ba1a1a",
+                "inverse-surface": "#313030",
+                "surface-dim": "#dcd9d9",
+                "inverse-on-surface": "#f3f0ef",
+                "on-tertiary-container": "#513f00",
+                "on-secondary-fixed": "#2f1314"
             },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "2xl": "1rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "container-padding": "20px",
-                    "gutter": "16px",
-                    "stack-md": "16px",
-                    "stack-lg": "32px",
-                    "stack-sm": "12px",
-                    "unit": "8px"
-            },
+            "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
             "fontFamily": {
-                    "label-md": ["Source Sans 3"],
-                    "headline-md": ["Libre Caslon Text"],
-                    "body-sm": ["Source Sans 3"],
-                    "body-md": ["Source Sans 3"],
-                    "body-lg": ["Source Sans 3"],
-                    "label-lg": ["Source Sans 3"],
-                    "headline-lg": ["Libre Caslon Text"],
-                    "display-lg": ["Libre Caslon Text"]
-            },
-            "fontSize": {
-                    "label-md": ["16px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
-                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
-                    "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                    "body-md": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                    "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                    "label-lg": ["18px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
-                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
-                    "display-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "700"}]
+                "body-sm": ["Source Sans 3"], "label-lg": ["Source Sans 3"],
+                "headline-md": ["Libre Caslon Text"], "body-lg": ["Source Sans 3"],
+                "display-lg": ["Libre Caslon Text"], "body-md": ["Source Sans 3"],
+                "headline-lg": ["Libre Caslon Text"], "label-md": ["Source Sans 3"]
             }
-          },
-        },
+          }
+        }
       }
     </script>
-<style>
-        body {
-            background-color: #fcf9f8;
-            color: #1c1b1b;
-            font-family: 'Source Sans 3', sans-serif;
-        }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 24px;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(200, 162, 200, 0.2);
-            box-shadow: 0 4px 20px rgba(85, 55, 87, 0.05);
-        }
-        .gold-accent {
-            border-top: 2px solid #cfaa32;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
+    <style>
+        body { background-color: #fcf9f8; color: #1c1b1b; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(200,162,200,0.2); }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #f0eded; }
+        ::-webkit-scrollbar-thumb { background: #c8a2c8; border-radius: 10px; border: 3px solid #f0eded; }
+        html, body { height: 100vh; overflow: hidden; }
+        main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .dashboard-content { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 8px 16px !important; gap: 8px !important; }
+        .table-container { flex: 1; overflow-y: auto; }
+
+        /* Modales */
+        #delete-confirm-modal {
             display: none;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.55) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            z-index: 9999 !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 16px !important;
         }
+        #delete-confirm-modal.open {
+            display: flex !important;
+        }
+        #delete-confirm-modal .modal-inner {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 24px 64px rgba(116, 84, 117, 0.18), 0 4px 16px rgba(0,0,0,0.12);
+            overflow: hidden;
+            width: 100%;
+            max-width: 380px;
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        /* Header del modal de confirmación - ROSADO */
+        #delete-confirm-modal .del-header {
+            position: relative;
+            height: 88px;
+            background: linear-gradient(135deg, #F8C8D4 0%, #f0b3c0 50%, #FCECEE 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 0 28px 16px;
+            overflow: hidden;
+        }
+        #delete-confirm-modal .del-header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.15;
+            background: radial-gradient(circle at 70% 50%, white, transparent 70%);
+        }
+        #delete-confirm-modal .del-header-text {
+            position: relative;
+            z-index: 1;
+        }
+        #delete-confirm-modal .del-header-label {
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(90, 40, 50, 0.55);
+            display: block;
+            margin-bottom: 2px;
+        }
+        #delete-confirm-modal .del-header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1c1b1b;
+            font-family: 'Libre Caslon Text', serif;
+            line-height: 1.2;
+            margin: 0;
+        }
+        /* Cuerpo del modal */
+        #delete-confirm-modal .del-body {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
+        }
+        #delete-confirm-modal .del-icon-wrap {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(186, 26, 26, 0.10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ba1a1a;
+        }
+        #delete-confirm-modal .del-desc {
+            font-size: 14px;
+            color: #4c444b;
+            font-weight: 500;
+            line-height: 1.6;
+            margin: 0;
+        }
+        #delete-confirm-modal .del-actions {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-top: 4px;
+        }
+        #btn-delete-cancel {
+            flex: 1;
+            height: 48px;
+            border: 2px solid #cfc3cc !important;
+            background: transparent !important;
+            color: #4c444b !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            border-radius: 12px !important;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        #btn-delete-cancel:hover {
+            background: #f0eded !important;
+        }
+        #btn-delete-confirm {
+            flex: 1;
+            height: 48px;
+            background: #ba1a1a !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            border-radius: 12px !important;
+            border: none !important;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(186, 26, 26, 0.3) !important;
+        }
+        #btn-delete-confirm:hover {
+            background: #93000a !important;
+            box-shadow: 0 4px 16px rgba(186, 26, 26, 0.4) !important;
+        }
+        #btn-delete-confirm:active {
+            transform: scale(0.97);
+        }
+
+        /* Table row hover */
+        tbody tr:hover { background-color: #f6f3f2; }
     </style>
 </head>
-<body class="min-h-screen overflow-x-hidden">
-<!-- Sidebar Navigation -->
-<aside class="flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container dark:bg-surface-container-low shadow-md z-50 w-60 md:w-64">
-<div class="mb-5 px-4">
-<h1 class="font-headline-md text-headline-md text-primary">ESCARLÚ</h1>
-<p class="font-label-lg text-label-lg text-on-surface-variant opacity-70">Management Dashboard</p>
-</div>
-<nav class="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-hide px-2">
-<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 rounded-lg cursor-pointer" href="#">
-<span class="material-symbols-outlined">dashboard</span>
-<span class="font-label-lg text-label-lg">Dashboard</span>
-</a>
-<a class="flex items-center gap-4 bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-lg p-4 font-bold transition-all duration-200 cursor-pointer" href="#">
-<span class="material-symbols-outlined">inventory_2</span>
-<span class="font-label-lg text-label-lg">Central Fabric Stock</span>
-</a>
-<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 rounded-lg cursor-pointer" href="#">
-<span class="material-symbols-outlined">reorder</span>
-<span class="font-label-lg text-label-lg">Department Requests</span>
-</a>
-<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 rounded-lg cursor-pointer" href="#">
-<span class="material-symbols-outlined">content_cut</span>
-<span class="font-label-lg text-label-lg">Simulation of Trace &amp; Cut</span>
-</a>
-<a class="flex items-center gap-4 text-on-surface-variant dark:text-outline-variant p-4 hover:bg-surface-container-highest transition-all duration-200 rounded-lg cursor-pointer" href="#">
-<span class="material-symbols-outlined">assessment</span>
-<span class="font-label-lg text-label-lg">Reports</span>
-</a>
-</nav>
-<div class="mt-auto border-t border-outline-variant/30 pt-4 px-2">
-<a class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-error-container hover:text-on-error-container transition-all duration-200 rounded-lg" href="#">
-<span class="material-symbols-outlined">logout</span>
-<span class="font-label-lg text-label-lg">Logout</span>
-</a>
-</div>
-</aside>
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden flex">
+
+<!-- Sidebar Navigation (Shared Component) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-stack-md px-stack-sm bg-surface-container shadow-md z-50 w-72 transition-all duration-300"></aside>
+
 <!-- Main Content Area -->
-<main class="ml-0 md:ml-72 min-h-screen bg-background">
-<!-- Top Bar Header -->
-<header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
-  <!-- Lado Izquierdo: Badge de Sede -->
-  <div class="flex items-center gap-2">
-    <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-      <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">warehouse</span>
-      <span class="text-xs font-bold text-primary font-body-md">Almacén Central</span>
-    </div>
-  </div>
-
-  <!-- Centro: Búsqueda Global Centrada -->
-  <div class="flex-1 max-w-md mx-6">
-    <div class="relative w-full">
-      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
-        <span class="material-symbols-outlined text-sm">search</span>
-      </span>
-      <input type="text" placeholder="Buscar movimientos..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none font-body-md" id="global-search-input" />
-    </div>
-  </div>
-
-  <!-- Lado Derecho: Indicador y Usuario -->
-  <div class="flex items-center gap-4">
+<main class="w-full h-screen overflow-hidden md:ml-72 flex flex-col gap-3">
+  <!-- Unified Top Bar Header -->
+  <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 shrink-0">
+    <!-- Lado Izquierdo: Badge de Sede -->
     <div class="flex items-center gap-2">
-      <span class="text-xs font-bold text-on-surface font-body-md">Encargado de Almacén</span>
-      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
-        <img alt="Almacenero Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGWD6xK5vb8NZc5g9ADvQTdt4cs1gEe114evk9R65-086cCeFOZBkYxxm6OrsnYYYT3DBrHfsqyNCvkK15CUSvTDXbCCapLJQVA2nzFj8QQHckE5xEfT7SFuNHeHcLbEIuh7GbbtjrmCrkzKtEyULAo0nzM0txvbDFjR8JtjtHSqlAQl7zSNwVbdll4PTWi3KvEfbpxJiMEvKSQWUeBbYxguOwGHvBM70qPPl6Pb8AXfJ57nwqxiA"/>
+      <div class="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+        <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">warehouse</span>
+        <span class="text-xs font-bold text-primary" id="header-store-name">Almacén Central</span>
       </div>
     </div>
+
+    <!-- Centro: Input de Búsqueda -->
+    <div class="flex-1 max-w-md mx-6">
+      <div class="relative w-full">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+          <span class="material-symbols-outlined text-sm">search</span>
+        </span>
+        <input type="text" placeholder="Buscar por modelo, origen, destino..." class="w-full pl-9 pr-4 py-1.5 border border-outline-variant bg-surface rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary h-9 outline-none" id="hp-search-top" />
+      </div>
+    </div>
+
+    <!-- Lado Derecho -->
+    <div class="flex items-center gap-4">
+      <button class="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-white"></span>
+      </button>
+      <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
+        <span class="text-xs font-bold text-on-surface" id="header-user-name">Encargado de Almacén</span>
+        <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+          <img alt="Perfil" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGWD6xK5vb8NZc5g9ADvQTdt4cs1gEe114evk9R65-086cCeFOZBkYxxm6OrsnYYYT3DBrHfsqyNCvkK15CUSvTDXbCCapLJQVA2nzFj8QQHckE5xEfT7SFuNHeHcLbEIuh7GbbtjrmCrkzKtEyULAo0nzM0txvbDFjR8JtjtHSqlAQl7zSNwVbdll4PTWi3KvEfbpxJiMEvKSQWUeBbYxguOwGHvBM70qPPl6Pb8AXfJ57nwqxiA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content w-full px-6 py-2 flex flex-col gap-2 flex-grow min-h-0 overflow-y-auto">
+
+    <!-- Page Header -->
+    <div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0">
+      <div class="flex items-center gap-3">
+        <h2 id="page-title" class="text-[1.4rem] font-bold text-primary font-sans leading-tight">Historial de Movimientos de Almacén</h2>
+        <span class="text-xs text-on-surface-variant font-semibold">| Fecha: <span id="current-date-label" class="text-primary font-bold"></span></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Selector de Tipo de Movimiento -->
+        <select id="hp-filter-tipo" class="h-9 border border-outline-variant bg-surface rounded-lg px-3 text-xs font-semibold text-on-surface focus:ring-0 outline-none cursor-pointer">
+          <option value="all">Todos los movimientos</option>
+          <option value="ingreso">Solo Ingresos</option>
+          <option value="salida">Solo Salidas</option>
+        </select>
+        <!-- Selector de Color -->
+        <select id="hp-filter-color" class="h-9 border border-outline-variant bg-surface rounded-lg px-3 text-xs font-semibold text-on-surface focus:ring-0 outline-none cursor-pointer">
+          <option value="all">Todos los colores</option>
+        </select>
+        <!-- Selector de Mes -->
+        <div class="relative flex items-center">
+          <span class="absolute left-3 text-on-surface-variant flex items-center pointer-events-none">
+            <span class="material-symbols-outlined text-sm">calendar_month</span>
+          </span>
+          <input type="month" id="hp-filter-mes" class="pl-9 pr-3 h-9 border border-outline-variant bg-surface rounded-lg text-xs font-semibold text-on-surface focus:ring-0 outline-none cursor-pointer" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="grid grid-cols-3 gap-3 shrink-0">
+      <!-- Total movimientos -->
+      <div class="glass-card rounded-2xl px-5 py-3 flex items-center gap-4 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings:'FILL' 1;">swap_horiz</span>
+        </div>
+        <div>
+          <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Total Movimientos</p>
+          <p class="text-2xl font-black text-primary" id="stat-total">0</p>
+        </div>
+      </div>
+      <!-- Prendas enviadas -->
+      <div class="glass-card rounded-2xl px-5 py-3 flex items-center gap-4 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-green-600 text-lg" style="font-variation-settings:'FILL' 1;">local_shipping</span>
+        </div>
+        <div>
+          <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Prendas Enviadas</p>
+          <p class="text-2xl font-black text-green-700" id="stat-prendas">0</p>
+        </div>
+      </div>
+      <!-- Prendas recibidas -->
+      <div class="glass-card rounded-2xl px-5 py-3 flex items-center gap-4 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-blue-600 text-lg" style="font-variation-settings:'FILL' 1;">download</span>
+        </div>
+        <div>
+          <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Prendas Recibidas</p>
+          <p class="text-2xl font-black text-blue-700" id="stat-recibidas">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historial Table -->
+    <section class="flex flex-col min-h-0 glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant flex-1">
+      <!-- Table Header -->
+      <div class="p-4 bg-surface-container-low border-b border-outline-variant shrink-0">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm text-primary flex items-center gap-2 font-bold uppercase tracking-wider">
+            <span class="material-symbols-outlined text-base">history</span>
+            Registro de Ingresos y Salidas
+          </h3>
+          <span class="text-xs text-on-surface-variant font-semibold" id="hp-count-label">0 registros</span>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container overflow-auto flex-1">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container text-on-surface-variant text-xs font-bold uppercase tracking-wider sticky top-0 z-10">
+              <th class="px-5 py-3.5 border-b border-outline-variant" style="width:14%">Fecha / Hora</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:18%">Prenda</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:8%">Talla</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:8%">Cant.</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:20%">Origen / Destino</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant" style="width:18%">Tipo</th>
+              <th class="px-4 py-3.5 border-b border-outline-variant text-center" style="width:14%">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="hp-table-body" class="divide-y divide-outline-variant/60">
+            <!-- Inyectado dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="px-6 py-3 bg-surface-container-low border-t border-outline-variant/60 flex items-center justify-between shrink-0">
+        <span class="text-xs text-on-surface-variant font-semibold" id="hp-pagination-info">Mostrando 0-0 de 0 registros</span>
+        <div class="flex items-center gap-3">
+          <button type="button" id="hp-btn-prev"
+            class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">chevron_left</span> Anterior
+          </button>
+          <div id="hp-pagination-numbers" class="flex items-center gap-1.5">
+            <!-- Números de página inyectados dinámicamente -->
+          </div>
+          <button type="button" id="hp-btn-next"
+            class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
+            Siguiente <span class="material-symbols-outlined text-sm">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </section>
   </div>
-</header>
-<!-- Content Canvas -->
-<div class="p-container-padding max-w-[1440px] mx-auto">
-<!-- Page Header (Compact) -->
-<div class="flex items-center justify-between pb-1.5 border-b border-surface-variant shrink-0 mt-1 mb-4">
-    <div class="flex items-center gap-3">
-        <h2 class="font-headline-lg text-[1.4rem] font-bold text-primary leading-tight">Historial de Movimientos de Almacén</h2>
-        <span class="text-xs text-on-surface-variant font-semibold">| Seguimiento detallado de ingresos y egresos de productos textiles.</span>
-    </div>
-</div>
-<!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-    <!-- Card 1 -->
-    <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
-      <div class="w-12 h-12 rounded-full bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">trending_up</span>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex justify-between items-center mb-0.5">
-          <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Total Ingresos (Mes)</p>
-          <span id="card-ingresos-pct" class="text-green-600 font-bold bg-green-50 text-[10px] px-1.5 py-0.5 rounded">—</span>
-        </div>
-        <div class="flex items-baseline gap-1.5">
-          <span id="card-ingresos-val" class="text-2xl font-bold text-primary font-headline-md">—</span>
-          <span class="text-xs text-on-surface-variant font-semibold">Uds</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Card 2 -->
-    <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
-      <div class="w-12 h-12 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">trending_down</span>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex justify-between items-center mb-0.5">
-          <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Total Egresos (Mes)</p>
-          <span id="card-egresos-pct" class="text-red-600 font-bold bg-red-50 text-[10px] px-1.5 py-0.5 rounded">—</span>
-        </div>
-        <div class="flex items-baseline gap-1.5">
-          <span id="card-egresos-val" class="text-2xl font-bold text-secondary font-headline-md">—</span>
-          <span class="text-xs text-on-surface-variant font-semibold">Uds</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Card 3 -->
-    <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
-      <div class="w-12 h-12 rounded-full bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">star</span>
-      </div>
-      <div class="flex-1 min-w-0">
-        <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Movimiento más frecuente</p>
-        <p id="card-frecuente-titulo" class="text-lg font-bold text-on-surface truncate font-headline-md leading-tight">—</p>
-        <span id="card-frecuente-detalle" class="text-[10px] text-on-surface-variant truncate block mt-0.5">Cargando...</span>
-      </div>
-    </div>
-  </div>
-<!-- Filters -->
-<div class="glass-card rounded-2xl p-4 mb-4 flex flex-col md:flex-row gap-4 items-end">
-<div class="flex-1 w-full space-y-2">
-<label class="font-label-md text-label-md text-on-surface-variant">Fecha</label>
-<div class="flex gap-2">
-<input id="date-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-10 px-4 focus:ring-primary focus:border-primary" type="date"/>
-</div>
-</div>
-<div class="flex-1 w-full space-y-2">
-<label class="font-label-md text-label-md text-on-surface-variant">Tipo de Movimiento</label>
-<select id="type-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-10 px-4 focus:ring-primary focus:border-primary">
-<option value="all">Todos los movimientos</option>
-<option value="ingreso">Ingreso (Entradas)</option>
-<option value="egreso">Egreso (Salidas)</option>
-</select>
-</div>
-<div class="flex-1 w-full space-y-2">
-<label class="font-label-md text-label-md text-on-surface-variant">Tienda / Destino</label>
-<select id="store-filter" class="w-full bg-surface-container-low border-outline-variant rounded-xl h-10 px-4 focus:ring-primary focus:border-primary">
-<option value="all">Todas las sedes</option>
-<option value="ALM-01">Almacén Central</option>
-<option value="TDA-01">Tienda Santa Lucía</option>
-<option value="TDA-02">Tienda Generales Suplex</option>
-<option value="TDA-03">Tienda Generales Pasadizo</option>
-<option value="TDA-04">Tienda Aviación</option>
-</select>
-</div>
-<button id="btn-filter" class="hidden"></button>
-</div>
-<!-- Main Movement Table -->
-<div class="glass-card rounded-2xl overflow-hidden mb-12">
-<div class="overflow-x-auto max-h-[620px] overflow-y-auto">
-<table class="w-full text-left border-collapse">
-<thead class="sticky top-0 bg-surface-container-high z-10 shadow-sm">
-<tr class="bg-surface-container-high border-b border-outline-variant">
-<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Movimiento</th>
-<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Fecha y Hora</th>
-<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Producto</th>
-<th class="py-3 px-4 font-label-lg text-label-lg text-primary text-center">Cantidad</th>
-<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Origen / Destino</th>
-<th class="py-3 px-4 font-label-lg text-label-lg text-primary">Responsable</th>
-<th class="py-3 px-4 font-label-lg text-label-lg text-primary"></th>
-</tr>
-</thead>
-<tbody id="history-tbody" class="divide-y divide-outline-variant/30">
-<!-- Row 1 -->
-<tr class="hover:bg-primary-container/5 transition-colors group">
-<td class="py-3 px-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
-</div>
-<span class="font-label-md text-label-md text-on-surface">Ingreso</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<div class="flex flex-col">
-<span class="font-body-md text-body-md text-on-surface">24 May 2024</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">09:15 AM</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
-<img class="w-full h-full object-cover" data-alt="A close-up high-resolution photograph of premium silk fabric in a deep lilac color, showing its rich texture and subtle sheen. The background is a clean, neutral textile workshop environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVuoSa14jfjUi7aCrKYUHE0AjxBlnB2YdDtFdFvfgh1HC2h7VUKK8ntKyoBCx7hyq9Ri_S-te99nOGAx-0SMlqrfFwoQXlXiOuW-IJmcUg3Ti6Os5oCvmCAaohfAcGgL3e-FHmHM314z1HfNdmxR35oj_0QbydKIgRiQh_WW7y8iAQl23yzTiUVFkyNwZVRjZ8ypgLjf76MuzaBgqO4J1PiTIf2MR7gr6UepGGs1xW6nn49xNFXvk"/>
-</div>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface">Seda Imperial</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">Lila / Talla Única</span>
-</div>
-</div>
-</td>
-<td class="py-3 px-4 text-center">
-<span class="font-display-lg text-headline-md text-on-surface">120</span>
-</td>
-<td class="py-3 px-4">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-tertiary">location_on</span>
-<span class="font-body-md text-body-md">Almacén Central</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<span class="font-label-md text-label-md text-on-surface-variant">Carlos Rivas</span>
-</td>
-<td class="py-3 px-4 text-right">
-<button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
-<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-</button>
-</td>
-</tr>
-<!-- Row 2 -->
-<tr class="hover:bg-primary-container/5 transition-colors group">
-<td class="py-3 px-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">remove_circle</span>
-</div>
-<span class="font-label-md text-label-md text-on-surface">Egreso</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<div class="flex flex-col">
-<span class="font-body-md text-body-md text-on-surface">24 May 2024</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">10:45 AM</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
-<img class="w-full h-full object-cover" data-alt="A stack of folded high-quality linen shirts in soft rose and pastel pink shades. The photograph captures the elegant weave of the linen fabric in a bright, professionally lit boutique setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_l80sld5J-eGRwUxN5U_Rx926UtS4o4LKlv_G4CKsMyCRjMiajoq7lv4dXDA023Dt20Mu0csdZAaC8ydxEUGwU1Ie43c-28PyJ_Fd1yO2p-PkHo4MZV88Yq0pEBxclilX9ygPQa8S5JeszLmNP7HMmJdADlyqNJpEM04v6SOvRmDVovYHxuF-kDnPoAAM_3647I7kv7rgnVfhYwUwXchL-PZhoNovYkXGTwdSJi4bIx0qQM8dj4E"/>
-</div>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface">Lino Premium</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">Rosa Pastel / M</span>
-</div>
-</div>
-</td>
-<td class="py-3 px-4 text-center">
-<span class="font-display-lg text-headline-md text-on-surface">45</span>
-</td>
-<td class="py-3 px-4">
-<div class="flex flex-col">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">store</span>
-<span class="font-body-md text-body-md">Tienda Santa Lucía</span>
-</div>
-<span class="text-xs text-on-surface-variant ml-7 italic">Pedido Stock Semanal</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<span class="font-label-md text-label-md text-on-surface-variant">Elena Gómez</span>
-</td>
-<td class="py-3 px-4 text-right">
-<button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
-<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-</button>
-</td>
-</tr>
-<!-- Row 3 -->
-<tr class="hover:bg-primary-container/5 transition-colors group">
-<td class="py-3 px-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">remove_circle</span>
-</div>
-<span class="font-label-md text-label-md text-on-surface">Egreso</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<div class="flex flex-col">
-<span class="font-body-md text-body-md text-on-surface">23 May 2024</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">04:20 PM</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
-<img class="w-full h-full object-cover" data-alt="Close-up of a luxurious dark velvet textile with a rich deep purple tone. The light reflects off the soft pile of the fabric, highlighting its premium quality. Suitable for an elegant textile fashion brand dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqlkEG-bYSUvxkF7pS1BfmnDW5XJsO6qJt0mAsQGzzIL6Vdu-6Mbg_SSyqvpdWGmOrt5r-UAbCVW9bkIUs1tN3Z_EiMm2_-aZtnUXBClTC2PBnmDAAmFHNr7yPUoRpP-CZMOqrjgYQPt6L0LrAGM64wSxc2mxnK8KWBjOOMgeQZcignyhYfaed1lupbr5l7a57Pui4-GUyOcC8MwVu5IZvTLk-KdDAEm4AQP-2usM5Lnf-bhQzuoM"/>
-</div>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface">Terciopelo Gala</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">Vino Tinto / L</span>
-</div>
-</div>
-</td>
-<td class="py-3 px-4 text-center">
-<span class="font-display-lg text-headline-md text-on-surface">15</span>
-</td>
-<td class="py-3 px-4">
-<div class="flex flex-col">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">storefront</span>
-<span class="font-body-md text-body-md">Tienda Aviación</span>
-</div>
-<span class="text-xs text-on-surface-variant ml-7 italic">Reposición Urgente</span>
-</div>
-</td>
-<td class="py-3 px-4">
-<span class="font-label-md text-label-md text-on-surface-variant">Elena Gómez</span>
-</td>
-<td class="py-3 px-4 text-right">
-<button class="w-10 h-10 rounded-full hover:bg-surface-container-highest transition-all flex items-center justify-center">
-<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Pagination -->
-<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/60 flex items-center justify-between shrink-0">
-  <span class="text-xs text-on-surface-variant font-semibold" id="pagination-info">
-    Mostrando 0-0 de 0 movimientos
-  </span>
-  <div class="flex items-center gap-3">
-    <button type="button" id="btn-prev-page"
-      class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm">chevron_left</span> Anterior
-    </button>
-    <div id="pagination-numbers" class="flex items-center gap-1.5">
-      <!-- Números de página inyectados dinámicamente -->
-    </div>
-    <button type="button" id="btn-next-page"
-      class="h-9 px-4 border-2 border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1">
-      Siguiente <span class="material-symbols-outlined text-sm">chevron_right</span>
-    </button>
-  </div>
-</div>
-</div>
-<!-- Footer Decorative Element -->
-<div class="flex items-center justify-center gap-4 py-8 opacity-40">
-<div class="h-[1px] flex-1 bg-gradient-to-r from-transparent to-primary"></div>
-<span class="font-headline-md text-headline-md text-primary italic">Escarlú Heritage</span>
-<div class="h-[1px] flex-1 bg-gradient-to-l from-transparent to-primary"></div>
-</div>
-</div>
 </main>
-<!-- FAB for New Movement (Contextual) -->
-<button class="fixed bottom-10 right-10 w-16 h-16 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group z-50">
-<span class="material-symbols-outlined text-3xl">add</span>
-<span class="absolute right-full mr-4 bg-primary text-on-primary px-4 py-2 rounded-xl font-label-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Nuevo Movimiento</span>
-</button>
+
+<!-- ===== MODAL: Confirmación de Eliminación ===== -->
+<div id="delete-confirm-modal">
+  <div class="modal-inner">
+    <div class="del-header">
+      <div class="del-header-text">
+        <span class="del-header-label">Confirmar Acción</span>
+        <p class="del-header-title">¿Eliminar movimiento?</p>
+      </div>
+    </div>
+    <div class="del-body">
+      <div class="del-icon-wrap">
+        <span class="material-symbols-outlined" style="font-size:28px;">delete_forever</span>
+      </div>
+      <p class="del-desc">Esta acción no se puede deshacer y revertirá el stock de prendas de inmediato.</p>
+      <div class="del-actions">
+        <button type="button" id="btn-delete-cancel">Cancelar</button>
+        <button type="button" id="btn-delete-confirm">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
     const user = getCurrentUser();
+    const MOV_KEY = "escarlu_movimientos";
+
+    // ── MODELOS ──────────────────────────────────────────────────
+    const MODELOS_DEFAULT = [
+        { id_modelo: "MOD-001", tipo: "Polo",   nombre: "Camisero MC" },
+        { id_modelo: "MOD-002", tipo: "Polo",   nombre: "Camisero ML" },
+        { id_modelo: "MOD-003", tipo: "Polo",   nombre: "Girasol MC" },
+        { id_modelo: "MOD-004", tipo: "Polo",   nombre: "Girasol ML" },
+        { id_modelo: "MOD-005", tipo: "Polo",   nombre: "Redondo MC" },
+        { id_modelo: "MOD-006", tipo: "Polo",   nombre: "Redondo ML" },
+        { id_modelo: "MOD-007", tipo: "Polo",   nombre: "Cuadrado MC" },
+        { id_modelo: "MOD-008", tipo: "Polo",   nombre: "Cuadrado ML" },
+        { id_modelo: "MOD-009", tipo: "Polo",   nombre: "Tania MC" },
+        { id_modelo: "MOD-010", tipo: "Polo",   nombre: "Tania ML" },
+        { id_modelo: "MOD-011", tipo: "Polo",   nombre: "Noemi MC" },
+        { id_modelo: "MOD-012", tipo: "Polo",   nombre: "Noemi ML" },
+        { id_modelo: "MOD-013", tipo: "Polo",   nombre: "Boton MC" },
+        { id_modelo: "MOD-014", tipo: "Polo",   nombre: "Boton ML" },
+        { id_modelo: "MOD-015", tipo: "Short",  nombre: "Short Pinza" },
+        { id_modelo: "MOD-016", tipo: "Short",  nombre: "Short Boton" },
+        { id_modelo: "MOD-017", tipo: "Chompa", nombre: "Chompa Redondo" },
+        { id_modelo: "MOD-018", tipo: "Chompa", nombre: "Chompa V" },
+        { id_modelo: "MOD-019", tipo: "Buzo",   nombre: "Buzo Normal" },
+        { id_modelo: "MOD-020", tipo: "Polo",   nombre: "Corazon MC" },
+        { id_modelo: "MOD-021", tipo: "Polo",   nombre: "Corazon ML" }
+    ];
+
+    function getModelos() {
+        return JSON.parse(localStorage.getItem("escarlu_modelos")) || MODELOS_DEFAULT;
+    }
+
+    function getModelName(modelId) {
+        const m = getModelos().find(x => x.id_modelo === modelId);
+        return m ? m.nombre : modelId;
+    }
+
+    // ── MOVIMIENTOS ──────────────────────────────────────────────
+    function getMovimientos() {
+        return JSON.parse(localStorage.getItem(MOV_KEY)) || [];
+    }
+
+    function saveMovimientos(movs) {
+        localStorage.setItem(MOV_KEY, JSON.stringify(movs));
+    }
+
+    function getMisMovimientos() {
+        // Como este es el Almacén Central (ALM-01), mostramos los movimientos que involucran a ALM-01
+        const allMovs = getMovimientos();
+        return allMovs.filter(m => m.origen_id === "ALM-01" || m.destino_id === "ALM-01");
+    }
+
+    // ── PAGINACIÓN ───────────────────────────────────────────────
     let currentPage = 1;
     const rowsPerPage = 8;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        checkAuth();
-        if (typeof renderSideNav === 'function') renderSideNav("historialmacen");
-
-        // Populate table and summary cards on load
-        renderHistory();
-        updateSummaryCards();
-
-        // Apply filters in real-time on any change
-        const applyRealTime = () => { currentPage = 1; renderHistory(); };
-        document.getElementById('date-filter').addEventListener('change', applyRealTime);
-        document.getElementById('type-filter').addEventListener('change', applyRealTime);
-        document.getElementById('store-filter').addEventListener('change', applyRealTime);
-
-        // Pagination events
-        document.getElementById("btn-prev-page").addEventListener("click", () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderHistory();
-            }
-        });
-        document.getElementById("btn-next-page").addEventListener("click", () => {
-            currentPage++;
-            renderHistory();
-        });
-
-        // Bind FAB click to redirect to ingresoprendalmacen.html
-        const fab = document.querySelector('button.fixed.bottom-10');
-        if (fab) {
-            fab.addEventListener('click', () => {
-                window.location.href = "ingresoprendalmacen.html";
-            });
-        }
-    });
-
-    function renderHistory() {
-        const tbody = document.getElementById("history-tbody");
+    // ── RENDER TABLE ─────────────────────────────────────────────
+    function renderHPTable() {
+        const tbody = document.getElementById("hp-table-body");
         if (!tbody) return;
 
-        // Load logs
-        const allReqs = JSON.parse(localStorage.getItem("escarlu_requests")) || [];
-        const entries = JSON.parse(localStorage.getItem("escarlu_warehouse_entries")) || [];
+        const query = (document.getElementById("hp-search-top")?.value || "").toLowerCase();
+        const filterTipo = document.getElementById("hp-filter-tipo")?.value || "all";
+        const filterColor = document.getElementById("hp-filter-color")?.value || "all";
+        const filterMes = document.getElementById("hp-filter-mes")?.value || "";
 
-        // Map approved requests from ALM-01 as Egresos
-        const egresos = allReqs
-            .filter(r => r.origin === 'ALM-01' && r.status === 'aprobado')
-            .map(r => ({
-                id: r.id,
-                type: 'egreso',
-                date: r.date,
-                model: r.model,
-                color: r.color,
-                size: r.size,
-                qty: r.qty,
-                store: r.destination,
-                user: 'Sistema (Auto)'
-            }));
+        let movs = getMisMovimientos();
 
-        // Combine all movements
-        const movements = [...entries, ...egresos];
+        // Filtros
+        if (filterTipo === "ingreso") {
+            movs = movs.filter(m => m.destino_id === "ALM-01");
+        } else if (filterTipo === "salida") {
+            movs = movs.filter(m => m.origen_id === "ALM-01");
+        }
 
-        // Sort by date descending
-        movements.sort((a, b) => new Date(b.date) - new Date(a.date));
+        if (filterColor !== "all") {
+            movs = movs.filter(m => m.color_id === filterColor);
+        }
 
-        // Get filter values
-        const dateVal = document.getElementById('date-filter').value;
-        const typeVal = document.getElementById('type-filter').value;
-        const storeVal = document.getElementById('store-filter').value;
+        if (filterMes) {
+            movs = movs.filter(m => m.fecha_hora.startsWith(filterMes));
+        }
 
-        tbody.innerHTML = "";
+        if (query) {
+            movs = movs.filter(m =>
+                getModelName(m.modelo_id).toLowerCase().includes(query) ||
+                (STORE_NAMES?.[m.destino_id] || m.destino_id).toLowerCase().includes(query) ||
+                (STORE_NAMES?.[m.origen_id] || m.origen_id || "").toLowerCase().includes(query) ||
+                m.talla.toLowerCase().includes(query)
+            );
+        }
 
-        // Filter movements
-        const filtered = movements.filter(m => {
-            if (dateVal && m.date.slice(0, 10) !== dateVal) return false;
-            if (typeVal !== 'all' && m.type !== typeVal) return false;
-            
-            if (storeVal !== 'all') {
-                if (m.type === 'ingreso' && storeVal !== 'ALM-01') return false;
-                if (m.type === 'egreso' && m.store !== storeVal) return false;
-            }
-            return true;
-        });
+        // Ordenar por fecha más reciente primero
+        movs.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
 
-        // Lógica de Paginación Real
-        const totalItems = filtered.length;
+        // Stats
+        const totalPrendasSalida = movs.filter(m => m.origen_id === "ALM-01").reduce((s, m) => s + (m.cantidad || 0), 0);
+        const totalPrendasIngreso = movs.filter(m => m.destino_id === "ALM-01").reduce((s, m) => s + (m.cantidad || 0), 0);
+
+        document.getElementById("stat-total").textContent = movs.length;
+        document.getElementById("stat-prendas").textContent = totalPrendasSalida;
+        document.getElementById("stat-recibidas").textContent = totalPrendasIngreso;
+        document.getElementById("hp-count-label").textContent = `${movs.length} registro${movs.length !== 1 ? 's' : ''}`;
+
+        // Paginación
+        const totalItems = movs.length;
         const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
         if (currentPage < 1) currentPage = 1;
 
         const startIdx = (currentPage - 1) * rowsPerPage;
-        const endIdx = Math.min(startIdx + rowsPerPage, totalItems);
-        const pagedData = filtered.slice(startIdx, endIdx);
+        const endIdx   = Math.min(startIdx + rowsPerPage, totalItems);
+        const paged    = movs.slice(startIdx, endIdx);
 
-        // Actualizar textos y números de paginación
-        document.getElementById("pagination-info").textContent = totalItems > 0 
-            ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalItems} movimientos`
-            : "Mostrando 0-0 de 0 movimientos";
+        document.getElementById("hp-pagination-info").textContent = totalItems > 0
+            ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalItems} registros`
+            : "Sin registros";
 
-        setupPaginationNumbers("pagination-numbers", currentPage, totalPages, (page) => {
+        setupPaginationNumbers("hp-pagination-numbers", currentPage, totalPages, (page) => {
             currentPage = page;
-            renderHistory();
+            renderHPTable();
         });
 
         // Habilitar/deshabilitar botones
-        document.getElementById("btn-prev-page").disabled = currentPage === 1;
-        document.getElementById("btn-next-page").disabled = currentPage === totalPages;
+        document.getElementById("hp-btn-prev").disabled = currentPage === 1;
+        document.getElementById("hp-btn-next").disabled = currentPage === totalPages;
 
-        if (pagedData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="p-5 text-center text-on-surface-variant font-medium">No se encontraron movimientos registrados.</td></tr>`;
+        tbody.innerHTML = "";
+
+        if (paged.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="py-14 text-center">
+                <div class="flex flex-col items-center gap-3">
+                    <span class="material-symbols-outlined text-outline-variant text-5xl">history</span>
+                    <p class="text-sm font-semibold text-on-surface-variant">Aún no hay movimientos registrados.</p>
+                </div>
+            </td></tr>`;
             return;
         }
 
-        pagedData.forEach(m => {
-            const dateObj = new Date(m.date);
-            const dateStr = isNaN(dateObj) ? m.date.slice(0, 10) : dateObj.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
-            const timeStr = isNaN(dateObj) ? "" : dateObj.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+        for (const mov of paged) {
+            const fecha = new Date(mov.fecha_hora);
+            const fechaStr = fecha.toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" });
+            const horaStr  = fecha.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
+            const esIngreso = mov.destino_id === "ALM-01";
 
-            const modelLabel = MODEL_NAMES[m.model] || m.model;
-            const colorLabel = COLOR_NAMES[m.color] || m.color;
-            const storeLabel = m.type === 'ingreso' ? 'Almacén Central' : (STORE_NAMES[m.store] || m.store);
-
-            let typeIcon = "";
-            let typeLabel = "";
-            if (m.type === 'ingreso') {
-                typeIcon = `<div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span></div>`;
-                typeLabel = "Ingreso";
+            // Nombre de origen o destino
+            let sedeLabel = "";
+            if (esIngreso) {
+                const orig = mov.origen_id || 'ALM-01';
+                sedeLabel = STORE_NAMES?.[orig] || orig;
             } else {
-                typeIcon = `<div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">remove_circle</span></div>`;
-                typeLabel = "Egreso";
+                const dest = mov.destino_id;
+                sedeLabel = STORE_NAMES?.[dest] || dest;
             }
+
+            const modelName = getModelName(mov.modelo_id);
+
+            let tipoBadge = "";
+            let accionButton = "";
+
+            if (esIngreso) {
+                tipoBadge = `
+                    <span class="bg-green-100 text-green-800 border border-green-300 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold">
+                        <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1;">arrow_circle_down</span>
+                        Ingreso
+                    </span>`;
+            } else {
+                tipoBadge = `
+                    <span class="bg-amber-100 text-amber-800 border border-amber-300 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold">
+                        <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1;">arrow_circle_up</span>
+                        Salida
+                    </span>`;
+            }
+
+            // El almacén puede eliminar salidas o ingresos que registró
+            accionButton = `
+                <button data-id="${mov.id}"
+                    class="btn-eliminar w-9 h-9 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-all active:scale-90"
+                    title="Eliminar movimiento">
+                    <span class="material-symbols-outlined" style="font-size:22px;">delete</span>
+                </button>`;
+
+            const colorName = (typeof COLOR_NAMES !== 'undefined' && COLOR_NAMES[mov.color_id]) || mov.color_id || 'Sin Color';
 
             const tr = document.createElement("tr");
-            tr.className = "hover:bg-primary-container/5 transition-colors group";
+            tr.className = "transition-colors cursor-default";
             tr.innerHTML = `
-                <td class="py-3 px-4">
-                    <div class="flex items-center gap-3">
-                        ${typeIcon}
-                        <span class="font-label-md text-label-md text-on-surface">${typeLabel}</span>
-                    </div>
+                <td class="px-5 py-3">
+                    <p class="text-xs font-bold text-on-surface">${fechaStr}</p>
+                    <p class="text-[10px] text-on-surface-variant font-medium">${horaStr}</p>
                 </td>
-                <td class="py-3 px-4">
-                    <div class="flex flex-col">
-                        <span class="font-body-md text-body-md text-on-surface">${dateStr}</span>
-                        <span class="font-body-sm text-body-sm text-on-surface-variant">${timeStr}</span>
-                    </div>
-                </td>
-                <td class="py-3 px-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50">
-                            <span class="material-symbols-outlined text-primary text-xl">apparel</span>
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-primary-container/40 rounded-lg flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-sm">apparel</span>
                         </div>
-                        <div class="flex flex-col">
-                            <span class="font-label-lg text-label-lg text-on-surface">${modelLabel}</span>
-                            <span class="font-body-sm text-body-sm text-on-surface-variant">${colorLabel} / Talla ${m.size}</span>
+                        <div>
+                            <p class="font-bold text-xs text-on-surface">${modelName}</p>
+                            <p class="text-[10px] text-on-surface-variant font-medium">${colorName}</p>
                         </div>
                     </div>
                 </td>
-                <td class="py-3 px-4 text-center font-bold text-sm">${m.qty}</td>
-                <td class="py-3 px-4">
-                    <div class="flex flex-col">
-                        <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">${m.type === 'ingreso' ? 'warehouse' : 'storefront'}</span>
-                            <span class="font-body-md text-body-md">${storeLabel}</span>
-                        </div>
+                <td class="px-4 py-3">
+                    <span class="bg-primary/10 text-primary px-2.5 py-1 rounded-lg text-xs font-black">${mov.talla}</span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="text-base font-black text-on-surface">${mov.cantidad}</span>
+                </td>
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1;">storefront</span>
+                        <span class="text-xs font-semibold text-on-surface">${sedeLabel}</span>
                     </div>
                 </td>
-                <td class="py-3 px-4">
-                    <span class="font-label-md text-label-md text-on-surface-variant">${m.user}</span>
-                </td>
-                <td class="py-3 px-4 text-right"></td>
+                <td class="px-4 py-3">${tipoBadge}</td>
+                <td class="px-4 py-3 text-center"><div class="flex justify-center items-center">${accionButton}</div></td>
             `;
             tbody.appendChild(tr);
+        }
+
+        // Bind botones de eliminar
+        document.querySelectorAll(".btn-eliminar").forEach(btn => {
+            btn.addEventListener("click", () => handleDeleteMovimiento(btn.dataset.id));
         });
     }
 
-    // Sync in real time
-    window.addEventListener('storage', (e) => {
-        if (!e.key || e.key === 'escarlu_requests' || e.key === 'escarlu_warehouse_entries') {
-            renderHistory();
-            updateSummaryCards();
+    // ── ELIMINAR MOVIMIENTO (MODAL PREMIUM) ──────────────────────
+    let pendingDeleteMovId = null;
+
+    function handleDeleteMovimiento(movId) {
+        pendingDeleteMovId = movId;
+        const modal = document.getElementById("delete-confirm-modal");
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
         }
-    });
-
-    function updateSummaryCards() {
-        const allReqs  = JSON.parse(localStorage.getItem('escarlu_requests'))  || [];
-        const entries  = JSON.parse(localStorage.getItem('escarlu_warehouse_entries')) || [];
-
-        const now   = new Date();
-        const month = now.getMonth();
-        const year  = now.getFullYear();
-
-        function sameMonth(dateStr) {
-            if (!dateStr) return false;
-            const d = new Date(dateStr);
-            return !isNaN(d) && d.getMonth() === month && d.getFullYear() === year;
-        }
-
-        // ── Total Ingresos del mes ────────────────────────────────────
-        const ingresosThisMonth = entries.filter(e => e.type === 'ingreso' && sameMonth(e.date));
-        const totalIngresos = ingresosThisMonth.reduce((s, e) => s + (Number(e.qty) || 0), 0);
-
-        // Previous month ingresos for % change
-        const prevMonth = month === 0 ? 11 : month - 1;
-        const prevYear  = month === 0 ? year - 1 : year;
-        const ingPrev = entries
-            .filter(e => e.type === 'ingreso' && (() => { const d = new Date(e.date); return !isNaN(d) && d.getMonth() === prevMonth && d.getFullYear() === prevYear; })())
-            .reduce((s, e) => s + (Number(e.qty) || 0), 0);
-        const ingPct = ingPrev > 0 ? (((totalIngresos - ingPrev) / ingPrev) * 100).toFixed(1) : null;
-
-        const elIngVal = document.getElementById('card-ingresos-val');
-        const elIngPct = document.getElementById('card-ingresos-pct');
-        if (elIngVal) elIngVal.textContent = totalIngresos.toLocaleString('es-PE');
-        if (elIngPct) {
-            if (ingPct !== null) {
-                const positive = parseFloat(ingPct) >= 0;
-                elIngPct.textContent = (positive ? '+' : '') + ingPct + '%';
-                elIngPct.className = `font-bold text-[10px] px-1.5 py-0.5 rounded ${
-                    positive ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
-                }`;
-            } else {
-                elIngPct.textContent = '';
-                elIngPct.className = 'hidden';
-            }
-        }
-
-        // ── Total Egresos del mes ─────────────────────────────────────
-        const egresosList = allReqs
-            .filter(r => r.origin === 'ALM-01' && r.status === 'aprobado' && sameMonth(r.date));
-        const totalEgresos = egresosList.reduce((s, r) => s + (Number(r.qty) || 0), 0);
-
-        const egresosPrev = allReqs
-            .filter(r => r.origin === 'ALM-01' && r.status === 'aprobado' && (() => { const d = new Date(r.date); return !isNaN(d) && d.getMonth() === prevMonth && d.getFullYear() === prevYear; })())
-            .reduce((s, r) => s + (Number(r.qty) || 0), 0);
-        const egrPct = egresosPrev > 0 ? (((totalEgresos - egresosPrev) / egresosPrev) * 100).toFixed(1) : null;
-
-        const elEgrVal = document.getElementById('card-egresos-val');
-        const elEgrPct = document.getElementById('card-egresos-pct');
-        if (elEgrVal) elEgrVal.textContent = totalEgresos.toLocaleString('es-PE');
-        if (elEgrPct) {
-            if (egrPct !== null) {
-                const positive = parseFloat(egrPct) >= 0;
-                elEgrPct.textContent = (positive ? '+' : '') + egrPct + '%';
-                elEgrPct.className = `font-bold text-[10px] px-1.5 py-0.5 rounded ${
-                    positive ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
-                }`;
-            } else {
-                elEgrPct.textContent = '';
-                elEgrPct.className = 'hidden';
-            }
-        }
-
-        // ── Movimiento más frecuente (tienda con más egresos totales) ─
-        const allEgresos = allReqs.filter(r => r.origin === 'ALM-01' && r.status === 'aprobado');
-
-        // Count by store
-        const storeTotals = {};
-        allEgresos.forEach(r => {
-            storeTotals[r.destination] = (storeTotals[r.destination] || 0) + (Number(r.qty) || 0);
-        });
-        const topStore = Object.entries(storeTotals).sort((a, b) => b[1] - a[1])[0];
-
-        // Count by model for the top store
-        const elTitulo  = document.getElementById('card-frecuente-titulo');
-        const elDetalle = document.getElementById('card-frecuente-detalle');
-
-        if (topStore && elTitulo && elDetalle) {
-            const [topStoreId, topStoreQty] = topStore;
-            const storeName = (typeof STORE_NAMES !== 'undefined' && STORE_NAMES[topStoreId]) || topStoreId;
-
-            // Find top model for that store
-            const modelTotals = {};
-            allEgresos
-                .filter(r => r.destination === topStoreId)
-                .forEach(r => {
-                    modelTotals[r.model] = (modelTotals[r.model] || 0) + (Number(r.qty) || 0);
-                });
-            const topModel = Object.entries(modelTotals).sort((a, b) => b[1] - a[1])[0];
-            const modelName = topModel
-                ? ((typeof MODEL_NAMES !== 'undefined' && MODEL_NAMES[topModel[0]]) || topModel[0])
-                : '—';
-            const modelQty = topModel ? topModel[1] : 0;
-
-            elTitulo.textContent  = storeName;
-            elDetalle.textContent = `${modelName} — ${modelQty.toLocaleString('es-PE')} Uds enviadas`;
-        } else if (elTitulo && elDetalle) {
-            elTitulo.textContent  = 'Sin movimientos';
-            elDetalle.textContent = 'Aún no hay egresos registrados';
-        }
+        modal.classList.add("open");
     }
 
+    async function confirmDeleteMovimiento(movId) {
+        document.getElementById("delete-confirm-modal").classList.remove("open");
+        pendingDeleteMovId = null;
+
+        const movs = getMovimientos();
+        const mov = movs.find(m => m.id === movId);
+        if (!mov) return;
+
+        // Revertir stocks locales
+        const STORE_INV_KEY = "escarlu_tienda_stock";
+        const rawStock = JSON.parse(localStorage.getItem(STORE_INV_KEY)) || {};
+
+        const modelId = mov.modelo_id;
+        const talla   = mov.talla;
+        const originId = mov.origen_id;
+        const destId   = mov.destino_id;
+        const cant     = mov.cantidad || 0;
+
+        // Devolver prendas a ORIGEN
+        if (originId) {
+            if (!rawStock[originId]) rawStock[originId] = {};
+            if (!rawStock[originId][modelId]) rawStock[originId][modelId] = {};
+            rawStock[originId][modelId][talla] = (rawStock[originId][modelId][talla] || 0) + cant;
+        }
+
+        // Restar prendas de DESTINO
+        if (destId) {
+            if (!rawStock[destId]) rawStock[destId] = {};
+            if (!rawStock[destId][modelId]) rawStock[destId][modelId] = {};
+            rawStock[destId][modelId][talla] = Math.max(0, (rawStock[destId][modelId][talla] || 0) - cant);
+        }
+
+        // Guardar stock local (esto gatilla la sincronización en lote)
+        localStorage.setItem(STORE_INV_KEY, JSON.stringify(rawStock));
+
+        // Borrar el movimiento localmente
+        const updatedMovs = movs.filter(m => m.id !== movId);
+        saveMovimientos(updatedMovs);
+
+        // Borrar el movimiento en Supabase directamente
+        const client = getSupabaseClient();
+        if (client) {
+            try {
+                await client.from('movimientos_inventario').delete().eq('id', movId);
+            } catch (error) {
+                console.error("Error eliminando movimiento en Supabase:", error);
+            }
+        }
+
+        renderHPTable();
+    }
+
+    // ── INIT ─────────────────────────────────────────────────────
     document.addEventListener("DOMContentLoaded", () => {
-        const dateInputs = document.querySelectorAll('input[type="date"], input[type="month"]');
-        dateInputs.forEach(input => {
-            input.style.cursor = 'pointer';
-            input.addEventListener('click', function() {
-                if (typeof this.showPicker === 'function') {
-                    this.showPicker();
+        checkAuth();
+        renderSideNav("historialmacen");
+        setupHeaderProfile();
+
+        // Llenar dinámicamente el selector de colores
+        const filterColor = document.getElementById('hp-filter-color');
+        if (filterColor) {
+            filterColor.innerHTML = '<option value="all">Todos los colores</option>';
+            for (const [colorId, colorName] of Object.entries(COLOR_NAMES)) {
+                const opt = document.createElement('option');
+                opt.value = colorId;
+                opt.textContent = colorName;
+                filterColor.appendChild(opt);
+            }
+        }
+
+        const now = new Date();
+        document.getElementById("current-date-label").textContent =
+            now.toLocaleDateString("es-PE", { day: "numeric", month: "long", year: "numeric" });
+
+        // Preseleccionar mes actual
+        const currentYear = now.getFullYear();
+        const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+        const defaultMonth = `${currentYear}-${currentMonth}`;
+        const mesInput = document.getElementById("hp-filter-mes");
+        if (mesInput) {
+            mesInput.value = defaultMonth;
+        }
+
+        // Calendario click triggers
+        const mesWrapper = document.getElementById("hp-filter-mes")?.parentElement;
+        if (mesWrapper && mesInput) {
+            mesWrapper.addEventListener("click", (e) => {
+                if (e.target !== mesInput) {
+                    if (typeof mesInput.showPicker === 'function') {
+                        mesInput.showPicker();
+                    }
                 }
             });
+            mesInput.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (typeof mesInput.showPicker === 'function') {
+                    mesInput.showPicker();
+                }
+            });
+        }
+
+        // Eventos del modal de confirmación
+        document.getElementById("btn-delete-cancel").addEventListener("click", () => {
+            document.getElementById("delete-confirm-modal").classList.remove("open");
+            pendingDeleteMovId = null;
+        });
+        document.getElementById("btn-delete-confirm").addEventListener("click", () => {
+            if (pendingDeleteMovId) {
+                confirmDeleteMovimiento(pendingDeleteMovId);
+            }
+        });
+
+        renderHPTable();
+
+        // Eventos de búsqueda / filtro
+        document.getElementById("hp-search-top").addEventListener("input", () => { currentPage = 1; renderHPTable(); });
+        document.getElementById("hp-filter-tipo").addEventListener("change", () => { currentPage = 1; renderHPTable(); });
+        document.getElementById("hp-filter-color").addEventListener("change", () => { currentPage = 1; renderHPTable(); });
+        document.getElementById("hp-filter-mes").addEventListener("change", () => { currentPage = 1; renderHPTable(); });
+
+        // Paginación
+        document.getElementById("hp-btn-prev").addEventListener("click", () => { if (currentPage > 1) { currentPage--; renderHPTable(); } });
+        document.getElementById("hp-btn-next").addEventListener("click", () => { currentPage++; renderHPTable(); });
+
+        // Sincronización en tiempo real
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'escarlu_movimientos') {
+                renderHPTable();
+            }
         });
     });
 
@@ -848,4 +845,5 @@
         container.appendChild(btn);
     }
 </script>
-</body></html>
+</body>
+</html>
