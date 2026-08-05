@@ -1146,10 +1146,6 @@ function renderSideNav(activePage) {
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'ingresoprendalmacen' ? 1 : 0};">add_box</span>
                 <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Ingreso de Prendas</span>
             </a>
-            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'solicitudpendientealmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="solicitudpendientealmacen.html">
-                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'solicitudpendientealmacen' ? 1 : 0};">pending_actions</span>
-                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Solicitudes Pendientes</span>
-            </a>
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="Stockalmacen.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'Stockalmacen' ? 1 : 0};">inventory_2</span>
                 <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Stock Almacén</span>
