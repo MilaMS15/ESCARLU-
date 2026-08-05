@@ -87,7 +87,6 @@ let supabaseClient = null;
         /* Botones de Acción principales */
         .bg-primary, 
         button[type="submit"], 
-        form button,
         #btn-open-ingreso, 
         #btn-add-item, 
         #btn-submit-consolidated, 
@@ -110,7 +109,6 @@ let supabaseClient = null;
         }
         .bg-primary:hover, 
         button[type="submit"]:hover, 
-        form button:hover,
         #btn-open-ingreso:hover, 
         #btn-add-item:hover, 
         #btn-submit-consolidated:hover,
@@ -244,14 +242,14 @@ let supabaseClient = null;
         #kpi-utilidad.text-error {
           color: #D32F2F !important; /* Rojo elegante si es negativo */
         }
-        main .grid.grid-cols-1.md\\:grid-cols-3 > div:last-child {
+        #caja-balance-card {
           border: 2px solid var(--accent-gold) !important;
           background: linear-gradient(135deg, var(--white) 60%, var(--primary-pink-light) 100%) !important;
           box-shadow: 0 8px 25px rgba(197, 155, 39, 0.15) !important;
           position: relative;
           overflow: hidden;
         }
-        main .grid.grid-cols-1.md\\:grid-cols-3 > div:last-child::after {
+        #caja-balance-card::after {
           content: "account_balance";
           font-family: 'Material Symbols Outlined';
           position: absolute;
