@@ -1455,7 +1455,13 @@ function setupHeaderProfile() {
         }
     });
 
-    // 3. Configurar Menú Desplegable (Dropdown) de Perfil
+    // 3. Elevar el z-index de la cabecera (header) para evitar solapamientos con selects
+    const headerEl = document.querySelector("header");
+    if (headerEl) {
+        headerEl.style.setProperty("z-index", "9990", "important");
+    }
+
+    // 4. Configurar Menú Desplegable (Dropdown) de Perfil
     const avatarImg = document.querySelector("header img");
     const profileContainer = avatarImg ? avatarImg.closest(".flex") : null;
     if (profileContainer && !profileContainer.id) {
@@ -1470,11 +1476,11 @@ function setupHeaderProfile() {
             dropdown.className = "absolute right-0 top-full mt-2 w-48 border border-outline-variant rounded-xl shadow-lg py-2 hidden text-xs font-semibold text-left";
             dropdown.setAttribute("style", "background-color: #ffffff !important; z-index: 99999 !important;");
             dropdown.innerHTML = `
-                <div id="dropdown-my-profile" class="flex items-center gap-2 px-4 py-2 text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+                <div id="dropdown-my-profile" class="flex items-center gap-2 px-4 py-2 text-on-surface hover:bg-gray-100 transition-colors cursor-pointer select-none">
                     <span class="material-symbols-outlined text-sm">person</span>
                     <span>Mi Perfil</span>
                 </div>
-                <div id="dropdown-logout" class="flex items-center gap-2 px-4 py-2 text-error hover:bg-red-50 transition-colors border-t border-outline-variant/50 cursor-pointer select-none">
+                <div id="dropdown-logout" class="flex items-center gap-2 px-4 py-2 text-error hover:bg-red-100 transition-colors border-t border-outline-variant/50 cursor-pointer select-none">
                     <span class="material-symbols-outlined text-sm text-error">logout</span>
                     <span>Cerrar Sesión</span>
                 </div>

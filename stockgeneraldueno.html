@@ -176,9 +176,9 @@
     <input type="month" id="filter-period-stock" class="h-10 border border-outline-variant bg-surface rounded-lg px-3 text-sm font-bold text-black focus:ring-0 outline-none mt-1 sm:mt-0 cursor-pointer" />
   </div>
   <div class="flex items-center gap-3">
-    <div class="flex flex-row items-center gap-2">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
       <label class="text-[10px] text-on-surface-variant font-bold uppercase ml-1 whitespace-nowrap" for="store-filter-select">Filtrar por Sede</label>
-      <select class="h-11 min-w-[280px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary text-xs font-bold px-4 bg-white cursor-pointer outline-none" id="store-filter-select">
+      <select class="h-10 min-w-[280px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary text-xs font-bold pl-3 pr-8 bg-white cursor-pointer outline-none" id="store-filter-select">
         <option value="all">Consolidado Total (Todas las Sedes)</option>
         <option value="ALM-01">Almacén Central</option>
         <option value="TDA-01">Tienda Santa Lucía</option>
@@ -252,7 +252,7 @@
 
 <!-- Barra de Filtros en Cascada (Oculta por defecto) -->
 <div id="filter-bar" class="p-4 bg-surface-container-low border-b border-outline-variant grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0">
-  <div class="flex flex-row items-center gap-2">
+  <div class="flex flex-col gap-1">
     <label class="text-[10px] text-on-surface-variant font-bold uppercase whitespace-nowrap">Filtrar por Tipo</label>
     <select id="select-filter-tipo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg pl-3 pr-8 bg-surface outline-none cursor-pointer text-xs font-semibold">
       <option value="all">Todos los tipos</option>
@@ -262,13 +262,13 @@
       <option value="Buzo">Buzo</option>
     </select>
   </div>
-  <div class="flex flex-row items-center gap-2">
+  <div class="flex flex-col gap-1">
     <label class="text-[10px] text-on-surface-variant font-bold uppercase whitespace-nowrap">Filtrar por Modelo</label>
     <select id="select-filter-modelo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg pl-3 pr-8 bg-surface outline-none cursor-pointer text-xs font-semibold">
       <option value="all">Todos los modelos</option>
     </select>
   </div>
-  <div class="flex flex-row items-center gap-2">
+  <div class="flex flex-col gap-1">
     <label class="text-[10px] text-on-surface-variant font-bold uppercase whitespace-nowrap">Filtrar por Color</label>
     <select id="select-filter-color" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg pl-3 pr-8 bg-surface outline-none cursor-pointer text-xs font-semibold">
       <option value="all">Todos los colores</option>
