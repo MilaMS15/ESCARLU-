@@ -636,6 +636,22 @@ async function downloadFromSupabase() {
     const client = getSupabaseClient();
     if (!client) return;
 
+    // 0. Download Sedes (Stores)
+    try {
+        const { data: sedesData } = await client.from('sedes').select('*');
+        if (sedesData) {
+            const tempSedes = {};
+            sedesData.forEach(s => {
+                tempSedes[s.id_sede] = s.ubicacion;
+            });
+            originalSetItem.call(localStorage, 'escarlu_sedes', JSON.stringify(tempSedes));
+            Object.assign(STORE_NAMES, tempSedes);
+            triggerStorageUpdate('escarlu_sedes', JSON.stringify(tempSedes));
+        }
+    } catch (e) {
+        console.error("Error downloading sedes from Supabase:", e);
+    }
+
     // 1. Download Stock
     const { data: stockData } = await client.from('stock').select('*');
     if (stockData) {
@@ -892,6 +908,16 @@ const STORE_NAMES = {
     "CTR-01": "Administración"
 };
 
+// Sincronizar sedes dinámicas guardadas en localStorage
+try {
+    const savedSedes = localStorage.getItem("escarlu_sedes");
+    if (savedSedes) {
+        Object.assign(STORE_NAMES, JSON.parse(savedSedes));
+    }
+} catch (e) {
+    console.error("Error parsing escarlu_sedes:", e);
+}
+
 const MODEL_NAMES = {
     "MOD-001": "Camisero MC",
     "MOD-002": "Camisero ML",
@@ -1093,7 +1119,7 @@ function renderSideNav(activePage) {
     let linksHtml = "";
     
     if (user.role === "admin") {
-        // DUEÑO: cajadueno.html, cortesdueno.html, stockgeneraldueno.html
+        // DUEÑO: cajadueno.html, cortesdueno.html, stockgeneraldueno.html, tiendasdueno.html
         linksHtml += `
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'cajadueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="cajadueno.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'cajadueno' ? 1 : 0};">account_balance_wallet</span>
@@ -1106,6 +1132,10 @@ function renderSideNav(activePage) {
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'stockgeneraldueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="stockgeneraldueno.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'stockgeneraldueno' ? 1 : 0};">inventory_2</span>
                 <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Stock General</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'tiendasdueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="tiendasdueno.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'tiendasdueno' ? 1 : 0};">store</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Gestionar Tiendas</span>
             </a>
         `;
     } else if (user.role === "almacen") {
@@ -1220,6 +1250,10 @@ function setupMobileMenu(activePage) {
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'stockgeneraldueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="stockgeneraldueno.html">
                 <span class="material-symbols-outlined">inventory_2</span>
                 <span class="font-label-lg">Stock General</span>
+            </a>
+            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'tiendasdueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="tiendasdueno.html">
+                <span class="material-symbols-outlined">store</span>
+                <span class="font-label-lg">Gestionar Tiendas</span>
             </a>
         `;
     } else if (user.role === "almacen") {
