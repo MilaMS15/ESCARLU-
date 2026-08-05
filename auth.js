@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             
             const email = emailInput.value.trim().toLowerCase();
+            const passwordInput = document.getElementById("password");
+            const password = passwordInput ? passwordInput.value : "";
             
             // Limpiar errores previos
             if (errorDiv) {
@@ -39,6 +41,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 const dbUser = users[0];
+
+                // Validar contraseña (soporta columna 'contrasena' en Supabase y fallback inicial)
+                const storedPassword = dbUser.contrasena;
+                if (storedPassword) {
+                    if (storedPassword !== password) {
+                        showError("Contraseña incorrecta");
+                        return;
+                    }
+                } else {
+                    // Fallback para compatibilidad
+                    let fallbackPass = "";
+                    const lowerRol = (dbUser.rol || "").toLowerCase();
+                    if (lowerRol === "admin" || lowerRol === "dueño") {
+                        fallbackPass = "admin123";
+                    } else if (lowerRol === "almacén" || lowerRol === "almacen") {
+                        fallbackPass = "almacen123";
+                    } else {
+                        fallbackPass = "tienda123";
+                    }
+
+                    if (fallbackPass !== password) {
+                        showError("Contraseña incorrecta");
+                        return;
+                    }
+                }
 
                 // Mapear los datos de la base de datos al formato esperado por el frontend
                 let mappedRole = dbUser.rol;
