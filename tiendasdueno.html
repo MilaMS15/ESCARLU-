@@ -151,11 +151,26 @@
 
                 <div class="flex flex-col gap-1 relative">
                     <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="user-password">Contraseña de la Cuenta</label>
-                    <div class="relative">
+                    <div class="relative flex items-center">
                         <input type="password" id="user-password" required placeholder="Ej. claveSecreta123" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
-                        <button type="button" id="toggle-password-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary flex items-center justify-center">
+                        <span id="toggle-password-btn" class="absolute right-3 text-on-surface-variant hover:text-primary cursor-pointer flex items-center justify-center select-none" style="z-index: 10;">
                             <span class="material-symbols-outlined text-lg" id="password-visibility-icon">visibility</span>
-                        </button>
+                        </span>
+                    </div>
+                    <!-- Requisitos de Contraseña -->
+                    <div class="mt-2 space-y-1 text-xs">
+                        <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                            <span id="new-req-len-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                            <span>Mínimo 8 caracteres</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                            <span id="new-req-upper-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                            <span>Una letra mayúscula</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                            <span id="new-req-num-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                            <span>Un número</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -235,11 +250,26 @@
             <input type="hidden" id="reset-user-store-id" />
             <div class="flex flex-col gap-1 relative">
                 <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="reset-password-input">Nueva Contraseña</label>
-                <div class="relative">
-                    <input type="password" id="reset-password-input" required placeholder="Mínimo 6 caracteres" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
-                    <button type="button" id="toggle-reset-password-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary flex items-center justify-center">
+                <div class="relative flex items-center">
+                    <input type="password" id="reset-password-input" required placeholder="Mínimo 8 caracteres" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                    <span id="toggle-reset-password-btn" class="absolute right-3 text-on-surface-variant hover:text-primary cursor-pointer flex items-center justify-center select-none" style="z-index: 10;">
                         <span class="material-symbols-outlined text-lg" id="reset-password-visibility-icon">visibility</span>
-                    </button>
+                    </span>
+                </div>
+                <!-- Requisitos de Contraseña -->
+                <div class="mt-2 space-y-1 text-xs">
+                    <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                        <span id="reset-req-len-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                        <span>Mínimo 8 caracteres</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                        <span id="reset-req-upper-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                        <span>Una letra mayúscula</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                        <span id="reset-req-num-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                        <span>Un número</span>
+                    </div>
                 </div>
             </div>
 
@@ -255,6 +285,37 @@
     </div>
 </div>
 
+<!-- Modal: Confirmar Cambio de Estado -->
+<div id="status-confirm-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header degradado premium - ROSADO -->
+        <header class="relative h-24 bg-gradient-to-br from-[#F8C8D4] to-[#f0b3c0] flex items-end p-6 border-b border-outline-variant/30">
+            <div>
+                <span class="text-[10px] font-black uppercase tracking-wider text-[#745475] leading-none">Confirmación</span>
+                <h3 class="text-xl font-bold text-on-surface font-sans" id="status-confirm-title">Cambiar Estado</h3>
+            </div>
+        </header>
+
+        <div class="p-6 space-y-4 text-center flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-primary/15 flex items-center justify-center text-primary mb-2">
+                <span class="material-symbols-outlined text-2xl font-bold" id="status-confirm-icon">warning</span>
+            </div>
+            <p class="text-sm text-on-surface-variant font-semibold leading-relaxed" id="status-confirm-message">
+                ¿Estás seguro de que deseas cambiar el estado de esta tienda?
+            </p>
+
+            <div class="flex gap-3 w-full pt-4 border-t border-outline-variant/30">
+                <button type="button" onclick="closeStatusConfirmModal()" class="flex-1 h-11 border border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
+                    Cancelar
+                </button>
+                <button type="button" id="btn-status-confirm" class="flex-1 h-11 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         checkAuth();
@@ -266,10 +327,49 @@
         setupPasswordToggle("user-password", "toggle-password-btn", "password-visibility-icon");
         setupPasswordToggle("reset-password-input", "toggle-reset-password-btn", "reset-password-visibility-icon");
 
+        // Configurar validadores de requisitos dinámicos
+        setupPasswordValidators();
+
         // Escuchar cambios en LocalStorage / Supabase real-time
         window.addEventListener("storage", (e) => {
             if (!e.key || e.key === "escarlu_sedes") {
                 loadSedesAndUsers();
+            }
+        });
+        
+        // Confirmación de Estado
+        document.getElementById("btn-status-confirm").addEventListener("click", async () => {
+            if (!pendingStatusStoreId) return;
+            const client = window.supabaseClient;
+            if (!client) return;
+
+            const newStatus = !pendingStatusCurrent;
+            const storeId = pendingStatusStoreId;
+
+            closeStatusConfirmModal();
+
+            try {
+                // 1. Actualizar Sede
+                const { error: errSede } = await client.from("sedes").update({
+                    activo: newStatus
+                }).eq("id_sede", storeId);
+
+                if (errSede) throw errSede;
+
+                // 2. Actualizar Usuario
+                const { error: errUser } = await client.from("usuarios").update({
+                    activo: newStatus
+                }).eq("id_sede_asignada", storeId);
+
+                if (errUser) throw errUser;
+
+                // Recargar datos locales
+                await downloadFromSupabase();
+                loadSedesAndUsers();
+
+            } catch (err) {
+                console.error("Error al cambiar estado de la tienda:", err);
+                alert("Error al cambiar estado: " + err.message);
             }
         });
     });
@@ -291,8 +391,58 @@
         }
     }
 
+    function setupPasswordValidators() {
+        const userPassInput = document.getElementById("user-password");
+        if (userPassInput) {
+            userPassInput.addEventListener("input", () => {
+                const val = userPassInput.value;
+                updateDot("new-req-len-dot", val.length >= 8);
+                updateDot("new-req-upper-dot", /[A-Z]/.test(val));
+                updateDot("new-req-num-dot", /[0-9]/.test(val));
+            });
+        }
+
+        const resetPassInput = document.getElementById("reset-password-input");
+        if (resetPassInput) {
+            resetPassInput.addEventListener("input", () => {
+                const val = resetPassInput.value;
+                updateDot("reset-req-len-dot", val.length >= 8);
+                updateDot("reset-req-upper-dot", /[A-Z]/.test(val));
+                updateDot("reset-req-num-dot", /[0-9]/.test(val));
+            });
+        }
+    }
+
+    function updateDot(dotId, condition) {
+        const dot = document.getElementById(dotId);
+        if (dot) {
+            if (condition) {
+                dot.classList.remove("bg-gray-300");
+                dot.classList.add("bg-green-500");
+            } else {
+                dot.classList.remove("bg-green-500");
+                dot.classList.add("bg-gray-300");
+            }
+        }
+    }
+
+    function validatePasswordRequirements(password) {
+        const hasMinLen = password.length >= 8;
+        const hasUpper = /[A-Z]/.test(password);
+        const hasNum = /[0-9]/.test(password);
+        return hasMinLen && hasUpper && hasNum;
+    }
+
+    function resetDotStates(prefix) {
+        updateDot(`${prefix}-req-len-dot`, false);
+        updateDot(`${prefix}-req-upper-dot`, false);
+        updateDot(`${prefix}-req-num-dot`, false);
+    }
+
     let currentSedes = [];
     let currentUsuarios = [];
+    let pendingStatusStoreId = null;
+    let pendingStatusCurrent = null;
 
     async function loadSedesAndUsers() {
         const client = window.supabaseClient;
@@ -400,6 +550,7 @@
 
     // Modal Crear
     function openModal() {
+        resetDotStates("new");
         document.getElementById("new-store-modal").classList.remove("hidden");
         document.getElementById("new-store-modal").classList.add("flex");
         suggestNextStoreId();
@@ -409,6 +560,7 @@
         document.getElementById("new-store-modal").classList.add("hidden");
         document.getElementById("new-store-modal").classList.remove("flex");
         document.getElementById("new-store-form").reset();
+        resetDotStates("new");
     }
 
     // Modal Editar
@@ -435,6 +587,7 @@
 
     // Modal Restablecer Password
     function openResetModal(storeId) {
+        resetDotStates("reset");
         document.getElementById("reset-user-store-id").value = storeId;
         document.getElementById("reset-password-modal").classList.remove("hidden");
         document.getElementById("reset-password-modal").classList.add("flex");
@@ -444,6 +597,32 @@
         document.getElementById("reset-password-modal").classList.add("hidden");
         document.getElementById("reset-password-modal").classList.remove("flex");
         document.getElementById("reset-password-form").reset();
+        resetDotStates("reset");
+    }
+
+    // Modal Confirmación de Estado
+    function toggleSedeStatus(storeId, currentStatus) {
+        pendingStatusStoreId = storeId;
+        pendingStatusCurrent = currentStatus;
+
+        const newStatus = !currentStatus;
+        const actionText = newStatus ? 'ACTIVAR' : 'DESACTIVAR';
+
+        document.getElementById("status-confirm-title").textContent = `${newStatus ? 'Activar' : 'Desactivar'} Sede`;
+        document.getElementById("status-confirm-message").textContent = `¿Estás seguro de que deseas ${actionText} la tienda con código ${storeId}?`;
+        document.getElementById("status-confirm-icon").textContent = newStatus ? "check_circle" : "warning";
+
+        const modal = document.getElementById("status-confirm-modal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
+
+    function closeStatusConfirmModal() {
+        const modal = document.getElementById("status-confirm-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        pendingStatusStoreId = null;
+        pendingStatusCurrent = null;
     }
 
     // Registro de Nueva Tienda y Cuenta (Formulario Crear)
@@ -464,6 +643,12 @@
         const userFullName = document.getElementById("user-fullname").value.trim();
         const userEmail = document.getElementById("user-email").value.trim().toLowerCase();
         const userPassword = document.getElementById("user-password").value.trim();
+
+        // Validar requisitos de contraseña
+        if (!validatePasswordRequirements(userPassword)) {
+            alert("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula y un número.");
+            return;
+        }
 
         // Generar ID único de usuario
         const uniqueUserId = "USR-" + Math.random().toString(36).substring(2, 9).toUpperCase();
@@ -551,43 +736,6 @@
         }
     });
 
-    // Cambiar estado activo/inactivo (Switch)
-    async function toggleSedeStatus(storeId, currentStatus) {
-        const client = window.supabaseClient;
-        if (!client) return;
-
-        const newStatus = !currentStatus;
-        const confirmMsg = `¿Estás seguro de que deseas ${newStatus ? 'ACTIVAR' : 'DESACTIVAR'} la tienda con código ${storeId}?`;
-        if (!confirm(confirmMsg)) return;
-
-        try {
-            // 1. Actualizar Sede
-            const { error: errSede } = await client.from("sedes").update({
-                activo: newStatus
-            }).eq("id_sede", storeId);
-
-            if (errSede) throw errSede;
-
-            // 2. Actualizar Usuario
-            const { error: errUser } = await client.from("usuarios").update({
-                activo: newStatus
-            }).eq("id_sede_asignada", storeId);
-
-            if (errUser) throw errUser;
-
-            alert(`Tienda ${newStatus ? 'activada' : 'desactivada'} correctamente.`);
-            
-            // Recargar datos locales
-            await downloadFromSupabase();
-            
-            loadSedesAndUsers();
-
-        } catch (err) {
-            console.error("Error al cambiar estado de la tienda:", err);
-            alert("Error al cambiar estado: " + err.message);
-        }
-    }
-
     // Restablecer contraseña
     document.getElementById("reset-password-form").addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -597,8 +745,9 @@
         const storeId = document.getElementById("reset-user-store-id").value;
         const newPassword = document.getElementById("reset-password-input").value.trim();
 
-        if (newPassword.length < 6) {
-            alert("La contraseña debe tener al menos 6 caracteres.");
+        // Validar requisitos de contraseña
+        if (!validatePasswordRequirements(newPassword)) {
+            alert("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula y un número.");
             return;
         }
 
