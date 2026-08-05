@@ -102,9 +102,9 @@
 </main>
 
 <!-- Modal: Registrar Sede / Cuenta -->
-<div id="new-store-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
-        <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center">
+<div id="new-store-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
+    <div class="bg-white rounded-3xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
+        <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center shrink-0">
             <div>
                 <h3 class="text-lg font-bold">Registrar Nueva Tienda</h3>
                 <p class="text-[11px] opacity-80">Crea una nueva tienda y su cuenta de acceso asociada.</p>
@@ -114,7 +114,7 @@
             </button>
         </header>
 
-        <form id="new-store-form" class="p-6 space-y-4">
+        <form id="new-store-form" class="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
             <div class="grid grid-cols-2 gap-4">
                 <div class="flex flex-col gap-1 col-span-2">
                     <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-name">Nombre / Ubicación de Tienda</label>
@@ -188,9 +188,9 @@
 </div>
 
 <!-- Modal: Editar Tienda -->
-<div id="edit-store-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
-        <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center">
+<div id="edit-store-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
+    <div class="bg-white rounded-3xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
+        <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center shrink-0">
             <div>
                 <h3 class="text-lg font-bold">Editar Tienda</h3>
                 <p class="text-[11px] opacity-80">Actualiza los datos informativos de la sede y el encargado.</p>
@@ -200,7 +200,7 @@
             </button>
         </header>
 
-        <form id="edit-store-form" class="p-6 space-y-4">
+        <form id="edit-store-form" class="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
             <input type="hidden" id="edit-store-id" />
             <div class="grid grid-cols-2 gap-4">
                 <div class="flex flex-col gap-1 col-span-2">
