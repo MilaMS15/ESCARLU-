@@ -191,7 +191,7 @@
 <!-- Left Column: POS Form (Takes up more space) -->
 <div class="col-span-1 lg:col-span-8 flex flex-col gap-6">
     <!-- Selector de Productos -->
-    <div class="bg-surface rounded-xl shadow-soft-lilac p-6 border-t-2 border-primary">
+    <div class="bg-surface rounded-xl shadow-soft-lilac p-6 border-t-2 border-primary relative">
         <h3 class="font-headline-md text-xl text-primary font-bold mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined">add_shopping_cart</span>
             Seleccionar Producto
@@ -403,8 +403,10 @@
                     { id_modelo: "MOD-021", tipo: "Polo", nombre: "Corazon ML" }
                 ];
             }
-            
-            const filtered = modelsList.filter(m => m.tipo.toLowerCase() === selectedType.toLowerCase());
+            const filtered = modelsList.filter(m => {
+                const mTipo = m.tipo ? m.tipo.toLowerCase().trim() : "";
+                return mTipo === selectedType.toLowerCase();
+            });
             modelSelect.innerHTML = "";
             filtered.forEach(m => {
                 const opt = document.createElement('option');
