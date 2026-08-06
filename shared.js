@@ -2322,41 +2322,29 @@ async function getStockForProduct(model, color, storeId) {
 }
 
 function getAllowedSizesForModel(modelId) {
-    const models = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
-    const model = models.find(m => m.id_modelo === modelId);
-    
-    // Check if the model has a custom sizes attribute saved
-    if (model && model.tallas) {
-        if (Array.isArray(model.tallas)) return model.tallas;
-        if (typeof model.tallas === 'string') return model.tallas.split(',').map(s => s.trim());
-    }
-
-    // Try checking if size configurations exist in local inventory
-    const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
-    const sizesFound = new Set();
-    Object.values(inventory).forEach(store => {
-        const modelStock = store[modelId];
-        if (modelStock) {
-            Object.values(modelStock).forEach(colorStock => {
-                Object.keys(colorStock).forEach(sz => sizesFound.add(sz));
-            });
-        }
-    });
-    if (sizesFound.size > 0) {
-        return Array.from(sizesFound);
+    // 1. Obtener el modelo desde localStorage o desde el listado estático
+    const modelsFromStorage = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+    let model = modelsFromStorage.find(m => m.id_modelo === modelId);
+    if (!model) {
+        const staticModels = getModelos();
+        model = staticModels.find(m => m.id_modelo === modelId);
     }
 
     if (!model) {
+        // Fallback genérico por ID si no se encuentra
         if (modelId === "MOD-015" || modelId === "MOD-016") {
             return ["S", "M", "L", "XL"];
         }
         return ["St", "L"];
     }
     
-    const category = model.tipo.toLowerCase();
-    if (category === "short") {
+    // 2. Determinar las tallas estrictamente por su Tipo (Categoría) de prenda
+    const category = model.tipo ? model.tipo.toLowerCase().trim() : "";
+    
+    if (category === "short" || category === "shorts") {
         return ["S", "M", "L", "XL"];
     } else {
+        // Polos, Chompas, Buzos usan únicamente St y L según la tabla de especificaciones
         return ["St", "L"];
     }
 }

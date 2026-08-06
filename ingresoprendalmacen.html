@@ -270,27 +270,6 @@
 </div>
 </form>
 </div>
-<!-- Secondary visual element -->
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div class="bg-primary-container/20 p-6 rounded-xl flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center">
-<span class="material-symbols-outlined">check_circle</span>
-</div>
-<div>
-<p class="text-body-sm opacity-70">Último Ingreso</p>
-<p id="kpi-last-entry" class="font-bold">Ninguno</p>
-</div>
-</div>
-<div class="bg-secondary-container/20 p-6 rounded-xl flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-secondary text-on-secondary flex items-center justify-center">
-<span class="material-symbols-outlined">inventory</span>
-</div>
-<div>
-<p class="text-body-sm opacity-70">Stock Actual Central</p>
-<p id="kpi-central-stock" class="font-bold">0 Unidades</p>
-</div>
-</div>
-</div>
 </div>
 </main>
 </div>
@@ -435,7 +414,8 @@
             alert(`Ingreso de ${qtyVal} unidades de ${MODEL_NAMES[modelVal]} registrado con éxito.`);
             
             // Update KPIs
-            document.getElementById('kpi-last-entry').textContent = `${MODEL_NAMES[modelVal]} (${qtyVal} u.)`;
+            const kpiLastEntry = document.getElementById('kpi-last-entry');
+            if (kpiLastEntry) kpiLastEntry.textContent = `${MODEL_NAMES[modelVal]} (${qtyVal} u.)`;
             updateCentralStockKPI();
             
             // Clear inputs
@@ -489,7 +469,8 @@
                 }
             }
         }
-        document.getElementById('kpi-central-stock').textContent = `${total.toLocaleString('es-PE')} Unidades`;
+        const kpiCentralStock = document.getElementById('kpi-central-stock');
+        if (kpiCentralStock) kpiCentralStock.textContent = `${total.toLocaleString('es-PE')} Unidades`;
     }
 
     function renderPendingRequests() {
