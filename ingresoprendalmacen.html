@@ -349,7 +349,10 @@
                 ];
             }
             
-            const filtered = modelsList.filter(m => m.tipo.toLowerCase() === selectedType.toLowerCase());
+            const filtered = modelsList.filter(m => {
+                const mTipo = m.tipo ? m.tipo.toLowerCase().trim() : "";
+                return mTipo === selectedType.toLowerCase();
+            });
             selectModel.innerHTML = "";
             filtered.forEach(m => {
                 const opt = document.createElement('option');
