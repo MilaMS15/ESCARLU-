@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Consulta de Stock Multisede | ESCARLÚ</title>
-<script src="shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="shared.js"></script>
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -740,10 +740,11 @@
                 modalDesc.innerHTML = `Enviar stock de <strong>${modelName} - ${colorName}</strong> desde el Almacén Central hacia la tienda elegida.`;
                 destContainer.classList.remove("hidden");
                 
-                // Populate destination stores dropdown (exclude ALM-01 and CTR-01)
+                // Populate destination stores dropdown (exclude ALM-01, CTR-01, and inactive stores)
                 destSelect.innerHTML = "";
                 for (const [storeId, storeName] of Object.entries(STORE_NAMES)) {
                     if (storeId !== 'ALM-01' && storeId !== 'CTR-01') {
+                        if (window.isStoreActive && !window.isStoreActive(storeId)) continue;
                         const opt = document.createElement("option");
                         opt.value = storeId;
                         opt.textContent = storeName;

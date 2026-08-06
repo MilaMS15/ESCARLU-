@@ -1,5 +1,23 @@
 // Base de datos simulada y utilidades compartidas - ESCARLÚ
 
+window.addEventListener('error', function(e) {
+    if (!document.body) {
+        window.addEventListener('DOMContentLoaded', () => {
+            showErrorBanner(e.message, e.filename, e.lineno);
+        });
+    } else {
+        showErrorBanner(e.message, e.filename, e.lineno);
+    }
+});
+
+function showErrorBanner(message, filename, lineno) {
+    const errorBanner = document.getElementById('global-js-error-banner') || document.createElement('div');
+    errorBanner.id = 'global-js-error-banner';
+    errorBanner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ffebee; color: #c62828; padding: 15px; border-bottom: 3px solid #e53935; z-index: 999999; font-family: monospace; font-size: 14px; font-weight: bold; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);';
+    errorBanner.innerHTML = '⚠️ Error de Código: ' + message + ' en ' + (filename ? filename.split('/').pop() : 'script') + ':' + lineno;
+    document.body.appendChild(errorBanner);
+}
+
 let supabaseClient = null;
 
 // Cargar dinámicamente dependencias de Supabase, config.js y el tema visual global
@@ -28,10 +46,12 @@ let supabaseClient = null;
     }
     
     // 2. Cargar config.js
-    const scriptConfig = document.createElement('script');
-    scriptConfig.src = "config.js";
-    scriptConfig.async = false;
-    document.head.appendChild(scriptConfig);
+    if (typeof SUPABASE_URL === 'undefined') {
+        const scriptConfig = document.createElement('script');
+        scriptConfig.src = "config.js";
+        scriptConfig.async = false;
+        document.head.appendChild(scriptConfig);
+    }
 
     // 3. Inyectar Estilo Global del Nuevo Tema Visual
     const styleEl = document.createElement('style');
@@ -639,12 +659,17 @@ async function downloadFromSupabase() {
         const { data: sedesData } = await client.from('sedes').select('*');
         if (sedesData) {
             const tempSedes = {};
+            const activeStatus = {};
             sedesData.forEach(s => {
                 tempSedes[s.id_sede] = s.ubicacion;
+                activeStatus[s.id_sede] = s.activo;
             });
             originalSetItem.call(localStorage, 'escarlu_sedes', JSON.stringify(tempSedes));
+            originalSetItem.call(localStorage, 'escarlu_sedes_status', JSON.stringify(activeStatus));
             Object.assign(STORE_NAMES, tempSedes);
+            Object.assign(STORE_STATUS, activeStatus);
             triggerStorageUpdate('escarlu_sedes', JSON.stringify(tempSedes));
+            triggerStorageUpdate('escarlu_sedes_status', JSON.stringify(activeStatus));
         }
     } catch (e) {
         console.error("Error downloading sedes from Supabase:", e);
@@ -922,6 +947,8 @@ const STORE_NAMES = {
     "CTR-01": "Administración"
 };
 
+const STORE_STATUS = {};
+
 // Sincronizar sedes dinámicas guardadas en localStorage
 try {
     const savedSedes = localStorage.getItem("escarlu_sedes");
@@ -931,6 +958,31 @@ try {
 } catch (e) {
     console.error("Error parsing escarlu_sedes:", e);
 }
+
+try {
+    const savedSedesStatus = localStorage.getItem("escarlu_sedes_status");
+    if (savedSedesStatus) {
+        Object.assign(STORE_STATUS, JSON.parse(savedSedesStatus));
+    }
+} catch (e) {
+    console.error("Error parsing escarlu_sedes_status:", e);
+}
+
+window.STORE_NAMES = STORE_NAMES;
+window.STORE_STATUS = STORE_STATUS;
+window.isStoreActive = function(storeId) {
+    // Si no está definido en STORE_STATUS, por defecto está activa (true)
+    return STORE_STATUS[storeId] !== false;
+};
+
+window.addEventListener('storage', (e) => {
+    if (e.key === 'escarlu_sedes_status' && e.newValue) {
+        Object.assign(STORE_STATUS, JSON.parse(e.newValue));
+    }
+    if (e.key === 'escarlu_sedes' && e.newValue) {
+        Object.assign(STORE_NAMES, JSON.parse(e.newValue));
+    }
+});
 
 const MODEL_NAMES = {
     "MOD-001": "Camisero MC",
@@ -2323,7 +2375,13 @@ async function getStockForProduct(model, color, storeId) {
 
 function getAllowedSizesForModel(modelId) {
     // 1. Obtener el modelo desde localStorage o desde el listado estático
-    const modelsFromStorage = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+    let modelsFromStorage = [];
+    try {
+        modelsFromStorage = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+    } catch (e) {
+        console.error("Error parsing escarlu_modelos from localStorage in getAllowedSizesForModel", e);
+    }
+    
     let model = modelsFromStorage.find(m => m.id_modelo === modelId);
     if (!model) {
         const staticModels = getModelos();

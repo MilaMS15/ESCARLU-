@@ -3,7 +3,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Stock Tienda | ESCARLÚ</title>
-<script src="shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="shared.js"></script>
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -454,6 +454,7 @@
         const list = [];
         for (const [id, name] of Object.entries(STORE_NAMES)) {
             if (id !== "CTR-01" && id !== user.storeId) {
+                if (window.isStoreActive && !window.isStoreActive(id)) continue;
                 list.push({ id, name });
             }
         }

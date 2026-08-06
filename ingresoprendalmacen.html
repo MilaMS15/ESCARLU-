@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>ESCARLÚ - Gestión de Almacén</title>
-<script src="shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="shared.js"></script>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -321,9 +321,14 @@
         function updateModelsDropdown() {
             if (!selectTipo || !selectModel) return;
             const selectedType = selectTipo.value;
-            let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+            let modelsList = [];
+            try {
+                modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+            } catch (e) {
+                console.error("Error parsing escarlu_modelos in ingresoprendalmacen.html", e);
+            }
             
-            if (modelsList.length === 0) {
+            if (!Array.isArray(modelsList) || modelsList.length === 0 || !modelsList.every(m => m && m.tipo)) {
                 modelsList = [
                     { id_modelo: "MOD-001", tipo: "Polo", nombre: "Camisero MC" },
                     { id_modelo: "MOD-002", tipo: "Polo", nombre: "Camisero ML" },
