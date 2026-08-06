@@ -1545,7 +1545,7 @@ function injectGlobalProfileModal() {
             <header class="bg-gradient-to-br from-[#F8C8D4] to-[#f0b3c0] p-6 border-b border-outline-variant text-on-surface flex justify-between items-center shrink-0">
                 <div>
                     <h3 class="text-lg font-bold text-on-surface">Mi Cuenta</h3>
-                    <p class="text-[11px] text-on-surface-variant font-medium">Configura tus datos de perfil y contraseña.</p>
+                    <p class="text-[11px] text-on-surface-variant font-medium" id="gprof-subtitle">Configura tus datos de perfil y contraseña.</p>
                 </div>
                 <span id="close-global-profile-btn" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors cursor-pointer select-none">
                     <span class="material-symbols-outlined text-sm">close</span>
@@ -1563,9 +1563,9 @@ function injectGlobalProfileModal() {
                     <input type="email" id="gprof-email" readonly class="border border-outline-variant rounded-xl px-3 py-2 text-sm bg-gray-50 text-gray-500 font-bold outline-none cursor-not-allowed" />
                 </div>
                 
-                <hr class="border-outline-variant/50 my-2">
+                <hr id="gprof-password-sep" class="border-outline-variant/50 my-2">
                 
-                <div class="space-y-4">
+                <div id="gprof-password-section" class="space-y-4">
                     <h4 class="text-xs font-bold text-[#745475] uppercase">Cambiar Contraseña</h4>
                     
                     <div class="flex flex-col gap-1 relative">
@@ -1618,7 +1618,7 @@ function injectGlobalProfileModal() {
                     <button type="button" id="cancel-gprof-btn" class="px-4 py-2 border border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
                         Cancelar
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/95 transition-colors">
+                    <button type="submit" id="save-gprof-btn" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/95 transition-colors">
                         Guardar Cambios
                     </button>
                 </div>
@@ -1687,8 +1687,16 @@ function openGlobalProfileModal() {
     const user = getCurrentUser();
     if (!user) return;
 
-    document.getElementById("gprof-fullname").value = user.label || "";
-    document.getElementById("gprof-email").value = user.email || "";
+    const nameInput = document.getElementById("gprof-fullname");
+    const emailInput = document.getElementById("gprof-email");
+    const subtitle = document.getElementById("gprof-subtitle");
+    const passSection = document.getElementById("gprof-password-section");
+    const passSep = document.getElementById("gprof-password-sep");
+    const saveBtn = document.getElementById("save-gprof-btn");
+    const cancelBtn = document.getElementById("cancel-gprof-btn");
+
+    nameInput.value = user.label || "";
+    emailInput.value = user.email || "";
 
     // Reset password fields
     document.getElementById("gprof-old-password").value = "";
@@ -1698,6 +1706,25 @@ function openGlobalProfileModal() {
     updateGprofDot("gprof-req-len-dot", false);
     updateGprofDot("gprof-req-upper-dot", false);
     updateGprofDot("gprof-req-num-dot", false);
+
+    // Dynamic config according to user role (Only admin can change name and password)
+    if (user.role === "admin") {
+        nameInput.readOnly = false;
+        nameInput.className = "border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none bg-white text-on-background";
+        subtitle.textContent = "Configura tus datos de perfil y contraseña.";
+        passSection.style.display = "block";
+        passSep.style.display = "block";
+        saveBtn.style.display = "inline-block";
+        cancelBtn.textContent = "Cancelar";
+    } else {
+        nameInput.readOnly = true;
+        nameInput.className = "border border-outline-variant rounded-xl px-3 py-2 text-sm bg-gray-50 text-gray-500 font-bold outline-none cursor-not-allowed";
+        subtitle.textContent = "Datos de perfil del usuario (Solo Lectura).";
+        passSection.style.display = "none";
+        passSep.style.display = "none";
+        saveBtn.style.display = "none";
+        cancelBtn.textContent = "Cerrar";
+    }
 
     const modal = document.getElementById("global-profile-modal");
     modal.classList.remove("hidden");
