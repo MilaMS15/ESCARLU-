@@ -285,7 +285,6 @@
 <th class="px-4 py-4 border-b border-outline-variant text-center">XL</th>
 <th class="px-4 py-4 border-b border-outline-variant text-center">Total Stock</th>
 <th class="px-4 py-4 border-b border-outline-variant">Estado</th>
-<th class="px-6 py-4 border-b border-outline-variant text-right">Acción</th>
 </tr>
 </thead>
 <tbody id="inventory-tbody" class="divide-y divide-outline-variant">
@@ -468,6 +467,8 @@
 </div>
 <script>
         const user = getCurrentUser();
+        // Almacén de la sesión: una sede solo despacha desde su propio stock
+        const MY_ALM = (user && user.role === "almacen" && user.storeId) ? user.storeId : "ALM-01";
         let invData = {};
         let reqsData = [];
         let currentPage = 1;
@@ -485,14 +486,30 @@
         const storeSelect = document.getElementById("store-select");
         if (storeSelect) {
             storeSelect.innerHTML = "";
+            const MY_STORE = (user && user.storeId) ? user.storeId : null;
+
+            // Opción General: todas las sedes (almacenes + tiendas) juntas
+            const optAll = document.createElement("option");
+            optAll.value = "__ALL__";
+            optAll.textContent = "Todas las sedes (General)";
+            storeSelect.appendChild(optAll);
+
+            // Opción Mi sede (el almacén donde está la cuenta), seleccionada por defecto
+            if (MY_STORE && MY_STORE !== "CTR-01") {
+                const optMy = document.createElement("option");
+                optMy.value = MY_STORE;
+                optMy.textContent = "Mi sede — " + (STORE_NAMES[MY_STORE] || (user ? user.label : MY_STORE) || MY_STORE);
+                optMy.selected = true;
+                storeSelect.appendChild(optMy);
+            }
+
+            // Resto de sedes (otras tiendas y almacenes)
             for (const [id, name] of Object.entries(STORE_NAMES)) {
-                if (id !== "CTR-01") { // Exclude general admin
-                    const opt = document.createElement("option");
-                    opt.value = id;
-                    opt.textContent = name;
-                    if (id === "ALM-01") opt.selected = true;
-                    storeSelect.appendChild(opt);
-                }
+                if (id === "CTR-01" || id === MY_STORE) continue;
+                const opt = document.createElement("option");
+                opt.value = id;
+                opt.textContent = name;
+                storeSelect.appendChild(opt);
             }
         }
         function getColorBadgeClass(colorKey) {
@@ -525,7 +542,8 @@
             }
 
             const selectedStore = storeSelect.value;
-            const selectedStoreName = STORE_NAMES[selectedStore] || selectedStore;
+            const isAll = selectedStore === "__ALL__";
+            const selectedStoreName = isAll ? "Todas las sedes (General)" : (STORE_NAMES[selectedStore] || selectedStore);
             
             const filterTipo = document.getElementById("select-filter-tipo");
             const filterModelo = document.getElementById("select-filter-modelo");
@@ -563,35 +581,105 @@
                 });
                 if (sKey === "ALM-01") filterCentral += storeSum;
                 else if (sKey.startsWith("TDA-")) filterTiendas += storeSum;
-                
+
                 if (selectedStore === sKey) {
                     storeTotal = storeSum;
+                } else if (isAll && sKey !== "CTR-01") {
+                    storeTotal += storeSum;
                 }
             });
 
+            const isCentral = selectedStore === "ALM-01";
             const tableRows = [];
 
-            for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
-                // Filter by selected model
-                if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
+            if (isCentral) {
+                for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+                    if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
 
-                // Filter by type
-                let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
-                const modelObj = modelsList.find(m => m.id_modelo === modelKey);
-                const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
-                if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
+                    let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+                    const modelObj = modelsList.find(m => m.id_modelo === modelKey);
+                    const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
+                    if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
 
-                for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
-                    // Filter by color
-                    if (selectedColor !== "all" && colorKey !== selectedColor) continue;
+                    for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
+                        if (selectedColor !== "all" && colorKey !== selectedColor) continue;
+
+                        const allowedSizes = getAllowedSizesForModel(modelKey);
+                        const sizes = targetInventory[modelKey]?.[colorKey] || {};
+                        
+                        let totalRow = 0;
+                        allowedSizes.forEach(sz => {
+                            totalRow += (sizes[sz] || 0);
+                        });
+
+                        if (totalRow < 5) {
+                            lowAlerts++;
+                        }
+
+                        let estado = "Disponible";
+                        if (totalRow === 0) {
+                            estado = "Agotado";
+                        } else if (totalRow < 5) {
+                            estado = "Bajo Stock";
+                        }
+
+                        if (totalRow > 0) {
+                            tableRows.push({
+                                row: [
+                                    `${modelName} (${modelType})`,
+                                    colorName,
+                                    allowedSizes.includes("St") ? (sizes.St || 0) : "-",
+                                    allowedSizes.includes("S") ? (sizes.S || 0) : "-",
+                                    allowedSizes.includes("M") ? (sizes.M || 0) : "-",
+                                    allowedSizes.includes("L") ? (sizes.L || 0) : "-",
+                                    allowedSizes.includes("XL") ? (sizes.XL || 0) : "-",
+                                    totalRow,
+                                    estado
+                                ],
+                                totalRow: totalRow
+                            });
+                        }
+                    }
+                }
+            } else {
+                for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+                    if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
+
+                    let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+                    const modelObj = modelsList.find(m => m.id_modelo === modelKey);
+                    const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
+                    if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
 
                     const allowedSizes = getAllowedSizesForModel(modelKey);
-                    const sizes = targetInventory[modelKey]?.[colorKey] || {};
-                    
+                    const sizes = {};
+                    allowedSizes.forEach(sz => { sizes[sz] = 0; });
+
                     let totalRow = 0;
-                    allowedSizes.forEach(sz => {
-                        totalRow += (sizes[sz] || 0);
-                    });
+                    if (isAll) {
+                        // General: sumar el stock de TODAS las sedes (almacenes + tiendas)
+                        for (const [sId, storeInv] of Object.entries(invData)) {
+                            if (sId === "CTR-01") continue;
+                            const modelColors = storeInv[modelKey] || {};
+                            for (const [cKey, sizesObj] of Object.entries(modelColors)) {
+                                for (const [sz, qty] of Object.entries(sizesObj)) {
+                                    if (allowedSizes.includes(sz)) {
+                                        sizes[sz] = (sizes[sz] || 0) + qty;
+                                        totalRow += qty;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        const modelColors = targetInventory[modelKey] || {};
+                        for (const [cKey, sizesObj] of Object.entries(modelColors)) {
+                            for (const [sz, qty] of Object.entries(sizesObj)) {
+                                if (allowedSizes.includes(sz)) {
+                                    sizes[sz] = (sizes[sz] || 0) + qty;
+                                    totalRow += qty;
+                                }
+                            }
+                        }
+                    }
 
                     if (totalRow < 5) {
                         lowAlerts++;
@@ -604,12 +692,10 @@
                         estado = "Bajo Stock";
                     }
 
-                    // --- FILTRADO DE VARIACIONES SIN STOCK ---
                     if (totalRow > 0) {
                         tableRows.push({
                             row: [
                                 `${modelName} (${modelType})`,
-                                colorName,
                                 allowedSizes.includes("St") ? (sizes.St || 0) : "-",
                                 allowedSizes.includes("S") ? (sizes.S || 0) : "-",
                                 allowedSizes.includes("M") ? (sizes.M || 0) : "-",
@@ -624,7 +710,6 @@
                 }
             }
 
-            // Ordenar de mayor a menor stock
             tableRows.sort((a, b) => b.totalRow - a.totalRow);
 
             const ws_data = [
@@ -633,7 +718,7 @@
                 ["Sede Filtrada:", selectedStoreName],
                 ["Filtro Tipo:", selectedTipo === "all" ? "Todos los tipos" : selectedTipo],
                 ["Filtro Modelo:", selectedModelo === "all" ? "Todos los modelos" : (MODEL_NAMES[selectedModelo] || selectedModelo)],
-                ["Filtro Color:", selectedColor === "all" ? "Todos los colores" : (COLOR_NAMES[selectedColor] || selectedColor)],
+                isCentral ? ["Filtro Color:", selectedColor === "all" ? "Todos los colores" : (COLOR_NAMES[selectedColor] || selectedColor)] : [],
                 [],
                 ["RESUMEN DE INDICADORES"],
                 ["TOTAL PRENDAS EN STOCK", storeTotal],
@@ -642,7 +727,9 @@
                 ["VARIANTES EN ALERTA", lowAlerts],
                 [],
                 ["EXISTENCIAS POR MODELO Y TALLA (Variantes con Stock)"],
-                ["MODELO / TIPO", "COLOR", "ST", "S", "M", "L", "XL", "TOTAL STOCK", "ESTADO"]
+                isCentral 
+                    ? ["MODELO / TIPO", "COLOR", "ST", "S", "M", "L", "XL", "TOTAL STOCK", "ESTADO"]
+                    : ["MODELO / TIPO", "ST", "S", "M", "L", "XL", "TOTAL STOCK", "ESTADO"]
             ];
 
             tableRows.forEach(item => {
@@ -661,7 +748,6 @@
                     const cell_ref = XLSX.utils.encode_cell({c:C, r:R});
                     if (!ws[cell_ref]) continue;
 
-                    // Inicializar objeto de estilo
                     ws[cell_ref].s = {
                         font: { name: "Calibri", sz: 11 },
                         alignment: { vertical: "center" },
@@ -673,7 +759,6 @@
                         }
                     };
 
-                    // Fila de cabecera principal (Fila 1)
                     if (R === 0) {
                         ws[cell_ref].s = {
                             font: { name: "Cambria", sz: 16, bold: true, color: { rgb: "745475" } },
@@ -681,7 +766,6 @@
                         };
                     }
 
-                    // Metadatos superiores (Filas 1 a 6)
                     if (R >= 1 && R <= 5) {
                         if (C === 0) {
                             ws[cell_ref].s.font.bold = true;
@@ -694,11 +778,10 @@
 
                     if (R === 6) ws[cell_ref].s.border = {};
 
-                    // Título de Sección "RESUMEN DE INDICADORES"
                     if (R === 7) {
                         ws[cell_ref].s = {
                             font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
-                            fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } }, // Rosa claro
+                            fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } },
                             alignment: { horizontal: "left", vertical: "center" },
                             border: {
                                 top: { style: "thin", color: { rgb: "F8C8D4" } },
@@ -707,7 +790,6 @@
                         };
                     }
 
-                    // Filas de Indicadores principales (Filas 8 a 11)
                     if (R >= 8 && R <= 11) {
                         if (C === 0) {
                             ws[cell_ref].s.font.color = { rgb: "1C1B1B" };
@@ -722,7 +804,6 @@
 
                     if (R === 12) ws[cell_ref].s.border = {};
 
-                    // Título de Sección "EXISTENCIAS POR MODELO Y TALLA"
                     if (R === 13) {
                         ws[cell_ref].s = {
                             font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
@@ -735,12 +816,11 @@
                         };
                     }
 
-                    // Cabeceras de tabla de movimientos (Fila 15, index 14)
                     if (R === 14) {
                         ws[cell_ref].s = {
                             font: { name: "Calibri", sz: 10, bold: true, color: { rgb: "745475" } },
                             fill: { patternType: "solid", fgColor: { rgb: "F8C8D4" } },
-                            alignment: { horizontal: (C >= 2 && C <= 7) ? "center" : "left", vertical: "center" },
+                            alignment: { horizontal: "center", vertical: "center" },
                             border: {
                                 top: { style: "medium", color: { rgb: "745475" } },
                                 bottom: { style: "medium", color: { rgb: "745475" } },
@@ -750,43 +830,20 @@
                         };
                     }
 
-                    // Filas de datos
                     if (R >= 15) {
                         const zebraColor = (R % 2 === 0) ? "FAF5F6" : "FFFFFF";
                         ws[cell_ref].s.fill = { patternType: "solid", fgColor: { rgb: zebraColor } };
-
-                        // Alinear datos numéricos
-                        if (C >= 2 && C <= 7) {
-                            ws[cell_ref].s.alignment.horizontal = "center";
-                            if (C === 7) {
-                                ws[cell_ref].t = 'n';
-                                ws[cell_ref].z = '#,##0';
-                                ws[cell_ref].s.font.bold = true;
-                                ws[cell_ref].s.font.color = { rgb: "745475" };
-                            } else if (ws[cell_ref].v !== "-") {
-                                ws[cell_ref].t = 'n';
-                                ws[cell_ref].z = '#,##0';
-                            }
-                        }
                     }
                 }
             }
 
-            // Combinar títulos para alineación limpia
             if(!ws['!merges']) ws['!merges'] = [];
-            ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } });
+            ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: isCentral ? 8 : 7 } });
 
-            // Set Column Widths
-            ws['!cols'] = [
-                { wch: 35 }, // MODELO / TIPO
-                { wch: 18 }, // COLOR
-                { wch: 8 },  // ST
-                { wch: 8 },  // S
-                { wch: 8 },  // M
-                { wch: 8 },  // L
-                { wch: 8 },  // XL
-                { wch: 15 }, // TOTAL STOCK
-                { wch: 15 }  // ESTADO
+            ws['!cols'] = isCentral ? [
+                { wch: 35 }, { wch: 18 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 15 }, { wch: 15 }
+            ] : [
+                { wch: 35 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 15 }, { wch: 15 }
             ];
 
             XLSX.utils.book_append_sheet(wb, ws, "Stock Sede");
@@ -799,16 +856,55 @@
             if (!invData || Object.keys(invData).length === 0) return;
 
             const selectedStore = storeSelect.value;
-            const storeName = STORE_NAMES[selectedStore] || selectedStore;
+            const isAll = selectedStore === "__ALL__";
+            const storeName = isAll ? "Todas las sedes (General)" : (STORE_NAMES[selectedStore] || selectedStore);
+            const isCentral = selectedStore === "ALM-01";
+
             const tableTitleEl = document.getElementById("table-header-title");
             if (tableTitleEl) {
                 tableTitleEl.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Existencias de Prendas - ${storeName}`;
             }
 
+            // Ocultar / Mostrar filtro de color según sea Almacén Central o Tienda
+            const filterColorEl = document.getElementById("select-filter-color");
+            const filterColorContainer = filterColorEl ? filterColorEl.closest("div.flex") : null;
+            if (filterColorContainer) {
+                filterColorContainer.style.display = isCentral ? "flex" : "none";
+            }
+
+            // Actualizar la cabecera HTML dinámicamente
+            const theadTr = document.querySelector("table thead tr");
+            if (theadTr) {
+                if (isCentral) {
+                    theadTr.innerHTML = `
+                        <th class="px-6 py-4 border-b border-outline-variant">Modelo / Tipo</th>
+                        <th class="px-4 py-4 border-b border-outline-variant">Color</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">St</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">S</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">M</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">L</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">XL</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">Total Stock</th>
+                        <th class="px-4 py-4 border-b border-outline-variant">Estado</th>
+                    `;
+                } else {
+                    theadTr.innerHTML = `
+                        <th class="px-6 py-4 border-b border-outline-variant">Modelo / Tipo</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">St</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">S</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">M</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">L</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">XL</th>
+                        <th class="px-4 py-4 border-b border-outline-variant text-center">Total Stock</th>
+                        <th class="px-4 py-4 border-b border-outline-variant">Estado</th>
+                    `;
+                }
+            }
+
             const query = (document.getElementById("inventory-search-table")?.value || "").toLowerCase().trim();
             const selectedTipo = document.getElementById("select-filter-tipo")?.value || "all";
             const selectedModelo = document.getElementById("select-filter-modelo")?.value || "all";
-            const selectedColor = document.getElementById("select-filter-color")?.value || "all";
+            const selectedColor = isCentral ? (document.getElementById("select-filter-color")?.value || "all") : "all";
 
             tbody.innerHTML = "";
             let selectedStoreTotal = 0;
@@ -817,31 +913,93 @@
             const targetInventory = invData[selectedStore] || {};
             const allRows = [];
 
-            for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
-                // Filter by selected model
-                if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
+            if (isCentral) {
+                // Almacén Central: Desglose por Modelo + Color
+                for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+                    if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
 
-                // Filter by type
-                let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
-                const modelObj = modelsList.find(m => m.id_modelo === modelKey);
-                const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
-                if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
+                    let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+                    const modelObj = modelsList.find(m => m.id_modelo === modelKey);
+                    const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
+                    if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
 
-                for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
-                    // Filter by color
-                    if (selectedColor !== "all" && colorKey !== selectedColor) continue;
+                    for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
+                        if (selectedColor !== "all" && colorKey !== selectedColor) continue;
 
-                    if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
+                        if (query && !modelName.toLowerCase().includes(query) && !colorName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
+                            continue;
+                        }
+
+                        const allowedSizes = getAllowedSizesForModel(modelKey);
+                        const sizes = targetInventory[modelKey]?.[colorKey] || {};
+                        
+                        let totalRow = 0;
+                        allowedSizes.forEach(sz => {
+                            totalRow += (sizes[sz] || 0);
+                        });
+
+                        selectedStoreTotal += totalRow;
+                        if (totalRow < 5) {
+                            lowStockCount++;
+                        }
+
+                        allRows.push({
+                            isCentral: true,
+                            modelKey,
+                            modelName,
+                            colorKey,
+                            colorName,
+                            allowedSizes,
+                            sizes,
+                            totalRow
+                        });
+                    }
+                }
+            } else {
+                // Tiendas u otras sedes (incl. "General"): consolidado por Modelo (Sin colores)
+                for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+                    if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
+
+                    let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+                    const modelObj = modelsList.find(m => m.id_modelo === modelKey);
+                    const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
+                    if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
+
+                    if (query && !modelName.toLowerCase().includes(query) && !modelKey.toLowerCase().includes(query)) {
                         continue;
                     }
 
                     const allowedSizes = getAllowedSizesForModel(modelKey);
-                    const sizes = targetInventory[modelKey]?.[colorKey] || {};
-                    
+                    const aggregatedSizes = {};
+                    allowedSizes.forEach(sz => { aggregatedSizes[sz] = 0; });
+
                     let totalRow = 0;
-                    allowedSizes.forEach(sz => {
-                        totalRow += (sizes[sz] || 0);
-                    });
+                    if (isAll) {
+                        // General: sumar el stock de TODAS las sedes (almacenes + tiendas)
+                        for (const [sId, storeInv] of Object.entries(invData)) {
+                            if (sId === "CTR-01") continue;
+                            const modelColors = storeInv[modelKey] || {};
+                            for (const [cKey, sizesObj] of Object.entries(modelColors)) {
+                                for (const [sz, qty] of Object.entries(sizesObj)) {
+                                    if (allowedSizes.includes(sz)) {
+                                        aggregatedSizes[sz] = (aggregatedSizes[sz] || 0) + qty;
+                                        totalRow += qty;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Sede puntual: solo su propio stock
+                        const modelColors = targetInventory[modelKey] || {};
+                        for (const [cKey, sizesObj] of Object.entries(modelColors)) {
+                            for (const [sz, qty] of Object.entries(sizesObj)) {
+                                if (allowedSizes.includes(sz)) {
+                                    aggregatedSizes[sz] = (aggregatedSizes[sz] || 0) + qty;
+                                    totalRow += qty;
+                                }
+                            }
+                        }
+                    }
 
                     selectedStoreTotal += totalRow;
                     if (totalRow < 5) {
@@ -849,21 +1007,20 @@
                     }
 
                     allRows.push({
+                        isCentral: false,
                         modelKey,
                         modelName,
-                        colorKey,
-                        colorName,
+                        colorKey: '',
+                        colorName: '',
                         allowedSizes,
-                        sizes,
+                        sizes: aggregatedSizes,
                         totalRow
                     });
                 }
             }
 
-            // Ordenar de mayor a menor stock
             allRows.sort((a, b) => b.totalRow - a.totalRow);
 
-            // Lógica de Paginación Real
             const totalItems = allRows.length;
             const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
             if (currentPage > totalPages) currentPage = totalPages;
@@ -873,7 +1030,6 @@
             const endIdx = Math.min(startIdx + rowsPerPage, totalItems);
             const pagedRows = allRows.slice(startIdx, endIdx);
 
-            // Actualizar panel de información y controles
             document.getElementById("pagination-info").textContent = totalItems > 0 
                 ? `Mostrando ${startIdx + 1}-${endIdx} de ${totalItems} modelos`
                 : "Mostrando 0-0 de 0 modelos";
@@ -887,14 +1043,15 @@
             document.getElementById("btn-next-page").disabled = currentPage === totalPages;
 
             if (pagedRows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="py-10 text-center text-xs text-on-surface-variant font-medium">No se encontraron resultados.</td></tr>`;
+                const colSpan = isCentral ? 9 : 8;
+                tbody.innerHTML = `<tr><td colspan="${colSpan}" class="py-10 text-center text-xs text-on-surface-variant font-medium">No se encontraron resultados.</td></tr>`;
                 document.getElementById("stat-selected-stock").textContent = `${selectedStoreTotal.toLocaleString('es-PE')} Unidades`;
                 document.getElementById("stat-alerts").textContent = `${lowStockCount} Modelos`;
                 return;
             }
 
             pagedRows.forEach(row => {
-                const { modelKey, modelName, colorKey, colorName, allowedSizes, sizes, totalRow } = row;
+                const { isCentral, modelKey, modelName, colorKey, colorName, allowedSizes, sizes, totalRow } = row;
 
                 function renderSizeCell(sz) {
                     if (!allowedSizes.includes(sz)) {
@@ -912,36 +1069,27 @@
                     statusBadge = `<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[11px] font-bold">Bajo Stock</span>`;
                 }
 
-                // Check if Almacén Central (ALM-01) has stock to send
-                const centralStock = invData["ALM-01"]?.[modelKey]?.[colorKey] || {};
-                const centralTotal = allowedSizes.reduce((sum, sz) => sum + (centralStock[sz] || 0), 0);
-
-                if (centralTotal > 0) {
-                    actionButton = `
-                        <button onclick="openSendStockModal('${modelKey}', '${colorKey}', '${selectedStore}')" class="bg-primary text-on-primary px-3 py-1.5 rounded-lg font-label-md shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95 text-xs uppercase font-bold">
-                            Enviar Stock
-                        </button>
-                    `;
-                } else {
-                    actionButton = `
-                        <button class="bg-outline text-on-surface-variant px-3 py-1.5 rounded-lg font-label-md cursor-not-allowed text-xs font-bold" disabled>
-                            Sin Stock Central
-                        </button>
-                    `;
-                }
-
                 const tr = document.createElement("tr");
                 tr.className = "hover:bg-surface-container-low transition-colors group";
-                tr.innerHTML = `
+                
+                let rowHtml = `
                     <td class="px-6 py-3">
                         <div>
                             <p class="font-bold text-sm text-on-surface">${modelName}</p>
                             <p class="text-xs text-on-surface-variant">REF: ESC-2026-${modelKey}</p>
                         </div>
                     </td>
-                    <td class="px-4 py-3">
-                        <span class="${getColorBadgeClass(colorKey)}">${colorName}</span>
-                    </td>
+                `;
+
+                if (isCentral) {
+                    rowHtml += `
+                        <td class="px-4 py-3">
+                            <span class="${getColorBadgeClass(colorKey)}">${colorName}</span>
+                        </td>
+                    `;
+                }
+
+                rowHtml += `
                     ${renderSizeCell("St")}
                     ${renderSizeCell("S")}
                     ${renderSizeCell("M")}
@@ -949,8 +1097,9 @@
                     ${renderSizeCell("XL")}
                     <td class="px-4 py-3 text-center font-bold text-sm text-on-surface">${totalRow}</td>
                     <td class="px-4 py-3">${statusBadge}</td>
-                    <td class="px-6 py-3 text-right">${actionButton}</td>
                 `;
+
+                tr.innerHTML = rowHtml;
                 tbody.appendChild(tr);
             });
 
@@ -1154,18 +1303,18 @@
                     return;
                 }
 
-                // Verify Almacén Central (ALM-01) has enough stock
-                const centralStock = invData["ALM-01"]?.[modelKey]?.[colorKey]?.[size] || 0;
+                // Verificar que el almacén de la sesión tiene suficiente stock
+                const centralStock = invData[MY_ALM]?.[modelKey]?.[colorKey]?.[size] || 0;
                 if (centralStock < qty) {
-                    alert(`Stock insuficiente en el Almacén Central. Solo quedan ${centralStock} unidades disponibles de la talla ${size}.`);
+                    alert(`Stock insuficiente en su almacén. Solo quedan ${centralStock} unidades disponibles de la talla ${size}.`);
                     return;
                 }
 
-                // Deduct stock from Almacén Central (ALM-01) immediately
-                if (!invData["ALM-01"]) invData["ALM-01"] = {};
-                if (!invData["ALM-01"][modelKey]) invData["ALM-01"][modelKey] = {};
-                if (!invData["ALM-01"][modelKey][colorKey]) invData["ALM-01"][modelKey][colorKey] = {};
-                invData["ALM-01"][modelKey][colorKey][size] = centralStock - qty;
+                // Descontar stock del almacén de la sesión inmediatamente
+                if (!invData[MY_ALM]) invData[MY_ALM] = {};
+                if (!invData[MY_ALM][modelKey]) invData[MY_ALM][modelKey] = {};
+                if (!invData[MY_ALM][modelKey][colorKey]) invData[MY_ALM][modelKey][colorKey] = {};
+                invData[MY_ALM][modelKey][colorKey][size] = centralStock - qty;
 
                 // Save updated inventory back to localStorage
                 localStorage.setItem("escarlu_inventory", JSON.stringify(invData));
@@ -1176,7 +1325,7 @@
                 reqsData.push({
                     id: orderId,
                     type: "traspaso",
-                    origin: "ALM-01",
+                    origin: MY_ALM,
                     destination: destStoreId,
                     model: modelKey,
                     color: colorKey,

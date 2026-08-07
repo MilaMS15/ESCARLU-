@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Despachar a Tienda | ESCARLÚ</title>
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="despachartienda.js"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&amp;family=Source+Sans+3:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-background": "#1c1b1b",
+                "on-secondary": "#ffffff",
+                "surface": "#fcf9f8",
+                "on-surface-variant": "#4c444b",
+                "on-error": "#ffffff",
+                "background": "#fcf9f8",
+                "primary-container": "#c8a2c8",
+                "surface-bright": "#fcf9f8",
+                "on-primary-fixed-variant": "#5a3c5d",
+                "primary-fixed": "#ffd6fe",
+                "secondary-container": "#fecbcb",
+                "on-tertiary-fixed": "#241a00",
+                "on-surface": "#1c1b1b",
+                "inverse-primary": "#e2bae1",
+                "primary-fixed-dim": "#e2bae1",
+                "surface-variant": "#e5e2e1",
+                "on-secondary-container": "#7a5354",
+                "tertiary-container": "#cfaa32",
+                "surface-container-highest": "#e5e2e1",
+                "tertiary-fixed": "#ffe088",
+                "on-primary": "#ffffff",
+                "secondary-fixed": "#ffdad9",
+                "surface-container": "#f0eded",
+                "primary": "#745475",
+                "surface-container-high": "#eae7e7",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#745475",
+                "secondary": "#7b5455",
+                "outline": "#7e747c",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed-dim": "#ecbaba",
+                "tertiary-fixed-dim": "#e9c349",
+                "surface-container-low": "#f6f3f2",
+                "outline-variant": "#cfc3cc",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "on-secondary-fixed-variant": "#613d3e",
+                "tertiary": "#735c00",
+                "on-tertiary-fixed-variant": "#574500",
+                "on-primary-fixed": "#2b112f",
+                "on-primary-container": "#553757",
+                "error": "#ba1a1a",
+                "inverse-surface": "#313030",
+                "surface-dim": "#dcd9d9",
+                "inverse-on-surface": "#f3f0ef",
+                "on-tertiary-container": "#513f00",
+                "on-secondary-fixed": "#2f1314"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "body-sm": ["Source Sans 3"],
+                "label-lg": ["Source Sans 3"],
+                "headline-md": ["Libre Caslon Text"],
+                "body-lg": ["Source Sans 3"],
+                "display-lg": ["Libre Caslon Text"],
+                "body-md": ["Source Sans 3"],
+                "headline-lg": ["Libre Caslon Text"],
+                "label-md": ["Source Sans 3"]
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        body {
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(248, 200, 212, 0.4);
+            box-shadow: 0 4px 15px rgba(248, 200, 212, 0.12);
+        }
+        .plain-card {
+            background: #ffffff;
+            border: 1px solid rgba(248, 200, 212, 0.5);
+            box-shadow: 0 4px 15px rgba(248, 200, 212, 0.12);
+        }
+        #btn-add-to-guide {
+            background-color: #C59B27 !important;
+            color: #1A1A1A !important;
+            border: 2px solid #C59B27 !important;
+            font-weight: 800 !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 15px rgba(197, 155, 39, 0.35) !important;
+        }
+        #btn-add-to-guide:hover {
+            background-color: #b08920 !important;
+            color: #ffffff !important;
+            transform: translateY(-1px) !important;
+        }
+        #btn-confirm-dispatch {
+            background-color: #C59B27 !important;
+            color: #1a1a1a !important;
+            border: none !important;
+            box-shadow: 0 4px 18px rgba(197, 155, 39, 0.4) !important;
+        }
+        #btn-confirm-dispatch:not(:disabled):hover {
+            background-color: #b08920 !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 22px rgba(197, 155, 39, 0.5) !important;
+        }
+        #btn-confirm-dispatch:disabled {
+            background-color: #C59B27 !important;
+            color: #1a1a1a !important;
+            opacity: 0.45 !important;
+            cursor: not-allowed !important;
+        }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #f0eded; }
+        ::-webkit-scrollbar-thumb { background: #F8C8D4; border-radius: 10px; border: 3px solid #f0eded; }
+        select option {
+            background-color: #ffffff !important;
+            color: #1a1a1a !important;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background">
+    <!-- Sidebar Container -->
+    <aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-4 px-3 bg-surface-container shadow-md w-64 z-50"></aside>
+
+    <!-- Main Content Area -->
+    <main class="ml-0 md:ml-72 min-h-screen pb-16">
+        <!-- Top Bar Header -->
+        <header class="flex justify-between items-center w-full px-6 h-[60px] bg-white border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 max-w-[1440px] mx-auto shrink-0">
+            <!-- Left: Store Badge -->
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 bg-[#FFF0F3] px-3.5 py-1.5 rounded-full border border-[#F8C8D4]">
+                    <span class="material-symbols-outlined text-primary text-xs" style="font-variation-settings: 'FILL' 1;">warehouse</span>
+                    <span class="text-xs font-bold text-primary font-body-md">Almacén Central</span>
+                </div>
+            </div>
+
+            <!-- Center: Header title -->
+            <div class="flex-1 max-w-md mx-6 text-center hidden sm:block">
+                <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Módulo de Traslado y Despacho Masivo</span>
+            </div>
+
+            <!-- Right: User Info -->
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-on-surface font-body-md">Encargado de Almacén</span>
+                    <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
+                        <img alt="Almacenero Profile" class="w-full h-full object-cover" src="logo.png"/>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Container -->
+        <div class="p-4 sm:p-6 max-w-[1440px] mx-auto space-y-6">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center pb-4 border-b border-surface-variant/40 bg-white p-6 rounded-2xl border border-outline-variant/30 shadow-sm flex-wrap gap-4">
+                <div>
+                    <h2 class="font-headline-lg text-2xl font-bold text-primary leading-tight flex items-center gap-3">
+                        <span class="material-symbols-outlined text-3xl">local_shipping</span>
+                        Despachar Stock a Tienda
+                    </h2>
+                    <p class="text-xs text-on-surface-variant font-semibold mt-1">
+                        Cree y confirme guías de despacho masivo multi-item desde el Almacén Central hacia cualquier tienda.
+                    </p>
+                </div>
+            </div>
+
+            <!-- CARD 1 & 2 Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- CARD 1: Selección de Tienda y Producto (Left Column, 4 cols) -->
+                <div class="lg:col-span-5 plain-card rounded-2xl p-5 space-y-5">
+                    <div class="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-primary text-xl">tune</span>
+                        <h3 class="font-headline-md text-base font-bold text-primary">1. Selección de Destino y Prenda</h3>
+                    </div>
+
+                    <!-- Selector Tienda Destino -->
+                    <div class="space-y-1.5">
+                        <label class="font-label-md text-xs font-bold text-on-surface uppercase tracking-wider block" for="select-tienda-destino">
+                            🏬 Tienda Destino
+                        </label>
+                        <select id="select-tienda-destino" class="w-full h-11 rounded-xl border-2 border-[#F8C8D4] focus:border-[#C59B27] focus:ring-0 font-semibold px-3 bg-surface cursor-pointer text-sm">
+                            <option value="">-- Cargando Tiendas... --</option>
+                        </select>
+                    </div>
+
+                    <!-- Selector Tipo de Prenda -->
+                    <div class="space-y-1.5">
+                        <label class="font-label-md text-xs font-bold text-on-surface uppercase tracking-wider block" for="select-tipo">
+                            🏷️ Seleccionar Tipo
+                        </label>
+                        <select id="select-tipo" class="w-full h-11 rounded-xl border-2 border-[#F8C8D4] focus:border-[#C59B27] focus:ring-0 font-semibold px-3 bg-surface cursor-pointer text-sm">
+                            <option value="">-- Seleccionar Tipo --</option>
+                            <option value="Polo">Polo</option>
+                            <option value="Short">Short</option>
+                            <option value="Chompa">Chompa</option>
+                            <option value="Buzo">Buzo</option>
+                        </select>
+                    </div>
+
+                    <!-- Selector Modelo -->
+                    <div class="space-y-1.5">
+                        <label class="font-label-md text-xs font-bold text-on-surface uppercase tracking-wider block" for="select-modelo">
+                            👕 Seleccionar Modelo
+                        </label>
+                        <select id="select-modelo" class="w-full h-11 rounded-xl border-2 border-[#F8C8D4] focus:border-[#C59B27] focus:ring-0 font-semibold px-3 bg-surface cursor-pointer text-sm">
+                            <option value="">-- Seleccionar Tipo primero --</option>
+                        </select>
+                    </div>
+
+                    <!-- Selector Talla -->
+                    <div class="space-y-1.5">
+                        <label class="font-label-md text-xs font-bold text-on-surface uppercase tracking-wider block" for="select-talla">
+                            📏 Seleccionar Talla
+                        </label>
+                        <select id="select-talla" class="w-full h-11 rounded-xl border-2 border-[#F8C8D4] focus:border-[#C59B27] focus:ring-0 font-semibold px-3 bg-surface cursor-pointer text-sm">
+                            <option value="">-- Seleccionar Modelo primero --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CARD 2: Matriz Dinámica de Colores (Right Column, 7 cols) -->
+                <div class="lg:col-span-7 glass-card rounded-2xl p-5 space-y-4 border border-outline-variant flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3 mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-xl">palette</span>
+                                <h3 class="font-headline-md text-base font-bold text-primary">2. Matriz Rápida de Colores</h3>
+                            </div>
+                        </div>
+
+                        <!-- Grid de Colores Dinámico -->
+                        <div id="color-matrix-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 overflow-visible">
+                            <!-- Inyectado dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Botón Agregar al Carrito -->
+                    <div class="pt-3 border-t border-outline-variant/30">
+                        <button id="btn-add-to-guide" type="button" class="w-full h-12 flex items-center justify-center gap-2 text-sm uppercase tracking-wider transition-all">
+                            <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                            <span>+ Agregar al Carrito</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 3: Resumen de la Guía de Despacho (Tabla de Despacho) -->
+            <div class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
+                <div class="p-5 bg-surface-container-low border-b border-outline-variant flex flex-wrap justify-between items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-2xl">receipt_long</span>
+                        <div>
+                            <h3 class="font-headline-md text-lg font-bold text-primary">3. Resumen de Guía de Despacho</h3>
+                            <p class="text-xs text-on-surface-variant font-semibold">Lista consolidada de ítems a despachar en esta orden.</p>
+                        </div>
+                    </div>
+
+                    <button id="btn-clear-guide" type="button" class="text-xs font-bold text-error hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 border border-error/30">
+                        <span class="material-symbols-outlined text-base">delete_sweep</span>
+                        Limpiar Guía
+                    </button>
+                </div>
+
+                <div class="p-5 space-y-4">
+                    <!-- Giant Total Counter -->
+                    <div class="flex items-center justify-between p-5 bg-gradient-to-br from-[#FFF0F3] via-white to-[#FFF0F3] border-2 border-[#F8C8D4] rounded-2xl shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-[#F8C8D4]/40 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-2xl">checkroom</span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Total de Prendas en Guía</span>
+                                <span class="text-xs text-on-surface-variant/70 font-semibold">Consolidado para descuento en Almacén e ingreso a Tienda</span>
+                            </div>
+                        </div>
+                        <div id="giant-total-counter" class="text-3xl sm:text-4xl font-headline-md font-extrabold text-[#C59B27] tracking-tight">
+                            0 Prendas
+                        </div>
+                    </div>
+
+                    <!-- Items Table -->
+                    <div class="overflow-x-auto rounded-xl border border-outline-variant/40">
+                        <table class="w-full text-left border-collapse" id="guide-items-table">
+                            <thead>
+                                <tr class="bg-surface-container text-on-surface-variant font-label-md uppercase tracking-wider text-xs border-b border-outline-variant">
+                                    <th class="px-6 py-3.5">Modelo / Referencia</th>
+                                    <th class="px-4 py-3.5 text-center">Talla</th>
+                                    <th class="px-4 py-3.5">Color</th>
+                                    <th class="px-4 py-3.5 text-center">Cantidad</th>
+                                    <th class="px-6 py-3.5 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guide-items-tbody" class="divide-y divide-outline-variant/40 bg-white">
+                                <!-- Inyectado dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="pt-4 flex justify-end">
+                        <button id="btn-confirm-dispatch" type="button" disabled class="w-full sm:w-auto text-base px-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-3 transition-all cursor-not-allowed">
+                            <span class="material-symbols-outlined text-2xl">local_shipping</span>
+                            <span>Confirmar y Despachar Guía Completa</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

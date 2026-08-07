@@ -58,22 +58,26 @@
         <!-- Section Header -->
         <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-black tracking-tight">Gestión de Tiendas y Accesos</h2>
-                <p class="text-xs text-on-surface-variant">Visualiza tus tiendas existentes y crea nuevos accesos para expandir tu negocio.</p>
+                <h2 class="text-2xl font-bold text-black tracking-tight">Gestión de Sedes y Accesos</h2>
+                <p class="text-xs text-on-surface-variant">Visualiza tus sedes (almacenes y tiendas) y crea nuevos accesos para expandir tu negocio.</p>
             </div>
             <button onclick="openModal()" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-on-primary font-semibold text-sm shadow-md hover:bg-primary/95 transition-all">
                 <span class="material-symbols-outlined text-sm">add_home</span>
-                <span>Registrar Nueva Tienda</span>
+                <span>Registrar Nueva Sede</span>
             </button>
         </section>
 
         <!-- Tiendas Grid/Table -->
         <section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
-            <div class="p-6 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
-                <h3 class="font-headline-md text-primary font-bold flex items-center gap-3">
+            <div class="p-6 bg-surface-container-low border-b border-outline-variant flex justify-between items-center gap-4">
+                <h3 class="font-headline-md text-primary font-bold flex items-center gap-3" id="tiendas-grid-title">
                     <span class="material-symbols-outlined">store</span>
-                    Sedes y Cuentas Activas
+                    <span id="tiendas-grid-title-text">Sedes y Cuentas Activas</span>
                 </h3>
+                <button type="button" id="btn-toggle-inactive" class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl border border-outline-variant bg-white text-on-surface-variant font-bold text-xs hover:bg-surface transition-all cursor-pointer select-none">
+                    <span class="material-symbols-outlined text-sm" id="btn-toggle-inactive-icon">visibility</span>
+                    <span id="btn-toggle-inactive-label">Ver Inactivas</span>
+                </button>
             </div>
             
             <div class="overflow-x-auto">
@@ -106,8 +110,8 @@
     <div class="bg-white rounded-3xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
         <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center shrink-0">
             <div>
-                <h3 class="text-lg font-bold">Registrar Nueva Tienda</h3>
-                <p class="text-[11px] opacity-80">Crea una nueva tienda y su cuenta de acceso asociada.</p>
+                <h3 class="text-lg font-bold">Registrar Nueva Sede</h3>
+                <p class="text-[11px] opacity-80">Crea una nueva sede (almacén o tienda) y su cuenta de acceso asociada.</p>
             </div>
             <button onclick="closeModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
                 <span class="material-symbols-outlined text-sm">close</span>
@@ -117,7 +121,14 @@
         <form id="new-store-form" class="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
             <div class="grid grid-cols-2 gap-4">
                 <div class="flex flex-col gap-1 col-span-2">
-                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-name">Nombre / Ubicación de Tienda</label>
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-role">Tipo de Sede / Rol</label>
+                    <select id="store-role" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+                        <option value="tienda">Tienda (TDA)</option>
+                        <option value="almacen">Almacén (ALM)</option>
+                    </select>
+                </div>
+                <div class="flex flex-col gap-1 col-span-2">
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" id="lbl-store-name" for="store-name">Nombre / Ubicación de Tienda</label>
                     <input type="text" id="store-name" required placeholder="Ej. Tienda Aviación 2" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
                 </div>
                 <div class="flex flex-col gap-1">
@@ -125,11 +136,11 @@
                     <input type="text" id="store-id" required readonly class="border border-outline-variant rounded-xl px-3 py-2 text-sm bg-gray-50 text-gray-500 font-bold outline-none" />
                 </div>
                 <div class="flex flex-col gap-1">
-                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-phone">Teléfono Tienda</label>
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" id="lbl-store-phone" for="store-phone">Teléfono Sede</label>
                     <input type="text" id="store-phone" placeholder="Ej. 987654321" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
                 </div>
                 <div class="flex flex-col gap-1 col-span-2">
-                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="store-address">Dirección Completa</label>
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" id="lbl-store-address" for="store-address">Dirección Completa</label>
                     <input type="text" id="store-address" placeholder="Ej. Av. Aviación 1540, San Borja" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
                 </div>
             </div>
@@ -180,19 +191,19 @@
                     Cancelar
                 </button>
                 <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">
-                    Registrar Tienda y Cuenta
+                    Registrar Sede y Cuenta
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Modal: Editar Tienda -->
+<!-- Modal: Editar Sede -->
 <div id="edit-store-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
     <div class="bg-white rounded-3xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
         <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center shrink-0">
             <div>
-                <h3 class="text-lg font-bold">Editar Tienda</h3>
+                <h3 class="text-lg font-bold">Editar Sede</h3>
                 <p class="text-[11px] opacity-80">Actualiza los datos informativos de la sede y el encargado.</p>
             </div>
             <button onclick="closeEditModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
@@ -204,7 +215,7 @@
             <input type="hidden" id="edit-store-id" />
             <div class="grid grid-cols-2 gap-4">
                 <div class="flex flex-col gap-1 col-span-2">
-                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-store-name">Nombre / Ubicación de Tienda</label>
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-store-name">Nombre / Ubicación de Sede</label>
                     <input type="text" id="edit-store-name" required class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
                 </div>
                 <div class="flex flex-col gap-1 col-span-2">
@@ -212,7 +223,7 @@
                     <input type="text" id="edit-store-address" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
                 </div>
                 <div class="flex flex-col gap-1">
-                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-store-phone">Teléfono Tienda</label>
+                    <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-store-phone">Teléfono Sede</label>
                     <input type="text" id="edit-store-phone" class="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
                 </div>
                 <div class="flex flex-col gap-1">
@@ -311,6 +322,15 @@
         loadSedesAndUsers();
         setupHeaderProfile();
 
+        // Escuchar cambios de Rol en el modal de registro
+        const storeRoleSelect = document.getElementById("store-role");
+        if (storeRoleSelect) {
+            storeRoleSelect.addEventListener("change", () => {
+                suggestNextStoreId();
+                updateModalLabelsAndPlaceholders();
+            });
+        }
+
         // Configurar toggles de mostrar/ocultar contraseña
         setupPasswordToggle("user-password", "toggle-password-btn", "password-visibility-icon");
         setupPasswordToggle("edit-user-password", "toggle-edit-password-btn", "edit-password-visibility-icon");
@@ -371,8 +391,8 @@
 
                 if (errUser) throw errUser;
 
-                // Recargar datos locales
-                await downloadFromSupabase();
+                // Recargar datos locales (spinner de contenido mientras dura la descarga)
+                await window.escarluDownloadWithLoader();
                 loadSedesAndUsers();
 
             } catch (err) {
@@ -380,6 +400,28 @@
                 alert("Error al cambiar estado: " + err.message);
             }
         });
+
+        // Mostrar / Ocultar sedes inactivas (ojo del encabezado)
+        const btnToggleInactive = document.getElementById("btn-toggle-inactive");
+        if (btnToggleInactive) {
+            btnToggleInactive.addEventListener("click", () => {
+                showInactiveStores = !showInactiveStores;
+                const icon = document.getElementById("btn-toggle-inactive-icon");
+                const label = document.getElementById("btn-toggle-inactive-label");
+                if (showInactiveStores) {
+                    icon.textContent = "visibility_off";
+                    label.textContent = "Ocultar Inactivas";
+                    btnToggleInactive.classList.remove("bg-white", "text-on-surface-variant", "border-outline-variant");
+                    btnToggleInactive.classList.add("bg-primary", "text-white");
+                } else {
+                    icon.textContent = "visibility";
+                    label.textContent = "Ver Inactivas";
+                    btnToggleInactive.classList.remove("bg-primary", "text-white");
+                    btnToggleInactive.classList.add("bg-white", "text-on-surface-variant", "border-outline-variant");
+                }
+                loadSedesAndUsers();
+            });
+        }
     });
 
     function setupPasswordToggle(inputId, buttonId, iconId) {
@@ -451,6 +493,7 @@
     let currentUsuarios = [];
     let pendingStatusStoreId = null;
     let pendingStatusCurrent = null;
+    let showInactiveStores = false;
 
     async function loadSedesAndUsers() {
         const client = window.supabaseClient;
@@ -468,22 +511,29 @@
             currentSedes = sedes || [];
 
             // Cargar Usuarios
-            const { data: usuarios, error: errUsers } = await client.from("usuarios").select("*").eq("rol", "tienda");
+            const { data: usuarios, error: errUsers } = await client.from("usuarios").select("*").in("rol", ["tienda", "almacen"]);
             if (errUsers) throw errUsers;
             currentUsuarios = usuarios || [];
 
             // Renderizar
             tbody.innerHTML = "";
 
-            if (sedes.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-on-surface-variant font-semibold">No hay sedes registradas.</td></tr>`;
+            // Actualizar título del grid según el filtro
+            const titleText = document.getElementById("tiendas-grid-title-text");
+            if (titleText) {
+                titleText.textContent = showInactiveStores ? "Sedes y Cuentas (Incluye Inactivas)" : "Sedes y Cuentas Activas";
+            }
+
+            // Por defecto solo se muestran las sedes activas
+            const visibleSedes = sedes.filter(s => s.id_sede !== "CTR-01" && (showInactiveStores || s.activo !== false));
+
+            if (visibleSedes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-on-surface-variant font-semibold">${showInactiveStores ? 'No hay sedes registradas.' : 'No hay sedes activas registradas.'}</td></tr>`;
+                suggestNextStoreId();
                 return;
             }
 
-            sedes.forEach(s => {
-                // Almacén o Admin no se gestionan en este grid típicamente, pero los mostramos o filtramos
-                if (s.id_sede === "CTR-01") return; // saltar admin general
-
+            visibleSedes.forEach(s => {
                 const user = usuarios.find(u => u.id_sede_asignada === s.id_sede);
                 const userFullName = user ? user.nombre_completo : '<span class="text-gray-400 italic text-xs">No asignado</span>';
                 const userEmail = user ? user.email : '<span class="text-gray-400 italic text-xs">No asignado</span>';
@@ -514,7 +564,7 @@
                                 ${switchHtml}
                                 <button onclick="openEditModal('${s.id_sede}')" 
                                     class="w-9 h-9 rounded-lg flex items-center justify-center text-primary hover:bg-primary/10 transition-all" 
-                                    title="Editar datos de Tienda">
+                                    title="Editar datos de Sede">
                                     <span class="material-symbols-outlined" style="font-size:20px;">edit</span>
                                 </button>
                             </div>
@@ -536,19 +586,59 @@
         const storeIdInput = document.getElementById("store-id");
         if (!storeIdInput) return;
 
-        // Filtrar tiendas (TDA-xx)
-        const tdaSedes = currentSedes.filter(s => s.id_sede.startsWith("TDA-"));
-        let maxNum = 0;
-        tdaSedes.forEach(s => {
-            const num = parseInt(s.id_sede.replace("TDA-", ""), 10);
-            if (!isNaN(num) && num > maxNum) {
-                maxNum = num;
-            }
-        });
+        const role = document.getElementById("store-role")?.value || "tienda";
 
-        const nextNum = maxNum + 1;
-        const nextId = "TDA-" + String(nextNum).padStart(2, "0");
-        storeIdInput.value = nextId;
+        if (role === "almacen") {
+            const almSedes = currentSedes.filter(s => s.id_sede.startsWith("ALM-"));
+            let maxNum = 0;
+            almSedes.forEach(s => {
+                const num = parseInt(s.id_sede.replace("ALM-", ""), 10);
+                if (!isNaN(num) && num > maxNum) {
+                    maxNum = num;
+                }
+            });
+            const nextNum = maxNum + 1;
+            const nextId = "ALM-" + String(nextNum).padStart(2, "0");
+            storeIdInput.value = nextId;
+        } else {
+            const tdaSedes = currentSedes.filter(s => s.id_sede.startsWith("TDA-"));
+            let maxNum = 0;
+            tdaSedes.forEach(s => {
+                const num = parseInt(s.id_sede.replace("TDA-", ""), 10);
+                if (!isNaN(num) && num > maxNum) {
+                    maxNum = num;
+                }
+            });
+            const nextNum = maxNum + 1;
+            const nextId = "TDA-" + String(nextNum).padStart(2, "0");
+            storeIdInput.value = nextId;
+        }
+    }
+
+    function updateModalLabelsAndPlaceholders() {
+        const role = document.getElementById("store-role")?.value || "tienda";
+        const lblName = document.getElementById("lbl-store-name");
+        const inputName = document.getElementById("store-name");
+        const lblPhone = document.getElementById("lbl-store-phone");
+        const inputPhone = document.getElementById("store-phone");
+        const inputUser = document.getElementById("user-fullname");
+        const inputEmail = document.getElementById("user-email");
+
+        if (role === "almacen") {
+            if (lblName) lblName.textContent = "Nombre / Ubicación de Almacén";
+            if (inputName) inputName.placeholder = "Ej. Almacén Secundario";
+            if (lblPhone) lblPhone.textContent = "Teléfono Almacén";
+            if (inputPhone) inputPhone.placeholder = "Ej. 987654321";
+            if (inputUser) inputUser.placeholder = "Ej. Jefe de Almacén 2";
+            if (inputEmail) inputEmail.placeholder = "Ej. almacen2@escarlu.com";
+        } else {
+            if (lblName) lblName.textContent = "Nombre / Ubicación de Tienda";
+            if (inputName) inputName.placeholder = "Ej. Tienda Aviación 2";
+            if (lblPhone) lblPhone.textContent = "Teléfono Tienda";
+            if (inputPhone) inputPhone.placeholder = "Ej. 987654321";
+            if (inputUser) inputUser.placeholder = "Ej. Vendedora Aviación 2";
+            if (inputEmail) inputEmail.placeholder = "Ej. tienda5@escarlu.com";
+        }
     }
 
     // Modal Crear
@@ -564,6 +654,7 @@
         document.getElementById("new-store-modal").classList.remove("flex");
         document.getElementById("new-store-form").reset();
         resetDotStates("new");
+        updateModalLabelsAndPlaceholders();
     }
 
     // Modal Editar
@@ -604,7 +695,7 @@
         const actionText = newStatus ? 'ACTIVAR' : 'DESACTIVAR';
 
         document.getElementById("status-confirm-title").textContent = `${newStatus ? 'Activar' : 'Desactivar'} Sede`;
-        document.getElementById("status-confirm-message").textContent = `¿Estás seguro de que deseas ${actionText} la tienda con código ${storeId}?`;
+        document.getElementById("status-confirm-message").textContent = `¿Estás seguro de que deseas ${actionText} la sede con código ${storeId}?`;
         document.getElementById("status-confirm-icon").textContent = newStatus ? "check_circle" : "warning";
 
         const modal = document.getElementById("status-confirm-modal");
@@ -639,6 +730,9 @@
         const userEmail = document.getElementById("user-email").value.trim().toLowerCase();
         const userPassword = document.getElementById("user-password").value.trim();
 
+        const storeRole = document.getElementById("store-role").value;
+        const dbRole = storeRole === "almacen" ? "almacén" : "tienda";
+
         // Validar requisitos de contraseña
         if (!validatePasswordRequirements(userPassword)) {
             alert("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula y un número.");
@@ -653,7 +747,7 @@
             const { error: errSede } = await client.from("sedes").insert([{
                 id_sede: storeId,
                 ubicacion: storeName,
-                tipo: "tienda",
+                tipo: dbRole,
                 direccion_completa: storeAddress || null,
                 telefono: storePhone || null,
                 activo: true
@@ -666,7 +760,7 @@
                 id_usuario: uniqueUserId,
                 nombre_completo: userFullName,
                 email: userEmail,
-                rol: "tienda",
+                rol: dbRole,
                 id_sede_asignada: storeId,
                 contrasena: userPassword,
                 activo: true
@@ -677,7 +771,7 @@
             alert(`Sede "${storeName}" y cuenta para "${userFullName}" creadas correctamente.`);
             
             // Recargar datos locales
-            await downloadFromSupabase();
+            await window.escarluDownloadWithLoader();
             
             closeModal();
             loadSedesAndUsers();
@@ -738,7 +832,7 @@
             alert("Datos de la tienda actualizados correctamente.");
             
             // Recargar datos locales
-            await downloadFromSupabase();
+            await window.escarluDownloadWithLoader();
             
             closeEditModal();
             loadSedesAndUsers();

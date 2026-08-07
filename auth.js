@@ -86,16 +86,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("escarlu_current_user", JSON.stringify(currentUser));
                 sessionStorage.setItem("escarlu_current_user", JSON.stringify(currentUser));
 
-                // Evaluar rol y redirigir
+// Evaluar rol y redirigir con transición (splash de pantalla completa solo en login -> dashboard)
+                const goTo = function(url) {
+                    if (typeof window.escarluNavigate === 'function') {
+                        window.escarluNavigate(url, 220, { splash: true });
+                    } else {
+                        window.location.href = url;
+                    }
+                };
                 if (mappedRole === "admin" || mappedRole === "dueño") {
-                    window.location.href = "cajadueno.html";
+                    goTo("cajadueno.html");
                 } else if (mappedRole === "almacen") {
-                    window.location.href = "historialmacen.html";
+                    goTo("Stockalmacen.html");
                 } else if (mappedRole === "tienda") {
-                    window.location.href = "cajatienda.html";
+                    goTo("cajatienda.html");
                 } else {
                     // Fallback
-                    window.location.href = "cajatienda.html";
+                    goTo("cajatienda.html");
                 }
 
             } catch (err) {
