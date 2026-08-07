@@ -114,10 +114,11 @@ function renderFinanceDashboard() {
 
     // Add Sales as Ingresos
     approvedSales.forEach(sale => {
+        const method = (sale.method || '').toLowerCase();
         movements.push({
             date: sale.date,
             category: "Venta Tienda",
-            concept: `Venta a ${sale.client || 'Cliente'} (${sale.method.toUpperCase()})`,
+            concept: method === 'efectivo' ? 'Efectivo' : 'Digital',
             store: STORE_NAMES[sale.storeId] || sale.storeId,
             amount: parseFloat(sale.amount || 0),
             type: 'ingreso'
@@ -169,11 +170,15 @@ function renderFinanceDashboard() {
                 </td>
             ` : `<td class="py-3.5 px-4 text-center text-on-surface-variant/40">-</td>`;
 
+            // Para los ingresos el concepto muestra solo el método de pago (Efectivo / Digital)
+            const conceptoCell = m.type === 'ingreso'
+                ? `<span class="px-2.5 py-0.5 ${m.concept === 'Efectivo' ? 'bg-green-100 text-green-800' : 'bg-primary-container/20 text-primary'} text-xs font-bold rounded-full">${m.concept}</span>`
+                : `<span class="text-on-surface-variant font-medium">${m.concept}</span>`;
+
             tr.innerHTML = `
                 <td class="py-3.5 px-4 text-on-surface-variant font-medium">${dateStr}</td>
-                <td class="py-3.5 px-4 font-bold text-on-surface">${m.category}</td>
-                <td class="py-3.5 px-4 text-on-surface-variant font-medium">${m.concept}</td>
-                <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 bg-primary-container/20 text-primary text-xs font-bold rounded-full">${m.store}</span></td>
+                <td class="py-3.5 px-4 font-bold text-on-surface">${m.store}</td>
+                <td class="py-3.5 px-4">${conceptoCell}</td>
                 <td class="py-3.5 px-4 ${amtClass}">${amtSign}</td>
                 ${actionCell}
             `;
@@ -376,10 +381,11 @@ function exportToExcel() {
     // Gather movements
     const movements = [];
     approvedSales.forEach(sale => {
+        const method = (sale.method || '').toLowerCase();
         movements.push({
             date: sale.date,
             category: "Venta Tienda",
-            concept: `Venta a ${sale.client || 'Cliente'} (${sale.method.toUpperCase()})`,
+            concept: method === 'efectivo' ? 'Efectivo' : 'Digital',
             store: STORE_NAMES[sale.storeId] || sale.storeId,
             amount: parseFloat(sale.amount || 0),
             type: 'ingreso'
@@ -437,7 +443,7 @@ function exportToExcel() {
         ws_data.push([
             dateStr,
             m.store,
-            `${m.category} - ${m.concept}`,
+            m.type === 'ingreso' ? m.concept : `${m.category} - ${m.concept}`,
             displayAmount
         ]);
     });

@@ -210,25 +210,23 @@
 </div>
 <!-- Main Grid Layout (Bento Style) -->
 <div class="space-y-4">
-<div class="bg-surface rounded-xl shadow-soft-lilac p-6 border-t-2 border-primary relative">
-<div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-<span class="material-symbols-outlined text-[80px]">app_registration</span>
-</div>
-<form id="ingreso-lote-form" class="space-y-6 relative z-10" onsubmit="event.preventDefault();">
+<!-- Form Container: "DETALLES DEL LOTE" -->
+<div class="rounded-2xl p-6 relative z-30 transition-all space-y-6 overflow-visible" style="background-color: #FFF0F3 !important; border: 1.5px solid #F8C8D4 !important; box-shadow: 0 8px 25px rgba(248, 200, 212, 0.25) !important;">
 <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-    <h3 class="font-headline-md text-xl text-primary font-bold flex items-center gap-2">
-        <span class="material-symbols-outlined">add_circle</span>
+    <h3 class="font-headline-md text-xl font-bold flex items-center gap-2" style="color: #4A2832 !important;">
+        <span class="material-symbols-outlined text-pink-700">add_circle</span>
         Detalles del Lote
     </h3>
-    <button type="button" id="btn-open-create-model" class="h-9 px-4 bg-primary text-on-primary font-bold rounded-xl text-xs uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-sm border-none">
+    <button type="button" id="btn-open-create-model" class="h-10 px-4 font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 hover:bg-[#F8C8D4]/40 active:scale-[0.98] shadow-xs" style="background-color: transparent !important; color: #7B3B4A !important; border: 1.5px solid #E88D9B !important;">
         <span class="material-symbols-outlined text-sm">add</span>
-        <span>Crear Nuevo Modelo</span>
+        <span>CREAR NUEVO MODELO</span>
     </button>
 </div>
-<div class="grid grid-cols-12 gap-3 items-end w-full">
+<form id="ingreso-lote-form" class="space-y-6 relative z-20 overflow-visible" onsubmit="event.preventDefault();">
+<div class="grid grid-cols-12 gap-3 items-end w-full overflow-visible">
     <div class="col-span-12 md:col-span-3">
-        <label class="block font-label-md text-sm mb-1.5" for="select-tipo">Tipo de Prenda</label>
-        <select id="select-tipo" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0 cursor-pointer">
+        <label class="block font-label-md text-sm mb-1.5 font-bold text-[#4A2832]" for="select-tipo">Tipo de Prenda</label>
+        <select id="select-tipo" class="w-full h-11 bg-white border-2 border-[#E88D9B] rounded-xl pl-3 pr-8 font-semibold text-dark-text focus:border-[#C59B27] focus:ring-0 cursor-pointer shadow-xs">
             <option value="Polo">Polo</option>
             <option value="Short">Short</option>
             <option value="Chompa">Chompa</option>
@@ -236,39 +234,93 @@
         </select>
     </div>
     <div class="col-span-12 md:col-span-3">
-        <label class="block font-label-md text-sm mb-1.5" for="select-model">Modelo / SKU</label>
-        <select id="select-model" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0 cursor-pointer">
+        <label class="block font-label-md text-sm mb-1.5 font-bold text-[#4A2832]" for="select-model">Modelo / SKU</label>
+        <select id="select-model" class="w-full h-11 bg-white border-2 border-[#E88D9B] rounded-xl pl-3 pr-8 font-semibold text-dark-text focus:border-[#C59B27] focus:ring-0 cursor-pointer shadow-xs">
         </select>
     </div>
     <div class="col-span-12 md:col-span-2">
-        <label class="block font-label-md text-sm mb-1.5" for="select-color">Color</label>
-        <select id="select-color" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0 cursor-pointer">
+        <label class="block font-label-md text-sm mb-1.5 font-bold text-[#4A2832]" for="select-color">Color</label>
+        <select id="select-color" class="w-full h-11 bg-white border-2 border-[#E88D9B] rounded-xl pl-3 pr-8 font-semibold text-dark-text focus:border-[#C59B27] focus:ring-0 cursor-pointer shadow-xs">
         </select>
     </div>
     <div class="col-span-12 md:col-span-2">
-        <label class="block font-label-md text-sm mb-1.5" for="select-talla">Talla</label>
-        <select id="select-talla" class="w-full h-12 bg-white border border-outline-variant rounded-lg pl-3 pr-8 font-body-md focus:border-primary focus:ring-0 cursor-pointer">
+        <label class="block font-label-md text-sm mb-1.5 font-bold text-[#4A2832]" for="select-talla">Talla</label>
+        <select id="select-talla" class="w-full h-11 bg-white border-2 border-[#E88D9B] rounded-xl pl-3 pr-8 font-semibold text-dark-text focus:border-[#C59B27] focus:ring-0 cursor-pointer shadow-xs">
         </select>
     </div>
     <div class="col-span-12 md:col-span-2">
-        <label class="block font-label-md text-sm mb-1.5" for="qty-input">Cantidad de Unidades</label>
-        <div class="flex items-center border border-outline-variant rounded-lg h-12 bg-white w-full overflow-hidden">
-            <button type="button" class="w-10 h-full text-primary hover:bg-surface-container flex items-center justify-center border-r border-outline-variant" onclick="updateQtyInput(-10)">-</button>
-            <input type="number" id="qty-input" value="100" min="1" class="w-12 text-center font-bold border-none bg-transparent focus:ring-0 p-0 text-sm flex-1 min-w-0"/>
-            <button type="button" class="w-10 h-full text-primary hover:bg-surface-container flex items-center justify-center border-l border-outline-variant" onclick="updateQtyInput(10)">+</button>
+        <label class="block font-label-md text-sm mb-1.5 font-bold text-[#4A2832]" for="qty-input">Cantidad de Unidades</label>
+        <div class="flex items-center border-2 border-[#E88D9B] rounded-xl h-11 bg-white w-full overflow-hidden shadow-xs">
+            <button type="button" class="w-10 h-full text-pink-900 font-bold hover:bg-pink-100 flex items-center justify-center border-r border-[#E88D9B]" onclick="updateQtyInput(-10)">-</button>
+            <input type="number" id="qty-input" value="100" min="1" class="w-12 text-center font-extrabold border-none bg-transparent focus:ring-0 p-0 text-sm flex-1 min-w-0 text-[#4A2832]"/>
+            <button type="button" class="w-10 h-full text-pink-900 font-bold hover:bg-pink-100 flex items-center justify-center border-l border-[#E88D9B]" onclick="updateQtyInput(10)">+</button>
         </div>
     </div>
 </div>
-<div class="pt-6 flex justify-end gap-3 border-t border-outline-variant/30">
-    <button id="btn-clear-ingreso" class="px-5 h-10 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary/5 transition-all text-xs uppercase tracking-wider" type="button">
+<div class="pt-5 flex justify-end gap-3 border-t border-[#F8C8D4]">
+    <button id="btn-clear-ingreso" type="button" class="px-5 h-11 font-bold rounded-xl hover:bg-black/5 transition-all text-xs uppercase tracking-wider" style="background-color: transparent !important; color: #6B5B65 !important; border: 1px solid #E5D5DC !important;">
         Limpiar
     </button>
-    <button id="btn-submit-ingreso" class="px-6 h-10 bg-primary text-on-primary font-bold rounded-xl shadow-md hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
-        <span class="material-symbols-outlined text-sm">save</span>
-        <span>Registrar Ingreso</span>
+    <button id="btn-add-to-batch" type="button" class="px-7 h-11 font-extrabold rounded-xl shadow-md hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider" style="background-color: #E88D9B !important; color: #FFFFFF !important; border: none !important; box-shadow: 0 4px 12px rgba(232, 141, 155, 0.35) !important;">
+        <span class="material-symbols-outlined text-base">add_circle</span>
+        <span>AGREGAR AL LOTE</span>
     </button>
 </div>
 </form>
+</div>
+
+<!-- TABLA DE PREINGRESO (RESUMEN DEL LOTE) -->
+<div class="rounded-2xl p-6 space-y-5 relative z-10 mt-6" style="background-color: #FFFFFF !important; border: 1.5px solid #F8C8D4 !important; box-shadow: 0 8px 25px rgba(248, 200, 212, 0.18) !important;">
+    <div class="flex items-center justify-between flex-wrap gap-4 border-b border-[#FFF0F3] pb-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#FFF0F3] flex items-center justify-center text-[#7B3B4A] border border-[#F8C8D4]">
+                <span class="material-symbols-outlined text-xl">inventory_2</span>
+            </div>
+            <div>
+                <h3 class="font-headline-md text-lg font-bold text-[#4A2832]">Resumen del Lote a Ingresar</h3>
+                <p class="text-xs text-stone-500 font-semibold">Verifique las prendas agregadas antes de confirmar el ingreso global.</p>
+            </div>
+        </div>
+        
+        <!-- Contador destacado del TOTAL DEL LOTE -->
+        <div class="px-5 py-2.5 rounded-xl flex items-center gap-3 shadow-xs" style="background-color: #FFF0F3 !important; border: 1.5px solid #F8C8D4 !important;">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#7B3B4A]">TOTAL DEL LOTE:</span>
+            <span id="lote-total-units" class="text-2xl font-extrabold text-[#4A2832]">0</span>
+            <span class="text-xs font-bold text-[#7B3B4A]">Unidades</span>
+        </div>
+    </div>
+
+    <!-- Tabla de ítems agregados -->
+    <div class="overflow-x-auto rounded-xl border border-[#F8C8D4]">
+        <table class="w-full text-left border-collapse min-w-[650px]">
+            <thead>
+                <tr class="text-[#4A2832] border-b border-[#F8C8D4]" style="background-color: #FFF0F3 !important;">
+                    <th class="py-3.5 px-4 text-xs font-extrabold uppercase tracking-wider">Modelo / SKU</th>
+                    <th class="py-3.5 px-4 text-xs font-extrabold uppercase tracking-wider">Color</th>
+                    <th class="py-3.5 px-4 text-xs font-extrabold uppercase tracking-wider text-center">Talla</th>
+                    <th class="py-3.5 px-4 text-xs font-extrabold uppercase tracking-wider text-right">Cantidad</th>
+                    <th class="py-3.5 px-4 text-xs font-extrabold uppercase tracking-wider text-center w-24">Acción</th>
+                </tr>
+            </thead>
+            <tbody id="lote-items-table-body" class="divide-y divide-stone-100 text-sm font-medium">
+                <!-- Filas agregadas dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Botón Principal Destacado (Pie de la Tabla) -->
+    <div class="pt-4 flex justify-between items-center flex-wrap gap-4 border-t border-[#FFF0F3]">
+        <button type="button" id="btn-clear-batch" class="text-xs font-bold text-red-600 hover:text-red-800 hover:underline flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">delete_sweep</span>
+            <span>Vaciar Lista del Lote</span>
+        </button>
+
+        <button id="btn-submit-global-ingreso" type="button" class="px-7 h-12 font-extrabold rounded-xl shadow-xl flex items-center justify-center gap-2.5 text-xs uppercase tracking-wider transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed" style="background-color: #1F1116 !important; color: #FFFFFF !important; border: 1.5px solid #C59B27 !important; box-shadow: 0 4px 15px rgba(31, 17, 22, 0.4) !important;">
+            <span class="material-symbols-outlined text-lg text-[#F8C8D4]">save</span>
+            <span>REGISTRAR INGRESO GLOBAL</span>
+        </button>
+    </div>
+</div>
 </div>
 </div>
 </main>
@@ -277,10 +329,292 @@
 <script>
     const user = getCurrentUser();
     let selectedTalla = 'M';
+    let loteItems = [];
+
+    function getColorBadgeClass(colorKey) {
+        if (colorKey === "COL-01") return "px-3.5 py-1 bg-black text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px] shadow-xs"; // Negro
+        if (colorKey === "COL-02") return "px-3.5 py-1 bg-[#FFFDF9] border border-[#F8C8D4] text-[#222222] rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Perla / Blanco
+        if (colorKey === "COL-03") return "px-3.5 py-1 bg-[#FAF0D7] border border-[#F3E5AB] text-[#785C1D] rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Beige
+        if (colorKey === "COL-04") return "px-3.5 py-1 bg-[#1B4D2E] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Verde Botella
+        if (colorKey === "COL-05") return "px-3.5 py-1 bg-[#5C3D2E] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Marrón
+        if (colorKey === "COL-06") return "px-3.5 py-1 bg-[#708090] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Plomo
+        if (colorKey === "COL-07") return "px-3.5 py-1 bg-[#C19A6B] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Camel
+        if (colorKey === "COL-08") return "px-3.5 py-1 bg-[#B71C1C] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Rojo
+        if (colorKey === "COL-09") return "px-3.5 py-1 bg-[#D81B60] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Fucsia
+        if (colorKey === "COL-10") return "px-3.5 py-1 bg-[#4A0E17] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Guinda
+        if (colorKey === "COL-11") return "px-3.5 py-1 bg-[#0D233A] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Azul Marino
+        if (colorKey === "COL-12") return "px-3.5 py-1 bg-[#FBC02D] text-[#332200] rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Amarillo
+        if (colorKey === "COL-13") return "px-3.5 py-1 bg-[#E65100] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Anaranjado
+        if (colorKey === "COL-14") return "px-3.5 py-1 bg-[#F8C8D4] border border-[#E88D9B] text-[#5C2430] rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Rosa Palo
+        if (colorKey === "COL-15") return "px-3.5 py-1 bg-[#4E5D6C] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Acero
+        if (colorKey === "COL-16") return "px-3.5 py-1 bg-[#00695C] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Verde Esmeralda
+        if (colorKey === "COL-17") return "px-3.5 py-1 bg-[#B2EBF2] border border-[#80DEEA] text-[#004D40] rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Celeste
+        if (colorKey === "COL-18") return "px-3.5 py-1 bg-[#E1BEE7] border border-[#CE93D8] text-[#4A148C] rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Lila
+        if (colorKey === "COL-19") return "px-3.5 py-1 bg-[#9E9E9E] text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]"; // Melange
+        
+        return "px-3.5 py-1 bg-stone-800 text-white rounded-full text-xs font-extrabold inline-block text-center min-w-[80px]";
+    }
+
+    function renderLoteTable() {
+        const tbody = document.getElementById("lote-items-table-body");
+        const totalUnitsEl = document.getElementById("lote-total-units");
+        const btnSubmitGlobal = document.getElementById("btn-submit-global-ingreso");
+        
+        if (!tbody) return;
+        
+        tbody.innerHTML = "";
+        let totalQty = 0;
+        
+        if (loteItems.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="py-8 text-center text-stone-400 text-xs font-medium">
+                        <span class="material-symbols-outlined text-3xl block mb-1 text-stone-300">inventory_2</span>
+                        No hay prendas agregadas al lote todavía. Completa el formulario arriba y haz clic en <strong>"+ Agregar al Lote"</strong>.
+                    </td>
+                </tr>
+            `;
+            if (totalUnitsEl) totalUnitsEl.textContent = "0";
+            if (btnSubmitGlobal) {
+                btnSubmitGlobal.disabled = true;
+                btnSubmitGlobal.classList.add("opacity-50", "cursor-not-allowed");
+            }
+            return;
+        }
+        
+        if (btnSubmitGlobal) {
+            btnSubmitGlobal.disabled = false;
+            btnSubmitGlobal.classList.remove("opacity-50", "cursor-not-allowed");
+        }
+        
+        loteItems.forEach((item, index) => {
+            totalQty += item.qty;
+            
+            const modelName = (typeof MODEL_NAMES !== 'undefined' && MODEL_NAMES[item.model]) ? MODEL_NAMES[item.model] : item.model;
+            const colorName = (typeof COLOR_NAMES !== 'undefined' && COLOR_NAMES[item.color]) ? COLOR_NAMES[item.color] : item.color;
+            
+            const badgeClass = (typeof getColorBadgeClass === 'function') 
+                ? getColorBadgeClass(item.color) 
+                : "bg-stone-100 text-stone-800 border border-stone-300 px-2.5 py-1 rounded-full text-xs font-bold inline-block";
+
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-[#FFF0F3]/30 transition-colors";
+            tr.innerHTML = `
+                <td class="py-3.5 px-4">
+                    <div class="font-bold text-[#4A2832]">${modelName}</div>
+                    <div class="text-[11px] text-stone-500 font-semibold">${item.type || 'Prenda'} • SKU: ${item.model}</div>
+                </td>
+                <td class="py-3.5 px-4">
+                    <span class="${badgeClass}">${colorName}</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                    <span class="inline-block px-3 py-1 bg-stone-100 text-stone-800 rounded-md font-bold text-xs border border-stone-200">${item.size}</span>
+                </td>
+                <td class="py-3.5 px-4 text-right font-extrabold text-[#4A2832] text-base">
+                    ${item.qty.toLocaleString('es-PE')} <span class="text-xs font-normal text-stone-500">u.</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                    <button type="button" onclick="removeLoteItem(${index})" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors inline-flex items-center justify-center border border-red-200" title="Eliminar ítem del lote">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        if (totalUnitsEl) totalUnitsEl.textContent = totalQty.toLocaleString('es-PE');
+    }
+
+    window.removeLoteItem = function(index) {
+        if (index >= 0 && index < loteItems.length) {
+            loteItems.splice(index, 1);
+            renderLoteTable();
+        }
+    };
+
+    function addCurrentToBatch() {
+        const selectTipo = document.getElementById('select-tipo');
+        const selectModel = document.getElementById('select-model');
+        const selectColor = document.getElementById('select-color');
+        const selectTalla = document.getElementById('select-talla');
+        const qtyInput = document.getElementById('qty-input');
+        
+        if (!selectModel || !selectColor || !selectTalla || !qtyInput) return;
+        
+        const modelVal = selectModel.value;
+        const colorVal = selectColor.value;
+        const tallaVal = selectTalla.value || 'M';
+        const qtyVal = parseInt(qtyInput.value);
+        const tipoVal = selectTipo ? selectTipo.value : '';
+        
+        if (!modelVal) {
+            alert("Por favor seleccione un modelo.");
+            return;
+        }
+        
+        if (isNaN(qtyVal) || qtyVal <= 0) {
+            alert("Ingrese una cantidad válida mayor a 0.");
+            return;
+        }
+        
+        // Check if duplicate item already exists in batch
+        const existingIndex = loteItems.findIndex(i => i.model === modelVal && i.color === colorVal && i.size === tallaVal);
+        if (existingIndex !== -1) {
+            loteItems[existingIndex].qty += qtyVal;
+        } else {
+            loteItems.push({
+                id: `ITEM-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+                model: modelVal,
+                type: tipoVal,
+                color: colorVal,
+                size: tallaVal,
+                qty: qtyVal
+            });
+        }
+        
+        renderLoteTable();
+    }
+
+    async function submitGlobalIngreso() {
+        if (loteItems.length === 0) {
+            alert("El lote está vacío. Agregue al menos una prenda antes de registrar.");
+            return;
+        }
+
+        const btnSubmitGlobal = document.getElementById("btn-submit-global-ingreso");
+        const originalText = btnSubmitGlobal ? btnSubmitGlobal.innerHTML : "";
+
+        try {
+            if (btnSubmitGlobal) {
+                btnSubmitGlobal.disabled = true;
+                btnSubmitGlobal.innerHTML = `<span class="material-symbols-outlined animate-spin text-base">sync</span> <span>Procesando en Supabase...</span>`;
+            }
+
+            const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+            const userLabel = user?.name || user?.label || 'Jefe de Almacén';
+            const nowIso = new Date().toISOString();
+
+            // 1. Update Local Inventory (escarlu_inventory) for ALM-01
+            const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
+            if (!inventory["ALM-01"]) inventory["ALM-01"] = {};
+
+            // 2. Prepare warehouse entry logs (escarlu_warehouse_entries)
+            const entriesLog = JSON.parse(localStorage.getItem("escarlu_warehouse_entries")) || [];
+
+            const stockRecordsToUpsert = [];
+            const entryRecordsToInsert = [];
+            let totalBatchQty = 0;
+
+            for (const item of loteItems) {
+                totalBatchQty += item.qty;
+
+                if (!inventory["ALM-01"][item.model]) inventory["ALM-01"][item.model] = {};
+                if (!inventory["ALM-01"][item.model][item.color]) inventory["ALM-01"][item.model][item.color] = {};
+                
+                const currentStock = inventory["ALM-01"][item.model][item.color][item.size] || 0;
+                const newStock = currentStock + item.qty;
+                inventory["ALM-01"][item.model][item.color][item.size] = newStock;
+
+                const entryId = `ENT-${Math.floor(100000 + Math.random() * 900000)}`;
+                entriesLog.push({
+                    id: entryId,
+                    type: 'ingreso',
+                    model: item.model,
+                    color: item.color,
+                    size: item.size,
+                    qty: item.qty,
+                    date: nowIso,
+                    user: userLabel
+                });
+
+                const tallaId = (typeof TALLA_KEYS !== 'undefined' && TALLA_KEYS[item.size]) ? TALLA_KEYS[item.size] : 'TAL-03';
+                stockRecordsToUpsert.push({
+                    id_stock: `STK-ALM-01-${item.model}-${item.color}-${tallaId}`,
+                    id_sede: 'ALM-01',
+                    id_modelo: item.model,
+                    id_color: item.color,
+                    id_talla: tallaId,
+                    cantidad: newStock,
+                    ultima_actualizacion: nowIso
+                });
+
+                entryRecordsToInsert.push({
+                    id: entryId,
+                    fecha_hora: nowIso,
+                    origen_id: null,
+                    destino_id: 'ALM-01',
+                    modelo_id: item.model,
+                    color_id: item.color,
+                    talla: item.size,
+                    cantidad: item.qty,
+                    tipo: 'ingreso',
+                    user_label: userLabel,
+                    editado: false,
+                    fecha_edicion: null,
+                    cantidad_original: item.qty
+                });
+            }
+
+            // Save updated local caches
+            localStorage.setItem("escarlu_inventory", JSON.stringify(inventory));
+            localStorage.setItem("escarlu_warehouse_entries", JSON.stringify(entriesLog));
+
+            // 3. Process in Supabase in batch (upsert stock + insert movimientos_inventario)
+            if (client) {
+                try {
+                    if (stockRecordsToUpsert.length > 0) {
+                        const { error: stockErr } = await client.from('stock').upsert(stockRecordsToUpsert);
+                        if (stockErr) console.warn("Notice: stock table upsert warning:", stockErr.message);
+                    }
+                    if (entryRecordsToInsert.length > 0) {
+                        const { error: movErr } = await client.from('movimientos_inventario').upsert(entryRecordsToInsert);
+                        if (movErr) console.warn("Notice: movimientos_inventario table upsert warning:", movErr.message);
+                    }
+                } catch (supaErr) {
+                    console.error("Supabase sync warning:", supaErr);
+                }
+            }
+
+            // Trigger real-time synchronization event across open windows/tabs
+            if (typeof triggerStorageUpdate === 'function') {
+                triggerStorageUpdate('escarlu_inventory', JSON.stringify(inventory));
+                triggerStorageUpdate('escarlu_warehouse_entries', JSON.stringify(entriesLog));
+            }
+
+            // 4. Update KPIs on screen
+            updateCentralStockKPI();
+            const kpiLastEntry = document.getElementById('kpi-last-entry');
+            if (kpiLastEntry && loteItems.length > 0) {
+                const lastItem = loteItems[loteItems.length - 1];
+                const lastModelName = (typeof MODEL_NAMES !== 'undefined' && MODEL_NAMES[lastItem.model]) ? MODEL_NAMES[lastItem.model] : lastItem.model;
+                kpiLastEntry.textContent = `${lastModelName} (${lastItem.qty} u.)`;
+            }
+
+            alert(`¡Ingreso Global Registrado con Éxito!\n\nSe han registrado ${loteItems.length} ítem(s) con un total de ${totalBatchQty} unidades en el Almacén Central.`);
+
+            // 5. Clear batch items and form screen
+            loteItems = [];
+            renderLoteTable();
+            document.getElementById('qty-input').value = 100;
+
+        } catch (err) {
+            console.error("Error al registrar ingreso global:", err);
+            alert("Ocurrió un error al registrar el lote: " + (err.message || err));
+        } finally {
+            if (btnSubmitGlobal) {
+                btnSubmitGlobal.disabled = false;
+                btnSubmitGlobal.innerHTML = originalText;
+            }
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         checkAuth();
         renderSideNav("ingresoprendalmacen");
+
+        // Initial table render
+        renderLoteTable();
 
         // Mostrar fecha actual
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
@@ -359,6 +693,11 @@
                 return mTipo === selectedType.toLowerCase();
             });
             selectModel.innerHTML = "";
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = "";
+            defaultOpt.textContent = "-- Seleccionar Modelo --";
+            selectModel.appendChild(defaultOpt);
+
             filtered.forEach(m => {
                 const opt = document.createElement('option');
                 opt.value = m.id_modelo;
@@ -366,6 +705,8 @@
                 selectModel.appendChild(opt);
             });
             if (filtered.length > 0) {
+                selectModel.selectedIndex = 1;
+            } else {
                 selectModel.selectedIndex = 0;
             }
             selectModel.dispatchEvent(new Event('change'));
@@ -380,57 +721,31 @@
             updateModelsDropdown(); // run once initially
         }
 
-        // Submit form
-        const btnSubmit = document.getElementById('btn-submit-ingreso');
-        btnSubmit.addEventListener('click', () => {
-            const modelVal = selectModel.value;
-            const colorVal = selectColor.value;
-            const selectTalla = document.getElementById('select-talla');
-            const tallaVal = selectTalla ? selectTalla.value : 'M';
-            const qtyVal = parseInt(document.getElementById('qty-input').value);
+        // Bind "+ Agregar al Lote" button
+        const btnAddBatch = document.getElementById('btn-add-to-batch');
+        if (btnAddBatch) {
+            btnAddBatch.addEventListener('click', addCurrentToBatch);
+        }
 
-            if (isNaN(qtyVal) || qtyVal <= 0) {
-                alert("Ingrese una cantidad válida.");
-                return;
-            }
+        // Bind "💾 REGISTRAR INGRESO GLOBAL" button
+        const btnGlobal = document.getElementById('btn-submit-global-ingreso');
+        if (btnGlobal) {
+            btnGlobal.addEventListener('click', submitGlobalIngreso);
+        }
 
-            // Update inventory
-            const inventory = JSON.parse(localStorage.getItem("escarlu_inventory")) || {};
-            if (!inventory["ALM-01"]) inventory["ALM-01"] = {};
-            if (!inventory["ALM-01"][modelVal]) inventory["ALM-01"][modelVal] = {};
-            if (!inventory["ALM-01"][modelVal][colorVal]) inventory["ALM-01"][modelVal][colorVal] = {};
-            
-            const currentStock = inventory["ALM-01"][modelVal][colorVal][tallaVal] || 0;
-            inventory["ALM-01"][modelVal][colorVal][tallaVal] = currentStock + qtyVal;
-
-            localStorage.setItem("escarlu_inventory", JSON.stringify(inventory));
-
-            // Log entries locally for history
-            const entriesLog = JSON.parse(localStorage.getItem("escarlu_warehouse_entries")) || [];
-            entriesLog.push({
-                id: `ENT-${Math.floor(1000 + Math.random() * 9000)}`,
-                type: 'ingreso',
-                model: modelVal,
-                color: colorVal,
-                size: tallaVal,
-                qty: qtyVal,
-                date: new Date().toISOString(),
-                user: user?.name || 'Jefe de Almacén'
+        // Bind "Vaciar Lote" button
+        const btnClearBatch = document.getElementById('btn-clear-batch');
+        if (btnClearBatch) {
+            btnClearBatch.addEventListener('click', () => {
+                if (loteItems.length === 0) return;
+                if (confirm("¿Está seguro de vaciar todos los ítems agregados al lote actual?")) {
+                    loteItems = [];
+                    renderLoteTable();
+                }
             });
-            localStorage.setItem("escarlu_warehouse_entries", JSON.stringify(entriesLog));
+        }
 
-            alert(`Ingreso de ${qtyVal} unidades de ${MODEL_NAMES[modelVal]} registrado con éxito.`);
-            
-            // Update KPIs
-            const kpiLastEntry = document.getElementById('kpi-last-entry');
-            if (kpiLastEntry) kpiLastEntry.textContent = `${MODEL_NAMES[modelVal]} (${qtyVal} u.)`;
-            updateCentralStockKPI();
-            
-            // Clear inputs
-            document.getElementById('qty-input').value = 100;
-        });
-
-        // Clear button
+        // Clear form button
         document.getElementById('btn-clear-ingreso').addEventListener('click', () => {
             document.getElementById('qty-input').value = 100;
         });

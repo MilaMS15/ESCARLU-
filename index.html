@@ -12,217 +12,399 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="config.js"></script>
+    <!-- Config & Core -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="shared.js"></script>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
-            background-color: #FAF5F6;
-            background-image: radial-gradient(circle at 100% 0%, rgba(248, 200, 212, 0.4) 0%, transparent 40%),
-                              radial-gradient(circle at 0% 100%, rgba(248, 200, 212, 0.2) 0%, transparent 40%);
+            font-family: 'Source Sans 3', sans-serif;
+            overflow: hidden;
+            position: relative;
+            color: #1A1A1A;
+            background:
+                radial-gradient(120% 90% at 10% 0%, #FFE9EE 0%, transparent 45%),
+                radial-gradient(120% 90% at 100% 100%, #FCE3C8 0%, transparent 45%),
+                radial-gradient(100% 100% at 80% 10%, #F8C8D4 0%, transparent 40%),
+                #FAF5F6;
         }
-        .login-card {
-            background: #FFFFFF;
-            border: 1px solid rgba(248, 200, 212, 0.6);
-            box-shadow: 0 12px 40px rgba(116, 84, 117, 0.08);
-            border-radius: 32px;
+
+        /* ---------- Fondo generativo animado (blobs) ---------- */
+        @keyframes floatBlob {
+            0%   { transform: translate(0,0) scale(1); }
+            33%  { transform: translate(40px,-50px) scale(1.15); }
+            66%  { transform: translate(-30px,30px) scale(0.92); }
+            100% { transform: translate(0,0) scale(1); }
+        }
+        @keyframes floatBlobB {
+            0%   { transform: translate(0,0) scale(1) rotate(0deg); }
+            50%  { transform: translate(-50px,40px) scale(1.18) rotate(20deg); }
+            100% { transform: translate(0,0) scale(1) rotate(0deg); }
+        }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.55;
+            will-change: transform;
+        }
+        .blob-1 { width: 420px; height: 420px; top: -90px; right: -70px; background: radial-gradient(circle, #F8C8D4, transparent 70%); animation: floatBlob 18s ease-in-out infinite; }
+        .blob-2 { width: 480px; height: 480px; bottom: -140px; left: -110px; background: radial-gradient(circle, #E7C58A, transparent 70%); animation: floatBlobB 22s ease-in-out infinite; }
+        .blob-3 { width: 300px; height: 300px; top: 30%; left: 18%; background: radial-gradient(circle, #F6A8C0, transparent 70%); animation: floatBlob 26s ease-in-out infinite; opacity: 0.4; }
+        .blob-4 { width: 260px; height: 260px; bottom: 10%; right: 12%; background: radial-gradient(circle, #C59B27, transparent 70%); animation: floatBlobB 20s ease-in-out infinite; opacity: 0.25; }
+
+        @keyframes meshShift {
+            0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;}
+        }
+        .bg-mesh {
+            position: absolute; inset: 0; opacity: 0.16; pointer-events: none;
+            background: linear-gradient(120deg, #F8C8D4, #E7C58A, #F2E3E7, #F8C8D4);
+            background-size: 300% 300%;
+            animation: meshShift 16s ease infinite;
+        }
+
+        /* Imperfecciones doradas (puntos brillantes) */
+        @keyframes twinkle { 0%,100% {opacity:.15; transform:scale(.7);} 50% {opacity:.5; transform:scale(1);} }
+        .sparkle { position:absolute; width:8px; height:8px; background:#C59B27; border-radius:50%; animation: twinkle 5s ease-in-out infinite; }
+
+        /* ---------- Shell glassmorphism ---------- */
+        .login-shell {
+            position: relative;
+            width: min(1080px, 94vw);
+            min-height: 620px;
+            display: flex;
+            overflow: hidden;
+            border-radius: 34px;
+            background: rgba(255,255,255,0.32);
+            backdrop-filter: blur(22px) saturate(140%);
+            -webkit-backdrop-filter: blur(22px) saturate(140%);
+            box-shadow: 0 40px 90px rgba(116,84,117,0.28), inset 0 1px 0 rgba(255,255,255,0.6);
+            animation: shellIn .8s cubic-bezier(.2,.8,.2,1) both;
+        }
+        @keyframes shellIn {
+            from { opacity:0; transform: translateY(40px) scale(.96); }
+            to   { opacity:1; transform: translateY(0) scale(1); }
+        }
+
+        /* ---------- Panel izquierdo (Héroe) ---------- */
+        .hero {
+            flex: 1.1;
+            position: relative;
+            overflow: hidden;
+            padding: 64px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(160deg, rgba(248,200,212,.9) 0%, rgba(255,220,225,0.85) 45%, rgba(247,225,194,0.9) 100%);
+        }
+        .hero::after { /* brillo superior */
+            content:""; position:absolute; inset:0; pointer-events:none;
+            background: radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,0.5), transparent 60%);
+        }
+        /* Tarjetas glassmorphism flotantes */
+        @keyframes glassFloat1 { 0%,100%{ transform:translateY(0) rotate(-4deg);} 50%{ transform:translateY(-22px) rotate(-2deg);} }
+        @keyframes glassFloat2 { 0%,100%{ transform:translateY(0) rotate(3deg);} 50%{ transform:translateY(-16px) rotate(5deg);} }
+        .glass-card {
+            position: absolute;
+            padding: 18px 20px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.42);
+            backdrop-filter: blur(14px) saturate(150%);
+            -webkit-backdrop-filter: blur(14px) saturate(150%);
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 24px 50px rgba(116,84,117,0.22);
+            display: flex; align-items: center; gap: 14px;
+            min-width: 260px;
+        }
+        .glass-card .g-icon {
+            width: 52px; height: 52px; flex-shrink:0;
+            border-radius: 16px;
+            display:grid; place-items:center;
+            background: linear-gradient(135deg, #C59B27, #E7C58A);
+            color:#fff; font-size: 24px;
+            box-shadow: 0 10px 24px rgba(197,155,39,0.4);
+        }
+        .glass-card .g-icon.icon-pink { background: linear-gradient(135deg,#745475,#b78aa6); box-shadow:0 10px 24px rgba(116,84,117,0.4); }
+        .glass-card strong { font-size: 15px; color:#33282e; display:block; line-height:1.25; }
+        .glass-card p { font-size: 12px; color:#6b5560; margin-top:2px; line-height:1.35; }
+        .gc-top { top: 64px; right: -40px; animation: glassFloat1 7s ease-in-out infinite; z-index:2; }
+        .gc-bottom { bottom: 64px; left: -46px; animation: glassFloat2 8s ease-in-out infinite; z-index:2; }
+
+        .hero-brand { position: relative; z-index:3; }
+        .hero-logo {
+            width: 76px; height: 76px; border-radius: 24px; overflow:hidden;
+            border: 3px solid rgba(255,255,255,0.85);
+            box-shadow: 0 16px 40px rgba(116,84,117,0.3);
+            background:#fff; margin-bottom: 22px;
+            animation: elGrowIn .7s cubic-bezier(.2,.8,.2,1) both;
+        }
+        .hero-logo img { width:100%; height:100%; object-fit:cover; }
+        @keyframes elGrowIn { from{ transform: scale(.6); opacity:0; } to { transform: scale(1); opacity:1; } }
+        .hero-brand .badge {
+            display: inline-flex; align-items:center; gap:8px;
+            font-size: 12px; font-weight:700; letter-spacing: 1.5px; text-transform: uppercase;
+            color:#74554f; background:rgba(255,255,255,0.35); padding: 8px 16px; border-radius: 999px;
+            border:1px solid rgba(255,255,255,0.6);
+        }
+        .hero h1 {
+            font-family:'Libre Caslon Text', serif;
+            font-size: clamp(40px, 6vw, 60px);
+            font-weight: 700; color:#33282e; letter-spacing: 2px; margin-top: 20px; line-height: 1;
+        }
+        .hero h1 span { color:#A9821E; }
+        .hero-tagline { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color:#a9821e; font-weight:700; margin-top: 12px; }
+
+        /* ---------- Panel Formulario ---------- */
+        .form-side {
+            flex: 1;
+            padding: 56px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             position: relative;
         }
-        .login-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 32px;
-            padding: 2px;
-            background: linear-gradient(135deg, rgba(248, 200, 212, 0.8), rgba(197, 155, 39, 0.2));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
+        .form-head { margin-bottom: 26px; }
+        .form-head .eyebrow { font-size: 11px; letter-spacing: 3px; font-weight:800; text-transform: uppercase; color:#C59B27; }
+        .form-head h2 { font-size: clamp(26px, 3vw, 34px); font-weight: 800; color:#1A1A1A; margin-top:6px; letter-spacing:-0.5px; }
+        .form-head p { color:#8a7780; font-size: 14px; margin-top:6px; }
+
+        /* Inputs */
+        .field { margin-bottom: 18px; }
+        .field label {
+            display: flex; align-items:center; gap:6px;
+            font-size: 12.5px; font-weight: 700; color:#4a3b42; margin:0 0 8px 2px;
         }
-        .accent-line-gold {
-            background: linear-gradient(90deg, transparent, #C59B27 50%, transparent);
-            height: 1px;
-            opacity: 0.6;
+        .field label .mat { color:#b06dc6; }
+        .input-wrap { position:relative; }
+        .input-wrap .lead {
+            position:absolute; left:16px; top:50%; transform:translateY(-50%);
+            color:#c3b0ba; font-size:20px; pointer-events:none; transition:color .25s;
         }
-        .btn-premium {
-            background: linear-gradient(135deg, #2E2A2D 0%, #1A1A1A 100%);
-            box-shadow: 0 4px 15px rgba(26, 26, 26, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .input-wrap input {
+            width:100%; height: 54px;
+            padding: 0 48px;
+            border-radius: 16px;
+            border:2px solid #EFE0E5;
+            background:rgba(255,255,255,0.75);
+            font-size:14.5px; color:#1A1A1A; outline:none;
+            transition: all .28s cubic-bezier(.4,0,.2,1);
         }
-        .btn-premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(26, 26, 26, 0.35);
-            background: linear-gradient(135deg, #1A1A1A 0%, #0D0D0D 100%);
+        .input-wrap input::placeholder { color:#c6b6be; }
+        .input-wrap input:focus {
+            border-color:#C59B27;
+            background:#fff;
+            box-shadow: 0 10px 30px rgba(197,155,39,0.18), 0 0 0 4px rgba(197,155,39,0.12);
+            transform: translateY(-1px);
         }
-        .btn-premium:active {
-            transform: translateY(0);
+        .input-wrap input:focus ~ .lead { color:#C59B27; }
+        .input-wrap .trail {
+            position:absolute; right:14px; top:50%; transform:translateY(-50%);
+            color:#c3b0ba; font-size:22px; cursor:pointer;
+            transition: color .2s; user-select:none;
+            background:none;border:none;box-shadow:none;padding:0;display:grid;place-items:center;width:32px;height:32px;
         }
-        .input-premium {
-            border: 2px solid #F0E3E6 !important;
-            transition: all 0.25s ease;
+        .input-wrap .trail:hover { color:#74545A; }
+
+        .row-between { display:flex; align-items:center; justify-content:space-between; margin:2px 0 22px; }
+        .row-between label { display:flex; align-items:center; gap:8px; font-size:13px; color:#5d4a54; font-weight:600; cursor:pointer; }
+        .check { display:flex; align-items:center; gap:8px; font-size:13px; color:#5d4a54; font-weight:600; cursor:pointer; }
+        .link-forgot { font-size:13px; font-weight:700; color:#74545A; text-decoration:none; transition:color .15s; }
+        .link-forgot:hover { color:#C59B27; }
+
+        /* Botón principal */
+        @keyframes sweep { 0%{ left:-60%; } 100%{ left:130%; } }
+        .btn-cta {
+            width:100%; height:54px; border:none; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; gap:10px;
+            font-size:15px; font-weight:800; color:#fff; letter-spacing:0.3px;
+            border-radius:16px; position:relative; overflow:hidden;
+            background: linear-gradient(135deg,#2E2A2D 0%,#1A1A1A 60%,#C1970C 120%);
+            box-shadow: 0 14px 34px rgba(26,26,26,0.28);
+            transition: all .3s cubic-bezier(.4,0,.2,1);
         }
-        .input-premium:focus {
-            border-color: #F8C8D4 !important;
-            box-shadow: 0 0 0 4px rgba(248, 200, 212, 0.25) !important;
+        .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(197,155,39,0.34); background: linear-gradient(135deg,#3a3438 0%,#1a1a1a 70%,#C59B27 130%); }
+        .btn-cta:active { transform: translateY(0); }
+        .btn-cta::before {
+            content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent);
+            animation: sweep 3.2s ease-in-out infinite;
         }
-        /* ---- Evitar FOUC de íconos Material Symbols ---- */
-        .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined';
-            font-weight: normal;
-            font-style: normal;
-            display: inline-flex;
-            line-height: 1;
-            letter-spacing: normal;
-            text-transform: none;
-            white-space: nowrap;
-            word-wrap: normal;
-            direction: ltr;
-            -webkit-font-smoothing: antialiased;
-            /* Oculto hasta que la fuente cargue */
-            opacity: 0;
-            transition: opacity 0.2s ease;
+        .btn-cta[data-loading] .mat { animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-cta:disabled { opacity:.75; cursor:wait; }
+
+        .foot-note { text-align:center; margin-top:22px; font-size:12.5px; color:#b39fa9; }
+        .foot-note strong { color:#a9821e; }
+
+        /* Error */
+        .err-box {
+            display: flex; align-items: center; gap: 10px;
+            background: linear-gradient(135deg,#fde2e2,#ffe9ea); color:#c62828;
+            border: 1px solid #f6c6c6; padding: 13px 16px; border-radius: 14px;
+            font-size: 13px; font-weight: 700; margin-bottom: 16px;
+            animation: bounceIn .4s cubic-bezier(.2,.8,.2,1) both;
         }
-        /* La clase .icons-ready se añade por JS cuando la fuente está lista */
-        body.icons-ready .material-symbols-outlined {
-            opacity: 1;
+        @keyframes bounceIn { from{opacity:0;transform:translateY(-6px);} to{opacity:1;transform:translateY(0);} }
+
+        /* Material Icons */
+        .material-symbols-outlined { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+
+        /* Responsive */
+        @media (max-width: 860px) {
+            .hero { display:none; }
+            .form-side { padding: 44px 26px; }
+            .gc-top, .gc-bottom { display:none; }
+        }
+        @media (max-height: 640px) {
+            .login-shell { min-height: 0; }
+            .hero { padding: 40px 30px; }
         }
     </style>
 </head>
 <body class="h-screen overflow-hidden flex items-center justify-center p-4 antialiased">
 
-<div class="w-full max-w-[1100px] h-[650px] bg-white rounded-[32px] shadow-2xl flex overflow-hidden border border-[#F8C8D4]/50">
-    <!-- Left Panel: Brand & Visuals (Estilo Banner Silueta Escarlú) -->
-    <div class="hidden md:flex md:w-1/2 relative bg-[#FCECEE] items-center justify-center p-12 overflow-hidden select-none">
-        <!-- Fondo Decorativo Rosas / Siluetas -->
-        <div class="absolute inset-0 opacity-15 pointer-events-none">
-            <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="90" cy="10" r="40" fill="#F8C8D4" />
-                <circle cx="-10" cy="90" r="60" fill="#F8C8D4" />
-            </svg>
-        </div>
-        
-        <div class="relative z-10 flex flex-col items-center text-center">
-            <!-- Icono Decorativo Silueta Maniquí / Marca -->
-            <div class="w-72 h-72 mb-6 flex items-center justify-center relative">
-                <!-- SVG Garland/Foliage e Icono Escarlú -->
-                <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Silueta Garza / Icono Escarlú estilizado -->
-                    <path d="M100 30 C85 60 70 80 70 110 C70 140 100 170 100 170 C100 170 130 140 130 110 C130 80 115 60 100 30 Z" fill="none" stroke="#C59B27" stroke-width="1.5" />
-                    <!-- Ala/Detalle garza interior -->
-                    <path d="M100 60 C90 85 85 105 85 115 C85 130 100 145 100 145" fill="none" stroke="#C59B27" stroke-width="1" />
-                    <circle cx="100" cy="110" r="4" fill="#C59B27"/>
-                    <!-- Texto de marca curvo o decoraciones -->
-                    <path d="M40 110 Q100 150 160 110" fill="none" stroke="#F8C8D4" stroke-width="2" />
-                </svg>
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <img src="logo_nuevo.jpeg" alt="Escarlú Silueta" class="w-32 h-32 rounded-full object-cover border-4 border-[#FAF5F6] shadow-md"/>
+    <!-- Fondo genérico -->
+    <div class="bg-mesh"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    <div class="spark" style="top:18%; left:12%;"></div>
+    <div class="spark" style="top:64%; left:86%; width:6px; height:6px; animation-delay:1s;"></div>
+    <div class="spark" style="top:80%; left:22%; width:5px;height:5px; animation-delay:2s;"></div>
+    <div class="spark" style="top:30%; left:70%; width:7px;height:7px; animation-delay:3s;"></div>
+
+    <!-- Shell Glassmorphism -->
+    <div class="login-shell" role="main">
+
+        <!-- ====== PANEL HÉROE (izquierda) ====== -->
+        <div class="hero">
+            <!-- Tarjetas glassmorphism flotantes -->
+            <div class="glass-card gc-top">
+                <div class="g-icon"><span class="material-symbols-outlined">inventory_2</span></div>
+                <div>
+                    <strong>Inventario en tiempo real</strong>
+                    <p>Controla cada prenda de cada sede al instante.</p>
                 </div>
             </div>
-            <h2 class="font-headline-lg text-4xl font-bold text-[#1A1A1A] tracking-wider">ESCARLÚ</h2>
-            <div class="w-24 accent-line-gold my-3"></div>
-            <p class="text-xs uppercase tracking-[0.2em] text-[#C59B27] font-bold">Esencia & Estilo</p>
-            <p class="italic text-[#7A6B24] text-sm mt-3">Gestionamos tu negocio con esencia, estilo y excelencia.</p>
-        </div>
-        
-        <!-- Líneas Doradas abstractas decorativas del fondo -->
-        <div class="absolute bottom-0 right-0 w-32 h-32 opacity-30">
-            <svg class="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,100 C30,80 60,80 100,100 M0,90 C30,70 60,70 100,90" fill="none" stroke="#C59B27" stroke-width="1.5"/>
-            </svg>
-        </div>
-    </div>
 
-    <!-- Right Panel: Login Card Form -->
-    <div class="w-full md:w-1/2 flex items-center justify-center p-8 bg-[#FAF5F6]">
-        <div class="login-card w-full max-w-[440px] p-8">
-            <header class="text-center flex flex-col items-center gap-1.5 mb-6">
-                <!-- Logo Redondeado con su badge de marca -->
-                <div class="w-20 h-20 rounded-2xl overflow-hidden border border-[#F8C8D4] p-1 bg-white mb-2 shadow-sm">
-                    <img src="logo_nuevo.jpeg" alt="Escarlú Logo" class="object-cover w-full h-full rounded-xl"/>
+            <div class="glass-card gc-bottom">
+                <div class="g-icon icon-pink"><span class="material-symbols-outlined">auto_awesome</span></div>
+                <div>
+                    <strong>ESCARLÚ — Esencia & Estilo</strong>
+                    <p>Gestión con elegancia, cercanía y excelencia.</p>
                 </div>
-                <h1 class="text-3xl font-extrabold text-[#1A1A1A] tracking-tight">ESCARLÚ</h1>
-                <div class="w-20 accent-line-gold my-1.5"></div>
-                <p class="text-xs uppercase tracking-[0.15em] text-[#C59B27] font-bold">Esencia & Estilo</p>
-                <p class="text-xs text-on-surface-variant italic mt-1">Gestionamos tu negocio con esencia, estilo y excelencia.</p>
-            </header>
+            </div>
 
+            <!-- Marca del panel -->
+            <div class="hero-brand">
+                <div class="hero-logo"><img src="logo.png" alt="ESCARLÚ" onerror="this.parentElement.style.display='none';"></div>
+                <div class="badge">
+                    <span class="material-symbols-outlined" style="font-size:15px;">diamond</span>
+                    Sistema de Gestión
+                </div>
+                <h1>ESCA<span>RLÚ</span></h1>
+                <div class="hero-tagline">Esencia & Estilo</div>
+            </div>
+        </div>
+
+        <!-- ====== PANEL FORMULARIO (derecha) ====== -->
+        <div class="form-side">
             <!-- Error Banner -->
-            <div id="login-error" class="hidden text-error text-xs font-bold text-center bg-error-container text-on-error-container p-3 rounded-xl border border-error mb-4"></div>
+            <div id="login-error" class="err-box hidden" role="alert"></div>
+
+            <div class="form-head">
+                <div class="eyebrow">Sistema ESCARLÚ</div>
+                <h2>¡Bienvenido de nuevo!</h2>
+                <p>Ingresa tus credenciales para acceder al sistema.</p>
+            </div>
 
             <!-- Login Form -->
-            <form id="login-form" class="flex flex-col gap-4">
-                <!-- Correo Electrónico -->
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-bold text-[#1A1A1A] flex items-center gap-1.5 ml-1" for="email">
-                        <span aria-hidden="true" class="material-symbols-outlined text-[16px] text-[#745475]" style="font-variation-settings: 'FILL' 1;">mail</span>
-                        Correo electrónico
-                    </label>
-                    <div class="relative flex items-center">
-                        <input aria-required="true" class="input-premium h-[48px] w-full px-4 pr-10 rounded-xl bg-white text-sm text-[#1A1A1A] placeholder-[#C2B7C0] focus:border-primary focus:ring-0 transition-all outline-none border-2" id="email" name="email" placeholder="ejemplo@correo.com" required="" type="email"/>
-                        <span class="material-symbols-outlined absolute right-3 text-lg text-[#C2B7C0]">person</span>
+            <form id="login-form" novalidate>
+                <div class="field">
+                    <label for="email"><span class="material-symbols-outlined mat" style="font-size:17px;">mail</span> Correo electrónico</label>
+                    <div class="input-wrap">
+                        <input id="email" name="email" type="email" placeholder="ejemplo@correo.com" required/>
+                        <span class="material-symbols-outlined lead">person</span>
                     </div>
                 </div>
 
-                <!-- Contraseña -->
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-bold text-[#1A1A1A] flex items-center gap-1.5 ml-1" for="password">
-                        <span aria-hidden="true" class="material-symbols-outlined text-[16px] text-[#745475]" style="font-variation-settings: 'FILL' 1;">lock</span>
-                        Contraseña
-                    </label>
-                    <div class="relative flex items-center">
-                        <input aria-required="true" class="input-premium h-[48px] w-full px-4 pr-12 rounded-xl bg-white text-sm text-[#1A1A1A] placeholder-[#C2B7C0] focus:border-primary focus:ring-0 transition-all outline-none border-2" id="password" name="password" placeholder="Ingrese su contraseña" required="" type="password"/>
-                        <span role="button" id="toggle-password" class="material-symbols-outlined absolute right-3 text-xl text-[#C2B7C0] hover:text-[#745475] transition-colors focus:outline-none select-none cursor-pointer z-10 flex items-center justify-center" style="background: none !important; border: none !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">visibility</span>
+                <div class="field">
+                    <label for="password"><span class="material-symbols-outlined mat" style="font-size:17px;">lock</span> Contraseña</label>
+                    <div class="input-wrap">
+                        <input id="password" name="password" type="password" placeholder="Ingrese su contraseña" required/>
+                        <span class="material-symbols-outlined lead">key</span>
+                        <span role="button" id="toggle-password" class="material-symbols-outlined trail" title="Mostrar / ocultar contraseña">visibility</span>
                     </div>
                 </div>
 
-                <!-- Forgot Password -->
-                <div class="flex justify-end -mt-1.5">
-                    <a class="text-xs text-[#745475] font-bold hover:text-[#C59B27] transition-colors focus:outline-none" href="#" onclick="alert('Por favor solicite el restablecimiento de su contraseña al Administrador del sistema.'); return false;">
-                        ¿Olvidó su contraseña?
-                    </a>
+                <div class="row-between">
+                    <label class="link">
+                        <input type="checkbox" checked style="width:16px;height:16px;accent-color:#C59B27;">
+                        Recordarme
+                    </label>
+                    <a class="link-forgot" href="#" onclick="alert('Por favor solicite el restablecimiento de su contraseña al Administrador del sistema.'); return false;">¿Olvidó su contraseña?</a>
                 </div>
 
-                <!-- Action Button -->
-                <button class="btn-premium h-[50px] w-full text-white font-bold text-sm rounded-xl transition-all duration-200 focus:outline-none flex items-center justify-center gap-2 mt-2" type="submit">
-                    <span aria-hidden="true" class="material-symbols-outlined text-[18px]">lock_open</span>
-                    Iniciar Sesión
-                    <span aria-hidden="true" class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                <button class="btn-cta" type="submit" id="btn-submit">
+                    <span class="material-symbols-outlined" style="font-size:19px;">lock_open</span>
+                    <span id="btn-label">Iniciar Sesión</span>
+                    <span class="material-symbols-outlined" style="font-size:19px;">arrow_forward</span>
                 </button>
             </form>
 
-
+            <div class="foot-note">Plataforma de gestión <strong>ESCARLÚ</strong> · Esencia & Estilo</div>
         </div>
     </div>
-</div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="auth.js"></script>
-<script>
-    // Toggle visibilidad contraseña
-    const passwordInput = document.getElementById('password');
-    const togglePasswordBtn = document.getElementById('toggle-password');
-    if (togglePasswordBtn && passwordInput) {
-        togglePasswordBtn.addEventListener('click', () => {
-            const isPassword = passwordInput.type === 'password';
-            passwordInput.type = isPassword ? 'text' : 'password';
-            togglePasswordBtn.textContent = isPassword ? 'visibility_off' : 'visibility';
-        });
-    }
-
-    // Detectar cuando la fuente Material Symbols está disponible y mostrar íconos
-    (function checkMaterialFontLoaded() {
-        if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(() => {
-                document.body.classList.add('icons-ready');
-            });
-        } else {
-            // Fallback para navegadores sin document.fonts
-            window.addEventListener('load', () => {
-                document.body.classList.add('icons-ready');
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Toggle visibilidad contraseña
+        const passwordInput = document.getElementById('password');
+        const togglePasswordBtn = document.getElementById('toggle-password');
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                togglePasswordBtn.textContent = isPassword ? 'visibility_off' : 'visibility';
             });
         }
-    })();
-</script>
+
+        // Estado de carga en el botón
+        const submitBtn = document.getElementById('btn-submit');
+        const loginForm = document.getElementById('login-form');
+        const errorBox = document.getElementById('login-error');
+
+        function resetSubmitBtn() {
+            if (submitBtn) {
+                submitBtn.removeAttribute('data-loading');
+                submitBtn.disabled = false;
+            }
+        }
+
+        if (loginForm && submitBtn) {
+            loginForm.addEventListener('submit', () => {
+                submitBtn.setAttribute('data-loading', 'true');
+                submitBtn.disabled = true;
+            });
+        }
+
+        // Si el login falla (auth.js muestra el error), reactivar el botón para reintentar
+        if (errorBox) {
+            const observer = new MutationObserver((mutations) => {
+                for (const m of mutations) {
+                    if (m.type === 'attributes' && m.attributeName === 'class') {
+                        if (!errorBox.classList.contains('hidden')) { resetSubmitBtn(); break; }
+                    }
+                    if ((m.type === 'childList' || m.type === 'characterData') && errorBox.textContent.trim() !== '') {
+                        resetSubmitBtn(); break;
+                    }
+                }
+            });
+            observer.observe(errorBox, { attributes: true, childList: true, subtree: true, characterData: true });
+        }
+    </script>
 </body>
 </html>

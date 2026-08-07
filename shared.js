@@ -18,7 +18,174 @@ function showErrorBanner(message, filename, lineno) {
     document.body.appendChild(errorBanner);
 }
 
+// ============================================================
+// Cargador de marca + transiciones de página (ESCOM) 
+// Oculta la primera pintura sin estilos (FOUC) y da un
+// cambio de página/profesional y suave en toda la app.
+// ============================================================
+(function() {
+    var OVERLAY_ID = 'escarlu-page-loader';
+    // Flags de sesión para decidir cuándo mostrar el splash de pantalla completa
+    var LS_INAPP = 'escarlu_in_app_nav';   // '1' = vengo de navegar dentro de la app (menú)
+    var LS_FORCE = 'escarlu_show_splash';  // '1' = forzar splash (transición login -> dashboard)
+
+    function buildOverlay() {
+        if (document.getElementById(OVERLAY_ID)) return document.getElementById(OVERLAY_ID);
+        var ov = document.createElement('div');
+        ov.id = OVERLAY_ID;
+
+        var css = document.createElement('style');
+        css.textContent = [
+            '#' + OVERLAY_ID + ' {',
+            '  position: fixed; inset: 0; z-index: 2147483000;',
+            '  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;',
+            '  background: radial-gradient(120% 120% at 50% 0%, #FFF6F8 0%, #F8C8D4 55%, #F0B3C0 100%);',
+            '  opacity: 1; visibility: visible;',
+            '  transition: opacity .5s ease, visibility .5s ease;',
+            '}',
+            '#' + OVERLAY_ID + '.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }',
+            '#' + OVERLAY_ID + '.is-plain { background: #FAF5F6; }',
+            '#' + OVERLAY_ID + '.is-plain .el-logo-loader,',
+            '#' + OVERLAY_ID + '.is-plain .el-loader-brand,',
+            '#' + OVERLAY_ID + '.is-plain .el-loader-sub,',
+            '#' + OVERLAY_ID + '.is-plain .el-ring { visibility: hidden; }',
+            '#' + OVERLAY_ID + ' .el-logo-loader { width: 92px; height: 92px; border-radius: 28px; object-fit: cover; box-shadow: 0 18px 45px rgba(116,84,117,.35); animation: elGrowIn .6s cubic-bezier(.2,.8,.2,1) both; }',
+            '#' + OVERLAY_ID + ' .el-loader-brand { font-family: \'Libre Caslon Text\', serif; font-size: 26px; font-weight: 800; color: #7a4f6b; letter-spacing: 4px; animation: elFadeUp .7s .15s ease both; }',
+            '#' + OVERLAY_ID + ' .el-loader-sub { font-family: \'Source Sans 3\', sans-serif; font-size: 12px; letter-spacing: 3px; color: #9d7189; text-transform: uppercase; animation: elFadeUp .7s .25s ease both; }',
+            '#' + OVERLAY_ID + ' .el-ring { width: 46px; height: 46px; border-radius: 50%; border: 4px solid rgba(197,155,39,.18); border-top-color: #C59B27; animation: elSpin .9s linear infinite; margin-top: 6px; }',
+            '@keyframes elSpin { to { transform: rotate(360deg); } }',
+            '@keyframes elGrowIn { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }',
+            '@keyframes elFadeUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }'
+        ].join('\n');
+        document.head.appendChild(css);
+
+        ov.innerHTML = [
+            '<img class="el-logo-loader" src="logo_nuevo.jpeg" onerror="this.src=\'https://placehold.co/120x120?text=ESCARL%C3%9A\'">',
+            '<div class="el-loader-brand">ESCARLÚ</div>',
+            '<div class="el-loader-sub">Moda con propósito</div>',
+            '<div class="el-ring"></div>'
+        ].join('');
+
+        document.documentElement.appendChild(ov);
+        return ov;
+    }
+
+    function showLoader() {
+        var ov = document.getElementById(OVERLAY_ID) || buildOverlay();
+        ov.classList.remove('is-hidden');
+    }
+    function hideLoader(delay) {
+        var ov = document.getElementById(OVERLAY_ID) || buildOverlay();
+        setTimeout(function() { ov.classList.add('is-hidden'); }, delay || 0);
+    }
+    function navigateTo(href, delay, opts) {
+        opts = opts || {};
+        if (opts.splash) {
+            // Transición login -> dashboard: mostrar el splash de pantalla completa en el destino
+            sessionStorage.setItem(LS_FORCE, '1');
+            showLoader();
+            setTimeout(function() { window.location.href = href; }, delay || 220);
+        } else {
+            // Navegación dentro del menú: sin splash, inmediata (el destino hace un fade-in sutil)
+            sessionStorage.setItem(LS_INAPP, '1');
+            setTimeout(function() { window.location.href = href; }, delay || 120);
+        }
+    }
+
+    window.escarluShowLoader = showLoader;
+    window.escarluHideLoader = hideLoader;
+    window.escarluNavigate = navigateTo;
+
+    // ¿Esta carga de página merece la pantalla de carga completa (splash)?
+    // Sí, únicamente en: (a) primer ingreso tras el login (escarlu_show_splash) y
+    // (b) recarga directa (F5 / URL) / primera visita (sin navegación interna previa).
+    // No, cuando la navegación viene desde dentro de la app (clics del menú).
+    function consumeSplashFlags() {
+        var inApp = sessionStorage.getItem(LS_INAPP) === '1';
+        var force = sessionStorage.getItem(LS_FORCE) === '1';
+        sessionStorage.removeItem(LS_INAPP);
+        sessionStorage.removeItem(LS_FORCE);
+        return { show: force || !inApp, inApp: inApp };
+    }
+
+    // Construir el overlay (siempre visible al inicio, para proteger contra el FOUC)
+    var ov = buildOverlay();
+    var flags = consumeSplashFlags();
+    if (flags.show) {
+        // Splash de marca completo: se oculta tras la carga + pequeño margen
+        window.addEventListener('load', function() {
+            setTimeout(function() { hideLoader(120); }, 400);
+        });
+        setTimeout(function() { hideLoader(); }, 2600); // seguro
+    } else {
+        // Navegación interna: velo neutro (sin logo) que se retira rápido,
+        // evitando que se vea la plantilla antigua sin estilos.
+        ov.classList.add('is-plain');
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() { hideLoader(100); }, 250);
+        });
+        setTimeout(function() { hideLoader(); }, 1500); // seguro
+    }
+
+    // Interceptar enlaces internos (.html) para transición suave
+    document.addEventListener('click', function(e) {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        var t = e.target;
+        var a = t && t.closest ? t.closest('a') : null;
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (!href || !/\.html$/i.test(href)) return;
+        if (a.target === '_blank' || a.hasAttribute('download')) return;
+        e.preventDefault();
+        navigateTo(href, 120);
+    }, true);
+})();
+
 let supabaseClient = null;
+
+// ============================================================
+// Loader de contenido discreto: pequeño spinner dentro del área
+// de trabajo (a la derecha del menú), sin tapar toda la pantalla.
+// ============================================================
+(function() {
+    var loaderId = 'escarlu-content-loader';
+    var css = document.createElement('style');
+    css.textContent = [
+        '#' + loaderId + ' {',
+        '  position: fixed; top: 0; right: 0; bottom: 0; left: 288px;',
+        '  display: flex; align-items: center; justify-content: center;',
+        '  background: rgba(250,245,246,0.55); z-index: 9000;',
+        '  transition: opacity .25s ease, visibility .25s ease;',
+        '}',
+        '#' + loaderId + '.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }',
+        '#' + loaderId + ' .el-content-spinner {',
+        '  width: 42px; height: 42px; border-radius: 50%;',
+        '  border: 4px solid rgba(197,155,39,.2); border-top-color: #C59B27;',
+        '  animation: elSpin .9s linear infinite;',
+        '}',
+        '@media (max-width: 767px) { #' + loaderId + ' { left: 0; } }'
+    ].join('\n');
+    document.head.appendChild(css);
+
+    function showContentLoader(on) {
+        var el = document.getElementById(loaderId);
+        if (on) {
+            if (!el) {
+                el = document.createElement('div');
+                el.id = loaderId;
+                el.className = 'is-hidden';
+                el.innerHTML = '<div class="el-content-spinner"></div>';
+                document.body.appendChild(el);
+            }
+            void el.offsetWidth; // forzar reflow para que el fade funcione
+            el.classList.remove('is-hidden');
+        } else {
+            if (el) el.classList.add('is-hidden');
+        }
+    }
+
+    window.escarluShowContentLoader = showContentLoader;
+})();
 
 // Cargar dinámicamente dependencias de Supabase, config.js y el tema visual global
 (function() {
@@ -199,12 +366,8 @@ let supabaseClient = null;
           box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.2) !important;
         }
         select option {
-          background-color: var(--white) !important;
-          color: var(--dark-text) !important;
-        }
-        select option:hover, select option:checked {
-          background-color: var(--primary-pink) !important;
-          color: var(--dark-text) !important;
+          background-color: #ffffff !important;
+          color: #1a1a1a !important;
         }
 
         /* Quitar bordes y fondos a los inputs del stepper de cantidad */
@@ -381,6 +544,129 @@ let supabaseClient = null;
         }
     `;
     document.head.appendChild(styleEl);
+
+    // ============ CAPA PREMIUM (solo páginas internas, no el login) ============
+    const __pageName = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    if (__pageName !== 'index.html') {
+        const premiumStyle = document.createElement('style');
+        premiumStyle.textContent = `
+            /* Fondo ambiental sutil */
+            body {
+              background-color: #FAF5F6 !important;
+              background-image: linear-gradient(158deg, #FBF6F7 0%, #F7EDF1 46%, #FCF6EA 100%) !important;
+              background-attachment: fixed !important;
+            }
+            html { background-color: #FAF5F6 !important; }
+            main, main.bg-background, main[class*="bg-background"] { background-color: transparent !important; }
+
+            /* Tipografía de títulos: serif elegante */
+            h1, h2, h3 { font-family: 'Libre Caslon Text', serif !important; letter-spacing: .2px !important; }
+            [id^="kpi-"] { font-family: 'Libre Caslon Text', serif !important; letter-spacing: -.5px !important; }
+
+            /* ---------- Sidebar ---------- */
+            aside {
+              background: linear-gradient(180deg, #FFFFFF 0%, #FFF7F9 55%, #FBEEF2 100%) !important;
+              border-right: 1px solid #F3D9E0 !important;
+              box-shadow: 6px 0 28px rgba(116, 84, 117, .06) !important;
+            }
+            aside img { border: 2px solid #FFFFFF; box-shadow: 0 10px 24px rgba(116, 84, 117, .28); }
+            aside h1 { letter-spacing: 1px !important; }
+            aside nav a {
+              position: relative;
+              transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease !important;
+            }
+            aside nav a:not([class*="bg-primary-container"]):hover {
+              background: linear-gradient(90deg, #FBEDF1, #FFF6F7) !important;
+              color: #6B4259 !important;
+              transform: translateX(5px);
+            }
+            aside nav a[class*="bg-primary-container"] {
+              background: linear-gradient(90deg, #2E2A2C, #45313F) !important;
+              color: #FFFFFF !important;
+              border-left: 4px solid #C59B27 !important;
+              box-shadow: 0 8px 20px rgba(46, 42, 44, .28) !important;
+            }
+            aside nav a[class*="bg-primary-container"] .material-symbols-outlined { color: #E7C58A !important; }
+
+            /* ---------- Barra superior ---------- */
+            header[class*="sticky"] {
+              background: rgba(255, 255, 255, .88) !important;
+              backdrop-filter: blur(14px);
+              -webkit-backdrop-filter: blur(14px);
+              border-bottom: 1px solid rgba(248, 200, 212, .55) !important;
+              box-shadow: 0 6px 20px rgba(116, 84, 117, .05) !important;
+            }
+            header[class*="sticky"] [class*="bg-primary/10"] {
+              background: linear-gradient(90deg, #FFF6E8, #FDEBEE) !important;
+              border-color: rgba(197, 155, 39, .35) !important;
+            }
+            header[class*="sticky"] [class*="bg-primary/10"] * { color: #8A6A14 !important; }
+
+            /* ---------- Tarjetas ---------- */
+            .glass-card, .bento-card {
+              border-radius: 20px !important;
+              box-shadow: 0 12px 32px rgba(116, 84, 117, .08), 0 2px 8px rgba(197, 155, 39, .05) !important;
+            }
+            .glass-card { background: rgba(255, 255, 255, .92) !important; }
+
+            /* ---------- Tablas ---------- */
+            thead { background: transparent !important; }
+            thead tr {
+              background: linear-gradient(90deg, #FFF1F4, #FBEAEE) !important;
+            }
+            thead tr th { text-transform: uppercase; letter-spacing: .5px; font-size: 11px; }
+            tbody tr { transition: background-color .15s ease; }
+            tbody tr:hover { background-color: #FFF7F8 !important; }
+
+            /* ---------- Botones principales: brillo dorado ---------- */
+            button[type="submit"], .bg-primary, #btn-open-ingreso, #btn-add-item, #btn-submit-consolidated {
+              position: relative;
+              overflow: hidden;
+            }
+            button[type="submit"]::after, .bg-primary::after, #btn-open-ingreso::after,
+            #btn-add-item::after, #btn-submit-consolidated::after {
+              content: '';
+              position: absolute; top: 0; left: -80%; width: 45%; height: 100%;
+              background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent);
+              transform: skewX(-20deg);
+              transition: left .55s ease;
+              pointer-events: none;
+            }
+            button[type="submit"]:hover::after, .bg-primary:hover::after, #btn-open-ingreso:hover::after,
+            #btn-add-item:hover::after, #btn-submit-consolidated:hover::after { left: 130%; }
+
+            /* ---------- Inputs ---------- */
+            input, select, textarea { caret-color: #C59B27; }
+            input:focus, select:focus, textarea:focus {
+              box-shadow: 0 0 0 3px rgba(197, 155, 39, .18), 0 6px 16px rgba(197, 155, 39, .08) !important;
+            }
+
+            /* ---------- Modales ---------- */
+            div[class*="bg-black/"] { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+            div[class*="rounded-[24px]"], div[class*="rounded-3xl"] {
+              box-shadow: 0 24px 60px rgba(46, 42, 44, .22) !important;
+            }
+
+            /* ---------- Toast ---------- */
+            #toast {
+              background: linear-gradient(90deg, #2E2A2C, #45313F) !important;
+              color: #FFFFFF !important;
+              border: 1px solid rgba(197, 155, 39, .45) !important;
+              box-shadow: 0 14px 34px rgba(46, 42, 44, .35) !important;
+            }
+
+            /* ---------- Scrollbars ---------- */
+            ::-webkit-scrollbar { width: 10px !important; height: 10px !important; }
+            ::-webkit-scrollbar-track { background: transparent !important; }
+            ::-webkit-scrollbar-thumb {
+              background: linear-gradient(#E9BDCC, #D9A5B8) !important;
+              border-radius: 10px !important;
+              border: 2px solid #FAF5F6 !important;
+            }
+            ::-webkit-scrollbar-thumb:hover { background: linear-gradient(#D9A5B8, #C98DA3) !important; }
+        `;
+        document.head.appendChild(premiumStyle);
+    }
 
 })();
 
@@ -867,6 +1153,17 @@ async function downloadFromSupabase() {
     }
 }
 
+// Sincronizar desde Supabase mostrando solo el spinner de contenido (no el splash completo)
+async function escarluDownloadWithLoader() {
+    if (typeof window.escarluShowContentLoader === 'function') window.escarluShowContentLoader(true);
+    try {
+        await downloadFromSupabase();
+    } finally {
+        if (typeof window.escarluShowContentLoader === 'function') window.escarluShowContentLoader(false);
+    }
+}
+window.escarluDownloadWithLoader = escarluDownloadWithLoader;
+
 const DEFAULT_INVENTORY = {
     // Almacén Central
     "ALM-01": {
@@ -1152,7 +1449,7 @@ function checkAuth() {
 
         // Restricciones de acceso por rol
         const ownerPages = ["cajadueno.html", "cortesdueno.html", "stockgeneraldueno.html"];
-        const almacenPages = ["historialmacen.html", "ingresoprendalmacen.html", "solicitudpendientealmacen.html", "stockalmacen.html", "almacen.html"];
+        const almacenPages = ["historialmacen.html", "ingresoprendalmacen.html", "solicitudpendientealmacen.html", "stockalmacen.html", "Stockalmacen.html", "almacen.html", "despachartienda.html"];
         const tiendaPages = ["cajatienda.html", "solitienda.html", "registrarventa.html", "stocktienda.html", "solicitud.html", "atenderpedidos.html", "historialprendas.html"];
 
         const currentPage = path.split("/").pop();
@@ -1168,12 +1465,18 @@ function checkAuth() {
 }
 
 function redirectToDefaultPage(user) {
+    let url;
     if (user.role === "admin") {
-        window.location.href = "cajadueno.html";
+        url = "cajadueno.html";
     } else if (user.role === "almacen") {
-        window.location.href = "historialmacen.html";
+        url = "Stockalmacen.html";
     } else {
-        window.location.href = "cajatienda.html";
+        url = "cajatienda.html";
+    }
+    if (typeof window.escarluNavigate === 'function') {
+        window.escarluNavigate(url, 200);
+    } else {
+        window.location.href = url;
     }
 }
 
@@ -1223,7 +1526,7 @@ function renderSideNav(activePage) {
             </a>
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'tiendasdueno' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="tiendasdueno.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'tiendasdueno' ? 1 : 0};">store</span>
-                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Gestionar Tiendas</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Gestionar Usuarios</span>
             </a>
         `;
     } else if (user.role === "almacen") {
@@ -1232,6 +1535,10 @@ function renderSideNav(activePage) {
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="Stockalmacen.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'Stockalmacen' ? 1 : 0};">inventory_2</span>
                 <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Stock Almacén</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'despachartienda' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="despachartienda.html">
+                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'despachartienda' ? 1 : 0};">local_shipping</span>
+                <span style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600;">Despachar a Tienda</span>
             </a>
             <a class="flex items-center gap-4 px-4 py-3.5 rounded-xl min-h-[56px] cursor-pointer transition-all duration-200 ${activePage === 'ingresoprendalmacen' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-highest'}" href="ingresoprendalmacen.html">
                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' ${activePage === 'ingresoprendalmacen' ? 1 : 0};">add_box</span>
@@ -1333,7 +1640,7 @@ function setupMobileMenu(activePage) {
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'tiendasdueno' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="tiendasdueno.html">
                 <span class="material-symbols-outlined">store</span>
-                <span class="font-label-lg">Gestionar Tiendas</span>
+                <span class="font-label-lg">Gestionar Usuarios</span>
             </a>
         `;
     } else if (user.role === "almacen") {
@@ -1341,6 +1648,10 @@ function setupMobileMenu(activePage) {
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'Stockalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="Stockalmacen.html">
                 <span class="material-symbols-outlined">inventory_2</span>
                 <span class="font-label-lg">Stock Almacén</span>
+            </a>
+            <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'despachartienda' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="despachartienda.html">
+                <span class="material-symbols-outlined">local_shipping</span>
+                <span class="font-label-lg">Despachar a Tienda</span>
             </a>
             <a class="flex items-center gap-4 p-4 rounded-lg min-h-[56px] transition-colors ${activePage === 'ingresoprendalmacen' ? 'bg-primary-container text-on-primary-container font-bold border-l-4 border-primary' : 'text-on-surface-variant hover:bg-surface-container-high'}" href="ingresoprendalmacen.html">
                 <span class="material-symbols-outlined">add_box</span>
@@ -1494,6 +1805,7 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (path.includes("historialmacen.html")) pageName = "historialmacen";
     else if (path.includes("ingresoprendalmacen.html")) pageName = "ingresoprendalmacen";
     else if (path.includes("solicitudpendientealmacen.html")) pageName = "solicitudpendientealmacen";
+    else if (path.includes("despachartienda.html")) pageName = "despachartienda";
     else if (path.includes("stockalmacen.html")) pageName = "Stockalmacen";
     else if (path.includes("almacen.html")) pageName = "Stockalmacen";
     else if (path.includes("solicitud.html")) pageName = "solitienda";
@@ -1564,6 +1876,11 @@ function setupHeaderProfile() {
                     <span class="material-symbols-outlined text-sm">person</span>
                     <span>Mi Perfil</span>
                 </div>
+                ${user.role === "admin" ? `
+                <div id="dropdown-change-password" class="flex items-center gap-2 px-4 py-2 text-on-surface hover:bg-gray-100 transition-colors cursor-pointer select-none">
+                    <span class="material-symbols-outlined text-sm">lock</span>
+                    <span>Cambiar Contraseña</span>
+                </div>` : ""}
                 <div id="dropdown-logout" class="flex items-center gap-2 px-4 py-2 text-error hover:bg-red-100 transition-colors border-t border-outline-variant/50 cursor-pointer select-none">
                     <span class="material-symbols-outlined text-sm text-error">logout</span>
                     <span>Cerrar Sesión</span>
@@ -1589,6 +1906,17 @@ function setupHeaderProfile() {
                 dropdown.classList.add("hidden");
                 openGlobalProfileModal();
             });
+
+            // Cambiar contraseña: abre el perfil con el acordeón desplegado
+            const changePassEl = document.getElementById("dropdown-change-password");
+            if (changePassEl) {
+                changePassEl.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdown.classList.add("hidden");
+                    openGlobalProfileModal(true);
+                });
+            }
 
             document.getElementById("dropdown-logout").addEventListener("click", (e) => {
                 e.preventDefault();
@@ -1632,8 +1960,15 @@ function injectGlobalProfileModal() {
                 
                 <hr id="gprof-password-sep" class="border-outline-variant/50 my-2">
                 
-                <div id="gprof-password-section" class="space-y-4">
-                    <h4 class="text-xs font-bold text-[#745475] uppercase">Cambiar Contraseña</h4>
+                <div id="gprof-password-section" class="rounded-2xl border border-outline-variant/60 overflow-hidden">
+                    <button type="button" id="gprof-toggle-password" class="w-full flex items-center justify-between gap-2 px-4 py-3 bg-surface-container hover:bg-surface-container-highest transition-colors cursor-pointer select-none text-left">
+                        <span class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg text-[#745475]">lock</span>
+                            <span class="text-xs font-bold uppercase tracking-wide text-[#745475]">Cambiar Contraseña</span>
+                        </span>
+                        <span id="gprof-chevron" class="material-symbols-outlined text-on-surface-variant transition-transform duration-300">expand_more</span>
+                    </button>
+                    <div id="gprof-password-body" class="px-4 py-4 space-y-4 hidden">
                     
                     <div class="flex flex-col gap-1 relative">
                         <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="gprof-old-password">Contraseña Actual</label>
@@ -1679,6 +2014,7 @@ function injectGlobalProfileModal() {
                             </span>
                         </div>
                     </div>
+                    </div>
                 </div>
                 
                 <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/50">
@@ -1706,6 +2042,23 @@ function injectGlobalProfileModal() {
     setupGprofPasswordToggle("gprof-old-password", "toggle-gprof-old-btn", "gprof-old-icon");
     setupGprofPasswordToggle("gprof-new-password", "toggle-gprof-new-btn", "gprof-new-icon");
     setupGprofPasswordToggle("gprof-confirm-password", "toggle-gprof-confirm-btn", "gprof-confirm-icon");
+
+    // Acordeón de cambio de contraseña
+    const gprofToggleBtn = document.getElementById("gprof-toggle-password");
+    const gprofPassBody = document.getElementById("gprof-password-body");
+    const gprofChevron = document.getElementById("gprof-chevron");
+    if (gprofToggleBtn && gprofPassBody) {
+        gprofToggleBtn.addEventListener("click", () => {
+            const isHidden = gprofPassBody.classList.contains("hidden");
+            if (isHidden) {
+                gprofPassBody.classList.remove("hidden");
+                if (gprofChevron) gprofChevron.classList.add("rotate-180");
+            } else {
+                gprofPassBody.classList.add("hidden");
+                if (gprofChevron) gprofChevron.classList.remove("rotate-180");
+            }
+        });
+    }
 
     // Validador de contraseña en tiempo real
     const newPassInput = document.getElementById("gprof-new-password");
@@ -1750,7 +2103,7 @@ function updateGprofDot(dotId, condition) {
     }
 }
 
-function openGlobalProfileModal() {
+function openGlobalProfileModal(openPassword) {
     const user = getCurrentUser();
     if (!user) return;
 
@@ -1796,6 +2149,17 @@ function openGlobalProfileModal() {
     const modal = document.getElementById("global-profile-modal");
     modal.classList.remove("hidden");
     modal.classList.add("flex");
+
+    // Reset del acordeón de contraseña (colapsado por defecto)
+    const gprofPassBodyEl = document.getElementById("gprof-password-body");
+    const gprofChevronEl = document.getElementById("gprof-chevron");
+    if (gprofPassBodyEl) gprofPassBodyEl.classList.add("hidden");
+    if (gprofChevronEl) gprofChevronEl.classList.remove("rotate-180");
+    // Si se pidió cambiar contraseña (desde el dropdown), desplegar el acordeón
+    if (openPassword && user.role === "admin" && gprofPassBodyEl) {
+        gprofPassBodyEl.classList.remove("hidden");
+        if (gprofChevronEl) gprofChevronEl.classList.add("rotate-180");
+    }
 }
 
 function closeGlobalProfileModal() {

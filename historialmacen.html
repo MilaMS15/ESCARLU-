@@ -413,6 +413,7 @@
 
 <script>
     const user = getCurrentUser();
+    const MY_STORE = (user && user.storeId) ? user.storeId : "ALM-01";
     const MOV_KEY = "escarlu_movimientos";
 
     // ── MODELOS ──────────────────────────────────────────────────
@@ -459,9 +460,9 @@
     }
 
     function getMisMovimientos() {
-        // Como este es el Almacén Central (ALM-01), mostramos los movimientos que involucran a ALM-01
+        // Solo se muestran los movimientos que involucran al almacén de la sesión (user.storeId)
         const allMovs = getMovimientos();
-        return allMovs.filter(m => m.origen_id === "ALM-01" || m.destino_id === "ALM-01");
+        return allMovs.filter(m => m.origen_id === MY_STORE || m.destino_id === MY_STORE);
     }
 
     // ── PAGINACIÓN ───────────────────────────────────────────────
@@ -482,9 +483,9 @@
 
         // Filtros
         if (filterTipo === "ingreso") {
-            movs = movs.filter(m => m.destino_id === "ALM-01");
+            movs = movs.filter(m => m.destino_id === MY_STORE);
         } else if (filterTipo === "salida") {
-            movs = movs.filter(m => m.origen_id === "ALM-01");
+            movs = movs.filter(m => m.origen_id === MY_STORE);
         }
 
         if (filterColor !== "all") {
@@ -508,8 +509,8 @@
         movs.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
 
         // Stats
-        const totalPrendasSalida = movs.filter(m => m.origen_id === "ALM-01").reduce((s, m) => s + (m.cantidad || 0), 0);
-        const totalPrendasIngreso = movs.filter(m => m.destino_id === "ALM-01").reduce((s, m) => s + (m.cantidad || 0), 0);
+        const totalPrendasSalida = movs.filter(m => m.origen_id === MY_STORE).reduce((s, m) => s + (m.cantidad || 0), 0);
+        const totalPrendasIngreso = movs.filter(m => m.destino_id === MY_STORE).reduce((s, m) => s + (m.cantidad || 0), 0);
 
         document.getElementById("stat-total").textContent = movs.length;
         document.getElementById("stat-prendas").textContent = totalPrendasSalida;
@@ -555,12 +556,12 @@
             const fecha = new Date(mov.fecha_hora);
             const fechaStr = fecha.toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" });
             const horaStr  = fecha.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
-            const esIngreso = mov.destino_id === "ALM-01";
+            const esIngreso = mov.destino_id === MY_STORE;
 
             // Nombre de origen o destino
             let sedeLabel = "";
             if (esIngreso) {
-                const orig = mov.origen_id || 'ALM-01';
+                const orig = mov.origen_id || MY_STORE;
                 sedeLabel = STORE_NAMES?.[orig] || orig;
             } else {
                 const dest = mov.destino_id;
@@ -707,6 +708,12 @@
         checkAuth();
         renderSideNav("historialmacen");
         setupHeaderProfile();
+
+        // Mostrar la sede del almacén de la sesión
+        const headerStore = document.getElementById("header-store-name");
+        if (headerStore) {
+            headerStore.textContent = STORE_NAMES?.[MY_STORE] || (user ? user.label : "Almacén");
+        }
 
         // Llenar dinámicamente el selector de colores
         const filterColor = document.getElementById('hp-filter-color');
