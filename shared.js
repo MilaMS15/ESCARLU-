@@ -172,6 +172,11 @@ let supabaseClient = null;
           border-radius: 20px !important;
         }
 
+        /* Mantener altura mínima en las tablas para evitar que la página salte arriba al paginar */
+        .glass-card .overflow-x-auto {
+          min-height: 380px !important;
+        }
+
         /* Cabecera de tablas */
         thead tr, .bg-surface-container-low, [class*="bg-surface-container-low"] {
           background-color: var(--primary-pink-light) !important;
@@ -215,11 +220,21 @@ let supabaseClient = null;
           border-radius: 0 !important;
         }
 
+        /* Ocultar las flechas nativas (spinners) en inputs de tipo número */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+          -webkit-appearance: none !important;
+          margin: 0 !important;
+        }
+        input[type="number"] {
+          -moz-appearance: textfield !important;
+        }
+
         h1, h2, h3, h4, h5, h6, .text-primary, .text-on-surface {
           color: var(--dark-text) !important;
         }
         .text-xs, .text-sm, .text-on-surface-variant {
-          color: #4C4C4C !important;
+          color: #4C4C4C;
         }
 
         .border-outline-variant, .border-outline-variant/30, .border-surface-variant {
@@ -2096,16 +2111,16 @@ window.alert = function(message) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = modalId;
-        modal.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] opacity-0 transition-opacity duration-200 pointer-events-none";
+        modal.className = "fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-[99999] opacity-0 transition-opacity duration-200 pointer-events-none";
         modal.innerHTML = `
             <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 transform scale-95 transition-transform duration-200" id="custom-alert-card">
                 <div class="flex items-center gap-3 mb-3" id="custom-alert-header">
-                    <span class="material-symbols-outlined text-2xl" id="custom-alert-icon" style="font-variation-settings: 'FILL' 1;">info</span>
+                    <span class="material-symbols-outlined text-3xl" id="custom-alert-icon" style="font-variation-settings: 'FILL' 1;">info</span>
                     <h4 class="font-headline-md text-base font-bold" id="custom-alert-title">Atención</h4>
                 </div>
                 <p id="custom-alert-message" class="text-sm font-body-sm text-on-surface-variant mb-5 leading-relaxed"></p>
                 <div class="flex justify-end">
-                    <button id="custom-alert-btn" class="bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-95">
+                    <button id="custom-alert-btn" class="px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-95">
                         Aceptar
                     </button>
                 </div>
@@ -2121,7 +2136,7 @@ window.alert = function(message) {
     
     // Determine dynamic type based on message text
     const lowerMsg = message.toLowerCase();
-    const isSuccess = lowerMsg.includes('éxito') || lowerMsg.includes('exito') || lowerMsg.includes('aprobado') || lowerMsg.includes('creada') || lowerMsg.includes('enviada') || lowerMsg.includes('correcto');
+    const isSuccess = lowerMsg.includes('éxito') || lowerMsg.includes('exito') || lowerMsg.includes('aprobado') || lowerMsg.includes('creada') || lowerMsg.includes('enviada') || lowerMsg.includes('correcto') || lowerMsg.includes('correcta') || lowerMsg.includes('guardad') || lowerMsg.includes('registrad');
     const isError = lowerMsg.includes('error') || lowerMsg.includes('insuficiente') || lowerMsg.includes('inválid') || lowerMsg.includes('invalidad') || lowerMsg.includes('incorrecto') || lowerMsg.includes('no tiene') || lowerMsg.includes('excede');
     const isInfo = lowerMsg.includes('sedes') || lowerMsg.includes('uds') || lowerMsg.includes('tallas') || lowerMsg.includes('existencias');
     
@@ -2129,27 +2144,32 @@ window.alert = function(message) {
     const header = modal.querySelector('#custom-alert-header');
     const icon = modal.querySelector('#custom-alert-icon');
     const title = modal.querySelector('#custom-alert-title');
+    const btn = modal.querySelector('#custom-alert-btn');
     
     if (isSuccess) {
-        card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-green-500 transform scale-95 transition-transform duration-200";
-        header.className = "flex items-center gap-3 mb-3 text-green-600";
+        card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-emerald-500 transform scale-95 transition-transform duration-200";
+        header.className = "flex items-center gap-3 mb-3 text-emerald-600";
         icon.textContent = "check_circle";
-        title.textContent = "Éxito";
+        title.textContent = "¡Operación Exitosa!";
+        btn.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-[0.97] border-none";
     } else if (isError) {
         card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-red-500 transform scale-95 transition-transform duration-200";
         header.className = "flex items-center gap-3 mb-3 text-red-600";
         icon.textContent = "error";
-        title.textContent = "Error";
+        title.textContent = "Hubo un problema";
+        btn.className = "bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-[0.97] border-none";
     } else if (isInfo) {
-        card.className = "bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200";
-        header.className = "flex items-center gap-3 mb-3 text-primary";
+        card.className = "bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border-t-4 border-[#C59B27] transform scale-95 transition-transform duration-200";
+        header.className = "flex items-center gap-3 mb-3 text-[#C59B27]";
         icon.textContent = "info";
         title.textContent = "Información de Stock";
+        btn.className = "bg-[#C59B27] hover:bg-[#B38A20] text-white px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-[0.97] border-none";
     } else {
-        card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200";
-        header.className = "flex items-center gap-3 mb-3 text-primary";
+        card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-[#C59B27] transform scale-95 transition-transform duration-200";
+        header.className = "flex items-center gap-3 mb-3 text-[#C59B27]";
         icon.textContent = "info";
         title.textContent = "Atención";
+        btn.className = "bg-[#C59B27] hover:bg-[#B38A20] text-white px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-[0.97] border-none";
     }
     
     // Set message and show
