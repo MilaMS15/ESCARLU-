@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Gestionar Tiendas | ESCARLÚ</title>
-    <script src="shared.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="shared.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
@@ -48,7 +48,7 @@
             <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
                 <span class="text-xs font-bold text-on-surface">Administrador</span>
                 <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
-                    <img alt="Perfil" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+                    <img alt="Perfil" class="w-full h-full object-cover" src="logo.png"/>
                 </div>
             </div>
         </div>
@@ -221,64 +221,51 @@
                 </div>
             </div>
 
+            <!-- Collapsible Security Section -->
+            <div class="border-t border-outline-variant/30 pt-4">
+                <button type="button" id="btn-toggle-edit-password" class="w-full flex items-center justify-between py-2 text-xs font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-wider outline-none">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">lock</span>
+                        <span>Cambiar Contraseña de Acceso</span>
+                    </div>
+                    <span id="edit-password-arrow" class="material-symbols-outlined text-sm transition-transform duration-200">expand_more</span>
+                </button>
+                
+                <div id="edit-password-section" class="hidden space-y-4 mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div class="flex flex-col gap-1 relative">
+                        <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="edit-user-password">Nueva Contraseña</label>
+                        <div class="relative flex items-center">
+                            <input type="password" id="edit-user-password" placeholder="Mínimo 8 caracteres, 1 número y 1 mayúscula" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+                            <span id="toggle-edit-password-btn" class="absolute right-3 text-on-surface-variant hover:text-primary cursor-pointer flex items-center justify-center select-none" style="z-index: 10;">
+                                <span class="material-symbols-outlined text-lg" id="edit-password-visibility-icon">visibility</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Password Validation Requirements -->
+                    <div class="grid grid-cols-3 gap-2 bg-surface-container-low p-3 rounded-2xl border border-outline-variant/30 text-xs">
+                        <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                            <span id="edit-req-len-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                            <span class="text-[10px]">8+ caracteres</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                            <span id="edit-req-upper-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                            <span class="text-[10px]">Una mayúscula</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
+                            <span id="edit-req-num-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
+                            <span class="text-[10px]">Un número</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/50">
                 <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
                     Cancelar
                 </button>
                 <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">
                     Guardar Cambios
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Modal: Restablecer Contraseña -->
-<div id="reset-password-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
-        <header class="bg-gradient-to-br from-primary to-primary-container p-6 border-b border-outline-variant text-on-surface flex justify-between items-center">
-            <div>
-                <h3 class="text-lg font-bold">Restablecer Contraseña</h3>
-                <p class="text-[11px] opacity-80">Asigna una nueva clave para esta cuenta.</p>
-            </div>
-            <button onclick="closeResetModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
-                <span class="material-symbols-outlined text-sm">close</span>
-            </button>
-        </header>
-
-        <form id="reset-password-form" class="p-6 space-y-4">
-            <input type="hidden" id="reset-user-store-id" />
-            <div class="flex flex-col gap-1 relative">
-                <label class="text-[11px] font-bold text-on-surface-variant uppercase" for="reset-password-input">Nueva Contraseña</label>
-                <div class="relative flex items-center">
-                    <input type="password" id="reset-password-input" required placeholder="Mínimo 8 caracteres" class="w-full border border-outline-variant rounded-xl pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
-                    <span id="toggle-reset-password-btn" class="absolute right-3 text-on-surface-variant hover:text-primary cursor-pointer flex items-center justify-center select-none" style="z-index: 10;">
-                        <span class="material-symbols-outlined text-lg" id="reset-password-visibility-icon">visibility</span>
-                    </span>
-                </div>
-                <!-- Requisitos de Contraseña -->
-                <div class="mt-2 space-y-1 text-xs">
-                    <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
-                        <span id="reset-req-len-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
-                        <span>Mínimo 8 caracteres</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
-                        <span id="reset-req-upper-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
-                        <span>Una letra mayúscula</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-on-surface-variant font-semibold">
-                        <span id="reset-req-num-dot" class="w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200"></span>
-                        <span>Un número</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/50">
-                <button type="button" onclick="closeResetModal()" class="px-4 py-2 border border-outline-variant rounded-xl text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
-                    Cancelar
-                </button>
-                <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">
-                    Actualizar Contraseña
                 </button>
             </div>
         </form>
@@ -326,7 +313,27 @@
 
         // Configurar toggles de mostrar/ocultar contraseña
         setupPasswordToggle("user-password", "toggle-password-btn", "password-visibility-icon");
-        setupPasswordToggle("reset-password-input", "toggle-reset-password-btn", "reset-password-visibility-icon");
+        setupPasswordToggle("edit-user-password", "toggle-edit-password-btn", "edit-password-visibility-icon");
+
+        // Toggle sección de contraseña en Editar
+        const btnToggleEditPassword = document.getElementById("btn-toggle-edit-password");
+        const editPasswordSection = document.getElementById("edit-password-section");
+        const editPasswordArrow = document.getElementById("edit-password-arrow");
+        const editPassInput = document.getElementById("edit-user-password");
+
+        if (btnToggleEditPassword && editPasswordSection) {
+            btnToggleEditPassword.addEventListener("click", () => {
+                if (editPasswordSection.classList.contains("hidden")) {
+                    editPasswordSection.classList.remove("hidden");
+                    editPasswordArrow.style.transform = "rotate(180deg)";
+                } else {
+                    editPasswordSection.classList.add("hidden");
+                    editPasswordArrow.style.transform = "rotate(0deg)";
+                    editPassInput.value = "";
+                    resetDotStates("edit");
+                }
+            });
+        }
 
         // Configurar validadores de requisitos dinámicos
         setupPasswordValidators();
@@ -403,13 +410,13 @@
             });
         }
 
-        const resetPassInput = document.getElementById("reset-password-input");
-        if (resetPassInput) {
-            resetPassInput.addEventListener("input", () => {
-                const val = resetPassInput.value;
-                updateDot("reset-req-len-dot", val.length >= 8);
-                updateDot("reset-req-upper-dot", /[A-Z]/.test(val));
-                updateDot("reset-req-num-dot", /[0-9]/.test(val));
+        const editPassInput = document.getElementById("edit-user-password");
+        if (editPassInput) {
+            editPassInput.addEventListener("input", () => {
+                const val = editPassInput.value;
+                updateDot("edit-req-len-dot", val.length >= 8);
+                updateDot("edit-req-upper-dot", /[A-Z]/.test(val));
+                updateDot("edit-req-num-dot", /[0-9]/.test(val));
             });
         }
     }
@@ -510,11 +517,6 @@
                                     title="Editar datos de Tienda">
                                     <span class="material-symbols-outlined" style="font-size:20px;">edit</span>
                                 </button>
-                                <button onclick="openResetModal('${s.id_sede}')" 
-                                    class="w-9 h-9 rounded-lg flex items-center justify-center text-[#cfaa32] hover:bg-amber-100 transition-all" 
-                                    title="Restablecer Contraseña">
-                                    <span class="material-symbols-outlined" style="font-size:20px;">lock_reset</span>
-                                </button>
                             </div>
                         </td>
                     </tr>
@@ -584,21 +586,13 @@
         document.getElementById("edit-store-modal").classList.add("hidden");
         document.getElementById("edit-store-modal").classList.remove("flex");
         document.getElementById("edit-store-form").reset();
-    }
-
-    // Modal Restablecer Password
-    function openResetModal(storeId) {
-        resetDotStates("reset");
-        document.getElementById("reset-user-store-id").value = storeId;
-        document.getElementById("reset-password-modal").classList.remove("hidden");
-        document.getElementById("reset-password-modal").classList.add("flex");
-    }
-
-    function closeResetModal() {
-        document.getElementById("reset-password-modal").classList.add("hidden");
-        document.getElementById("reset-password-modal").classList.remove("flex");
-        document.getElementById("reset-password-form").reset();
-        resetDotStates("reset");
+        
+        // Resetear el estado de la sección de contraseña colapsable
+        const passSection = document.getElementById("edit-password-section");
+        if (passSection) passSection.classList.add("hidden");
+        const arrow = document.getElementById("edit-password-arrow");
+        if (arrow) arrow.style.transform = "rotate(0deg)";
+        resetDotStates("edit");
     }
 
     // Modal Confirmación de Estado
@@ -705,6 +699,15 @@
         const storeAddress = document.getElementById("edit-store-address").value.trim();
         const storePhone = document.getElementById("edit-store-phone").value.trim();
         const userFullName = document.getElementById("edit-user-fullname").value.trim();
+        const newPassword = document.getElementById("edit-user-password").value.trim();
+
+        // Validar contraseña si se ingresó
+        if (newPassword) {
+            if (!validatePasswordRequirements(newPassword)) {
+                alert("La nueva contraseña debe tener al menos 8 caracteres, incluir una mayúscula y un número.");
+                return;
+            }
+        }
 
         try {
             // 1. Actualizar Sede
@@ -723,6 +726,15 @@
 
             if (errUser) throw errUser;
 
+            // 3. Actualizar contraseña (si se especificó una nueva)
+            if (newPassword) {
+                const { error: errReset } = await client.from("usuarios").update({
+                    contrasena: newPassword
+                }).eq("id_sede_asignada", storeId);
+                
+                if (errReset) throw errReset;
+            }
+
             alert("Datos de la tienda actualizados correctamente.");
             
             // Recargar datos locales
@@ -734,42 +746,6 @@
         } catch (err) {
             console.error("Error al actualizar la tienda:", err);
             alert("Error al actualizar: " + err.message);
-        }
-    });
-
-    // Restablecer contraseña
-    document.getElementById("reset-password-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const client = window.supabaseClient;
-        if (!client) return;
-
-        const storeId = document.getElementById("reset-user-store-id").value;
-        const newPassword = document.getElementById("reset-password-input").value.trim();
-
-        // Validar requisitos de contraseña
-        if (!validatePasswordRequirements(newPassword)) {
-            alert("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula y un número.");
-            return;
-        }
-
-        try {
-            const { error: errUser } = await client.from("usuarios").update({
-                contrasena: newPassword
-            }).eq("id_sede_asignada", storeId);
-
-            if (errUser) throw errUser;
-
-            alert("Contraseña actualizada con éxito.");
-            
-            // Recargar datos locales
-            await downloadFromSupabase();
-            
-            closeResetModal();
-            loadSedesAndUsers();
-
-        } catch (err) {
-            console.error("Error al restablecer contraseña:", err);
-            alert("Error al restablecer contraseña: " + err.message);
         }
     });
 </script>

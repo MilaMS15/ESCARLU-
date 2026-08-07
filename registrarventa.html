@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>ESCARLÚ - Registrar Venta</title>
-<script src="shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="shared.js"></script>
 <!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Google Fonts -->
@@ -169,7 +169,7 @@
       <div class="flex items-center gap-2 pl-3 border-l border-outline-variant/50">
         <span class="text-xs font-bold text-on-surface">Vendedora - Santa Lucía</span>
         <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
-          <img alt="Vendedora Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs7Mrds1vimPvZHCWIO9GhQNAZ5u-TAIqAP3QMG5eKz7W76vMgthHRIgLDOaXGzXwnojPL_grWNYJlNc9SEioAzKfQ6OxOLCUuKHtXUkT6I3VWiui80O6QCT8OX11mfGj2ut7jS4H3KmJtsMgUz_Ykzx4CpK88WwpqV4asNB8gpY7I2P4JI5LfGQob1D8nVRcoRtp5njvMTx-I8utD5u9_io167GlwvjOS7nfB5MusZNmlaNvJEro"/>
+          <img alt="Vendedora Profile" class="w-full h-full object-cover" src="logo.png"/>
         </div>
       </div>
     </div>
@@ -322,31 +322,14 @@
         </button>
     </form>
 
-    <!-- Info Aviso -->
-    <div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/50">
-        <div class="flex items-center gap-2 text-secondary mb-2">
-            <span class="material-symbols-outlined text-lg">info</span>
-            <h4 class="font-bold text-xs m-0">Aviso de Caja</h4>
-        </div>
-        <p class="text-xs text-on-surface-variant leading-relaxed m-0">
-            Asegúrese de verificar físicamente la transferencia en la aplicación bancaria de la tienda antes de entregar la prenda. El comprobante de WhatsApp agiliza el cuadre diario.
-        </p>
-    </div>
+
 </div>
 </main>
 
 <script>
     const user = getCurrentUser();
     let cart = [];
-    const MODEL_PRICES = window.MODEL_PRICES || {
-        "MOD-001": 60.00, "MOD-002": 60.00, "MOD-003": 55.00,
-        "MOD-004": 55.00, "MOD-005": 58.00, "MOD-006": 58.00,
-        "MOD-007": 62.00, "MOD-008": 62.00, "MOD-009": 57.00,
-        "MOD-010": 57.00, "MOD-011": 65.00, "MOD-012": 65.00,
-        "MOD-013": 63.00, "MOD-014": 63.00, "MOD-015": 45.00,
-        "MOD-016": 45.00, "MOD-017": 85.00, "MOD-018": 85.00,
-        "MOD-019": 75.00, "MOD-020": 58.00, "MOD-021": 58.00
-    };
+    // MODEL_PRICES se hereda globalmente desde shared.js
     const OWNER_PHONE = "51936197969";
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -376,9 +359,14 @@
         function updateModelsDropdown() {
             if (!tipoSelect || !modelSelect) return;
             const selectedType = tipoSelect.value;
-            let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+            let modelsList = [];
+            try {
+                modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+            } catch (e) {
+                console.error("Error parsing escarlu_modelos in registrarventa.html", e);
+            }
             
-            if (modelsList.length === 0) {
+            if (!Array.isArray(modelsList) || modelsList.length === 0 || !modelsList.every(m => m && m.tipo)) {
                 modelsList = [
                     { id_modelo: "MOD-001", tipo: "Polo", nombre: "Camisero MC" },
                     { id_modelo: "MOD-002", tipo: "Polo", nombre: "Camisero ML" },

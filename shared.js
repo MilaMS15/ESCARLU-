@@ -1,5 +1,23 @@
 // Base de datos simulada y utilidades compartidas - ESCARLÚ
 
+window.addEventListener('error', function(e) {
+    if (!document.body) {
+        window.addEventListener('DOMContentLoaded', () => {
+            showErrorBanner(e.message, e.filename, e.lineno);
+        });
+    } else {
+        showErrorBanner(e.message, e.filename, e.lineno);
+    }
+});
+
+function showErrorBanner(message, filename, lineno) {
+    const errorBanner = document.getElementById('global-js-error-banner') || document.createElement('div');
+    errorBanner.id = 'global-js-error-banner';
+    errorBanner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ffebee; color: #c62828; padding: 15px; border-bottom: 3px solid #e53935; z-index: 999999; font-family: monospace; font-size: 14px; font-weight: bold; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);';
+    errorBanner.innerHTML = '⚠️ Error de Código: ' + message + ' en ' + (filename ? filename.split('/').pop() : 'script') + ':' + lineno;
+    document.body.appendChild(errorBanner);
+}
+
 let supabaseClient = null;
 
 // Cargar dinámicamente dependencias de Supabase, config.js y el tema visual global
@@ -28,10 +46,12 @@ let supabaseClient = null;
     }
     
     // 2. Cargar config.js
-    const scriptConfig = document.createElement('script');
-    scriptConfig.src = "config.js";
-    scriptConfig.async = false;
-    document.head.appendChild(scriptConfig);
+    if (typeof SUPABASE_URL === 'undefined') {
+        const scriptConfig = document.createElement('script');
+        scriptConfig.src = "config.js";
+        scriptConfig.async = false;
+        document.head.appendChild(scriptConfig);
+    }
 
     // 3. Inyectar Estilo Global del Nuevo Tema Visual
     const styleEl = document.createElement('style');
@@ -152,6 +172,11 @@ let supabaseClient = null;
           border-radius: 20px !important;
         }
 
+        /* Mantener altura mínima en las tablas para evitar que la página salte arriba al paginar */
+        .glass-card .overflow-x-auto {
+          min-height: 380px !important;
+        }
+
         /* Cabecera de tablas */
         thead tr, .bg-surface-container-low, [class*="bg-surface-container-low"] {
           background-color: var(--primary-pink-light) !important;
@@ -195,11 +220,21 @@ let supabaseClient = null;
           border-radius: 0 !important;
         }
 
+        /* Ocultar las flechas nativas (spinners) en inputs de tipo número */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+          -webkit-appearance: none !important;
+          margin: 0 !important;
+        }
+        input[type="number"] {
+          -moz-appearance: textfield !important;
+        }
+
         h1, h2, h3, h4, h5, h6, .text-primary, .text-on-surface {
           color: var(--dark-text) !important;
         }
         .text-xs, .text-sm, .text-on-surface-variant {
-          color: #4C4C4C !important;
+          color: #4C4C4C;
         }
 
         .border-outline-variant, .border-outline-variant/30, .border-surface-variant {
@@ -639,12 +674,17 @@ async function downloadFromSupabase() {
         const { data: sedesData } = await client.from('sedes').select('*');
         if (sedesData) {
             const tempSedes = {};
+            const activeStatus = {};
             sedesData.forEach(s => {
                 tempSedes[s.id_sede] = s.ubicacion;
+                activeStatus[s.id_sede] = s.activo;
             });
             originalSetItem.call(localStorage, 'escarlu_sedes', JSON.stringify(tempSedes));
+            originalSetItem.call(localStorage, 'escarlu_sedes_status', JSON.stringify(activeStatus));
             Object.assign(STORE_NAMES, tempSedes);
+            Object.assign(STORE_STATUS, activeStatus);
             triggerStorageUpdate('escarlu_sedes', JSON.stringify(tempSedes));
+            triggerStorageUpdate('escarlu_sedes_status', JSON.stringify(activeStatus));
         }
     } catch (e) {
         console.error("Error downloading sedes from Supabase:", e);
@@ -922,6 +962,8 @@ const STORE_NAMES = {
     "CTR-01": "Administración"
 };
 
+const STORE_STATUS = {};
+
 // Sincronizar sedes dinámicas guardadas en localStorage
 try {
     const savedSedes = localStorage.getItem("escarlu_sedes");
@@ -931,6 +973,31 @@ try {
 } catch (e) {
     console.error("Error parsing escarlu_sedes:", e);
 }
+
+try {
+    const savedSedesStatus = localStorage.getItem("escarlu_sedes_status");
+    if (savedSedesStatus) {
+        Object.assign(STORE_STATUS, JSON.parse(savedSedesStatus));
+    }
+} catch (e) {
+    console.error("Error parsing escarlu_sedes_status:", e);
+}
+
+window.STORE_NAMES = STORE_NAMES;
+window.STORE_STATUS = STORE_STATUS;
+window.isStoreActive = function(storeId) {
+    // Si no está definido en STORE_STATUS, por defecto está activa (true)
+    return STORE_STATUS[storeId] !== false;
+};
+
+window.addEventListener('storage', (e) => {
+    if (e.key === 'escarlu_sedes_status' && e.newValue) {
+        Object.assign(STORE_STATUS, JSON.parse(e.newValue));
+    }
+    if (e.key === 'escarlu_sedes' && e.newValue) {
+        Object.assign(STORE_NAMES, JSON.parse(e.newValue));
+    }
+});
 
 const MODEL_NAMES = {
     "MOD-001": "Camisero MC",
@@ -2044,16 +2111,16 @@ window.alert = function(message) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = modalId;
-        modal.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] opacity-0 transition-opacity duration-200 pointer-events-none";
+        modal.className = "fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-[99999] opacity-0 transition-opacity duration-200 pointer-events-none";
         modal.innerHTML = `
             <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 transform scale-95 transition-transform duration-200" id="custom-alert-card">
                 <div class="flex items-center gap-3 mb-3" id="custom-alert-header">
-                    <span class="material-symbols-outlined text-2xl" id="custom-alert-icon" style="font-variation-settings: 'FILL' 1;">info</span>
+                    <span class="material-symbols-outlined text-3xl" id="custom-alert-icon" style="font-variation-settings: 'FILL' 1;">info</span>
                     <h4 class="font-headline-md text-base font-bold" id="custom-alert-title">Atención</h4>
                 </div>
                 <p id="custom-alert-message" class="text-sm font-body-sm text-on-surface-variant mb-5 leading-relaxed"></p>
                 <div class="flex justify-end">
-                    <button id="custom-alert-btn" class="bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-95">
+                    <button id="custom-alert-btn" class="px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-95">
                         Aceptar
                     </button>
                 </div>
@@ -2069,7 +2136,7 @@ window.alert = function(message) {
     
     // Determine dynamic type based on message text
     const lowerMsg = message.toLowerCase();
-    const isSuccess = lowerMsg.includes('éxito') || lowerMsg.includes('exito') || lowerMsg.includes('aprobado') || lowerMsg.includes('creada') || lowerMsg.includes('enviada') || lowerMsg.includes('correcto');
+    const isSuccess = lowerMsg.includes('éxito') || lowerMsg.includes('exito') || lowerMsg.includes('aprobado') || lowerMsg.includes('creada') || lowerMsg.includes('enviada') || lowerMsg.includes('correcto') || lowerMsg.includes('correcta') || lowerMsg.includes('guardad') || lowerMsg.includes('registrad');
     const isError = lowerMsg.includes('error') || lowerMsg.includes('insuficiente') || lowerMsg.includes('inválid') || lowerMsg.includes('invalidad') || lowerMsg.includes('incorrecto') || lowerMsg.includes('no tiene') || lowerMsg.includes('excede');
     const isInfo = lowerMsg.includes('sedes') || lowerMsg.includes('uds') || lowerMsg.includes('tallas') || lowerMsg.includes('existencias');
     
@@ -2077,27 +2144,32 @@ window.alert = function(message) {
     const header = modal.querySelector('#custom-alert-header');
     const icon = modal.querySelector('#custom-alert-icon');
     const title = modal.querySelector('#custom-alert-title');
+    const btn = modal.querySelector('#custom-alert-btn');
     
     if (isSuccess) {
-        card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-green-500 transform scale-95 transition-transform duration-200";
-        header.className = "flex items-center gap-3 mb-3 text-green-600";
+        card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-emerald-500 transform scale-95 transition-transform duration-200";
+        header.className = "flex items-center gap-3 mb-3 text-emerald-600";
         icon.textContent = "check_circle";
-        title.textContent = "Éxito";
+        title.textContent = "¡Operación Exitosa!";
+        btn.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-[0.97] border-none";
     } else if (isError) {
         card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-red-500 transform scale-95 transition-transform duration-200";
         header.className = "flex items-center gap-3 mb-3 text-red-600";
         icon.textContent = "error";
-        title.textContent = "Error";
+        title.textContent = "Hubo un problema";
+        btn.className = "bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-[0.97] border-none";
     } else if (isInfo) {
-        card.className = "bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200";
-        header.className = "flex items-center gap-3 mb-3 text-primary";
+        card.className = "bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border-t-4 border-[#C59B27] transform scale-95 transition-transform duration-200";
+        header.className = "flex items-center gap-3 mb-3 text-[#C59B27]";
         icon.textContent = "info";
         title.textContent = "Información de Stock";
+        btn.className = "bg-[#C59B27] hover:bg-[#B38A20] text-white px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-[0.97] border-none";
     } else {
-        card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-primary transform scale-95 transition-transform duration-200";
-        header.className = "flex items-center gap-3 mb-3 text-primary";
+        card.className = "bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-t-4 border-[#C59B27] transform scale-95 transition-transform duration-200";
+        header.className = "flex items-center gap-3 mb-3 text-[#C59B27]";
         icon.textContent = "info";
         title.textContent = "Atención";
+        btn.className = "bg-[#C59B27] hover:bg-[#B38A20] text-white px-5 py-2 rounded-xl font-label-lg text-xs uppercase font-bold shadow-sm transition-all active:scale-[0.97] border-none";
     }
     
     // Set message and show
@@ -2323,7 +2395,13 @@ async function getStockForProduct(model, color, storeId) {
 
 function getAllowedSizesForModel(modelId) {
     // 1. Obtener el modelo desde localStorage o desde el listado estático
-    const modelsFromStorage = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+    let modelsFromStorage = [];
+    try {
+        modelsFromStorage = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+    } catch (e) {
+        console.error("Error parsing escarlu_modelos from localStorage in getAllowedSizesForModel", e);
+    }
+    
     let model = modelsFromStorage.find(m => m.id_modelo === modelId);
     if (!model) {
         const staticModels = getModelos();

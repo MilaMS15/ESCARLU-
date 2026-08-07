@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Consulta de Stock Multisede | ESCARLÚ</title>
-<script src="shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="shared.js"></script>
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -188,7 +188,7 @@
     <div class="flex items-center gap-2">
       <span class="text-xs font-bold text-on-surface font-body-md">Encargado de Almacén</span>
       <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container shrink-0">
-        <img alt="Almacenero Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGWD6xK5vb8NZc5g9ADvQTdt4cs1gEe114evk9R65-086cCeFOZBkYxxm6OrsnYYYT3DBrHfsqyNCvkK15CUSvTDXbCCapLJQVA2nzFj8QQHckE5xEfT7SFuNHeHcLbEIuh7GbbtjrmCrkzKtEyULAo0nzM0txvbDFjR8JtjtHSqlAQl7zSNwVbdll4PTWi3KvEfbpxJiMEvKSQWUeBbYxguOwGHvBM70qPPl6Pb8AXfJ57nwqxiA"/>
+        <img alt="Almacenero Profile" class="w-full h-full object-cover" src="logo.png"/>
       </div>
     </div>
   </div>
@@ -197,67 +197,42 @@
 <div class="p-container-padding max-w-[1440px] mx-auto space-y-6">
 <!-- Welcome & Selector -->
 <section class="space-y-stack-sm">
-<div class="flex justify-between items-end pb-1.5 border-b border-surface-variant shrink-0 mt-1 mb-4">
-    <div class="flex items-center gap-3">
-        <h2 class="font-headline-lg text-base font-bold text-primary leading-tight">Consulta de Stock Multisede</h2>
-        <span class="text-xs text-on-surface-variant font-semibold">| Gestione y traslade existencias entre sus sedes con precisión.</span>
+<div class="flex justify-between items-center pb-3 border-b border-surface-variant/40 shrink-0 mt-1 mb-4 flex-wrap gap-4 bg-white p-5 rounded-2xl border border-outline-variant/30">
+    <div class="flex flex-col gap-1">
+        <h2 class="font-headline-lg text-lg font-bold text-primary leading-tight">Consulta de Stock Multisede</h2>
+        <span class="text-xs text-on-surface-variant font-semibold">Gestione y traslade existencias entre sus sedes con precisión.</span>
     </div>
-<div class="flex gap-4">
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-on-surface ml-1">Sede Origen</label>
-<div class="flex items-center gap-2 px-6 h-10 bg-surface-container-low border-2 border-primary-container rounded-xl">
-<span class="material-symbols-outlined text-primary">location_on</span>
-<span class="font-label-lg">Tienda Principal</span>
+    
+    <div class="flex items-end gap-4 flex-wrap">
+        <!-- Consultar En -->
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-on-surface-variant ml-1 font-bold text-[10px] uppercase tracking-wider">Consultar En:</label>
+            <select id="store-select" class="h-10 min-w-[240px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
+                <option value="ALM-01">Almacén Central</option>
+                <option value="TDA-01" selected="">Tienda Santa Lucía</option>
+                <option value="TDA-02">Tienda Generales Suplex</option>
+                <option value="TDA-03">Tienda Generales Pasadizo</option>
+                <option value="TDA-04">Tienda Aviación</option>
+            </select>
+        </div>
+        
+        <!-- Stock en Sede Seleccionada (Compact Card) -->
+        <div class="flex items-center gap-3 bg-[#FFF0F3] border border-[#F8C8D4] rounded-xl px-4 h-10">
+            <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">store</span>
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Stock:</span>
+                <span id="stat-selected-stock" class="text-sm font-headline-md font-bold text-primary">0 Unidades</span>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
-<div class="flex flex-col gap-1">
-<label class="font-label-md text-on-surface ml-1">Consultar En:</label>
-<select id="store-select" class="h-10 min-w-[240px] rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface cursor-pointer">
-<option value="ALM-01">Almacén Central</option>
-<option value="TDA-01" selected="">Tienda Santa Lucía</option>
-<option value="TDA-02">Tienda Generales Suplex</option>
-<option value="TDA-03">Tienda Generales Pasadizo</option>
-<option value="TDA-04">Tienda Aviación</option>
-</select>
-</div>
-</div>
+
+<!-- Divs ocultos para evitar errores de JS al buscar estas referencias -->
+<div class="hidden">
+    <span id="stat-rotation">Alta (84%)</span>
+    <span id="stat-alerts">0 Modelos</span>
 </div>
 </section>
-<!-- Quick Stats -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-  <!-- Card 1 -->
-  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
-    <div class="w-12 h-12 rounded-full bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
-      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">store</span>
-    </div>
-    <div class="flex-1 min-w-0">
-      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Stock en Sede Seleccionada</p>
-      <p id="stat-selected-stock" class="text-base font-headline-md font-bold text-primary">0 Unidades</p>
-    </div>
-  </div>
-  
-  <!-- Card 2 -->
-  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
-    <div class="w-12 h-12 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
-      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">trending_up</span>
-    </div>
-    <div class="flex-1 min-w-0">
-      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Nivel de Rotación</p>
-      <p id="stat-rotation" class="text-base font-headline-md font-bold text-on-surface">Alta (84%)</p>
-    </div>
-  </div>
-  
-  <!-- Card 3 -->
-  <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-4 border border-outline-variant/30 bg-surface-container-lowest">
-    <div class="w-12 h-12 rounded-full bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
-      <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">priority_high</span>
-    </div>
-    <div class="flex-1 min-w-0">
-      <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Alertas de Reposición</p>
-      <p id="stat-alerts" class="text-base font-headline-md font-bold text-error">0 Modelos</p>
-    </div>
-  </div>
-</div>
 <!-- Main Inventory Grid -->
 <section class="glass-card rounded-2xl shadow-sm overflow-hidden border border-outline-variant">
 <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
@@ -266,14 +241,14 @@
                         Existencias de Prendas - Sede
                     </h3>
 <div class="flex gap-2">
-<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
+<button id="btnExportarExcelAlmacen" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-container-high border border-outline-variant transition-colors">
 <span class="material-symbols-outlined text-sm">download</span>
-<span class="font-label-md">Exportar</span>
+<span class="font-label-md">Exportar Excel</span>
 </button>
 </div>
 </div>
 <!-- Barra de Filtros en Cascada -->
-<div class="p-4 bg-surface-container-low border-b border-outline-variant grid grid-cols-1 sm:grid-cols-4 gap-4 shrink-0">
+<div class="p-4 bg-surface-container-low border-b border-outline-variant grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0">
   <div class="flex flex-col gap-1">
     <label class="font-label-md text-on-surface ml-1 text-xs font-bold uppercase tracking-wider">Filtrar por Tipo</label>
     <select id="select-filter-tipo" class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none cursor-pointer text-sm font-semibold">
@@ -296,24 +271,21 @@
       <option value="all">Todos los colores</option>
     </select>
   </div>
-  <div class="flex flex-col gap-1">
-    <label class="font-label-md text-on-surface ml-1 text-xs font-bold uppercase tracking-wider">Buscar Texto</label>
-    <input type="text" id="inventory-search-table" placeholder="Buscar por palabra clave..." class="h-10 w-full rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-primary font-label-lg px-4 bg-surface outline-none text-sm" />
-  </div>
 </div>
 <div class="overflow-x-auto overflow-y-auto max-h-[620px] scrollbar-thin">
 <table class="w-full text-left border-collapse">
 <thead class="sticky top-0 bg-surface-container z-10 shadow-sm">
 <tr class="bg-surface-container text-on-surface-variant font-label-md uppercase tracking-wider text-xs">
-<th class="px-4 py-2.5 border-b border-outline-variant">Producto / Modelo</th>
-<th class="px-3 py-2.5 border-b border-outline-variant">Color</th>
-<th class="px-3 py-2.5 border-b border-outline-variant text-center">St</th>
-<th class="px-3 py-2.5 border-b border-outline-variant text-center">S</th>
-<th class="px-3 py-2.5 border-b border-outline-variant text-center">M</th>
-<th class="px-3 py-2.5 border-b border-outline-variant text-center">L</th>
-<th class="px-3 py-2.5 border-b border-outline-variant text-center">XL</th>
-<th class="px-3 py-2.5 border-b border-outline-variant">Estado</th>
-<th class="px-4 py-2.5 border-b border-outline-variant text-right">Acción</th>
+<th class="px-6 py-4 border-b border-outline-variant">Modelo / Tipo</th>
+<th class="px-4 py-4 border-b border-outline-variant">Color</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">St</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">S</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">M</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">L</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">XL</th>
+<th class="px-4 py-4 border-b border-outline-variant text-center">Total Stock</th>
+<th class="px-4 py-4 border-b border-outline-variant">Estado</th>
+<th class="px-6 py-4 border-b border-outline-variant text-right">Acción</th>
 </tr>
 </thead>
 <tbody id="inventory-tbody" class="divide-y divide-outline-variant">
@@ -438,9 +410,16 @@
 </section>
 
 </div>
+<!-- Notification Toast (Simulation) -->
+<div class="fixed bottom-8 right-8 bg-inverse-surface text-inverse-on-surface px-8 py-4 rounded-xl shadow-2xl flex items-center gap-4 translate-y-24 transition-transform duration-300 z-50" id="toast">
+<span class="material-symbols-outlined text-primary-fixed">check_circle</span>
+<p class="font-label-lg">Solicitud de traspaso enviada correctamente.</p>
+</div>
+</main>
+
 <!-- Custom Transfer Modal -->
-<div id="transfer-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[9999] opacity-0 transition-opacity duration-200 pointer-events-none px-4">
-  <div class="rounded-[24px] shadow-2xl overflow-hidden w-full max-w-sm transform scale-95 transition-transform duration-200">
+<div id="transfer-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-[9999] opacity-0 transition-opacity duration-200 pointer-events-none px-4">
+  <div class="bg-white rounded-[24px] shadow-2xl overflow-hidden w-full max-w-sm transform scale-95 transition-transform duration-200">
     <!-- Header degradado morado -->
     <div class="relative h-24 bg-gradient-to-br from-primary/90 via-primary to-primary/70 flex items-end px-8 pb-4 overflow-hidden">
       <div class="absolute inset-0 opacity-20" style="background: radial-gradient(circle at 80% 20%, white 0%, transparent 60%);"></div>
@@ -450,7 +429,7 @@
       </div>
     </div>
     <!-- Body -->
-    <div class="bg-white p-6 flex flex-col gap-4">
+    <div class="p-6 flex flex-col gap-4">
       <p id="transfer-modal-desc" class="text-xs text-on-surface-variant leading-relaxed"></p>
 
       <div class="flex flex-col gap-3">
@@ -481,19 +460,12 @@
         </button>
         <button id="transfer-confirm-btn" class="flex-1 h-10 rounded-xl bg-primary text-on-primary font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2">
           <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
-          Solicitar
+          Enviar
         </button>
       </div>
     </div>
   </div>
 </div>
-
-<!-- Notification Toast (Simulation) -->
-<div class="fixed bottom-8 right-8 bg-inverse-surface text-inverse-on-surface px-8 py-4 rounded-xl shadow-2xl flex items-center gap-4 translate-y-24 transition-transform duration-300 z-50" id="toast">
-<span class="material-symbols-outlined text-primary-fixed">check_circle</span>
-<p class="font-label-lg">Solicitud de traspaso enviada correctamente.</p>
-</div>
-</main>
 <script>
         const user = getCurrentUser();
         let invData = {};
@@ -523,15 +495,315 @@
                 }
             }
         }
-        const searchInput = document.querySelector('input[placeholder="Buscar producto o sede..."]');
-        const tableTitle = document.getElementById("table-header-title");
+        function getColorBadgeClass(colorKey) {
+            if (colorKey === "COL-01") return "px-2.5 py-0.5 bg-black text-white rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-02") return "px-2.5 py-0.5 bg-[#FFFDF9] border border-[#EAD0D8] text-on-surface rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-03") return "px-2.5 py-0.5 bg-[#F3E5AB]/30 border border-[#F3E5AB] text-[#7A6B24] rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-04") return "px-2.5 py-0.5 bg-[#1E4D2B] text-white rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-05") return "px-2.5 py-0.5 bg-[#5C4033] text-white rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-06") return "px-2.5 py-0.5 bg-[#708090]/20 border border-[#708090] text-[#2F4F4F] rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-07") return "px-2.5 py-0.5 bg-[#C19A6B]/20 border border-[#C19A6B] text-[#5C4033] rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-08") return "px-2.5 py-0.5 bg-red-100 border border-red-300 text-red-800 rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-09") return "px-2.5 py-0.5 bg-[#FF007F]/10 border border-[#FF007F] text-[#C71585] rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-10") return "px-2.5 py-0.5 bg-[#811414] text-white rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-11") return "px-2.5 py-0.5 bg-[#1C2833] text-white rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-12") return "px-2.5 py-0.5 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-13") return "px-2.5 py-0.5 bg-orange-100 border border-orange-300 text-orange-800 rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-14") return "px-2.5 py-0.5 bg-rose-100 border border-rose-300 text-rose-800 rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-15") return "px-2.5 py-0.5 bg-[#8C8275]/20 border border-[#8C8275] text-[#4A433A] rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-16") return "px-2.5 py-0.5 bg-[#2E5A88]/20 border border-[#2E5A88] text-[#1B365D] rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-17") return "px-2.5 py-0.5 bg-[#E0F7FA] border border-[#B2EBF2] text-[#006064] rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-18") return "px-2.5 py-0.5 bg-purple-100 border border-purple-300 text-purple-800 rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            if (colorKey === "COL-19") return "px-2.5 py-0.5 bg-[#E0E0E0] border border-[#BDBDBD] text-[#424242] rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+            return "px-2.5 py-0.5 bg-surface-variant text-on-surface-variant rounded-full text-xs font-semibold inline-block text-center min-w-[70px]";
+        }
+
+        function exportToExcelAlmacen() {
+            if (typeof XLSX === 'undefined') {
+                alert("Error: La biblioteca de exportación XLSX no se ha cargado correctamente.");
+                return;
+            }
+
+            const selectedStore = storeSelect.value;
+            const selectedStoreName = STORE_NAMES[selectedStore] || selectedStore;
+            
+            const filterTipo = document.getElementById("select-filter-tipo");
+            const filterModelo = document.getElementById("select-filter-modelo");
+            const filterColor = document.getElementById("select-filter-color");
+
+            const selectedTipo = filterTipo ? filterTipo.value : "all";
+            const selectedModelo = filterModelo ? filterModelo.value : "all";
+            const selectedColor = filterColor ? filterColor.value : "all";
+
+            // Obtener el período actual o fecha actual formateada
+            const now = new Date();
+            const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+            const periodLabel = `${meses[now.getMonth()]} ${now.getFullYear()}`;
+            const periodFilename = `${meses[now.getMonth()]}_${now.getFullYear()}`;
+
+            // Calcular KPIs para esta sede seleccionada
+            const targetInventory = invData[selectedStore] || {};
+            let storeTotal = 0;
+            let lowAlerts = 0;
+            
+            // También calcular Almacén Central y Tiendas para los KPIs globales
+            let filterCentral = 0;
+            let filterTiendas = 0;
+
+            Object.keys(invData).forEach(sKey => {
+                let storeSum = 0;
+                Object.keys(invData[sKey] || {}).forEach(mK => {
+                    const allowed = getAllowedSizesForModel(mK);
+                    Object.keys(invData[sKey][mK] || {}).forEach(cK => {
+                        const sizes = invData[sKey][mK][cK];
+                        allowed.forEach(sz => {
+                            storeSum += (sizes[sz] || 0);
+                        });
+                    });
+                });
+                if (sKey === "ALM-01") filterCentral += storeSum;
+                else if (sKey.startsWith("TDA-")) filterTiendas += storeSum;
+                
+                if (selectedStore === sKey) {
+                    storeTotal = storeSum;
+                }
+            });
+
+            const tableRows = [];
+
+            for (const [modelKey, modelName] of Object.entries(MODEL_NAMES)) {
+                // Filter by selected model
+                if (selectedModelo !== "all" && modelKey !== selectedModelo) continue;
+
+                // Filter by type
+                let modelsList = JSON.parse(localStorage.getItem("escarlu_modelos")) || [];
+                const modelObj = modelsList.find(m => m.id_modelo === modelKey);
+                const modelType = modelObj ? modelObj.tipo : (modelKey === "MOD-015" || modelKey === "MOD-016" ? "Short" : "Polo");
+                if (selectedTipo !== "all" && modelType.toLowerCase() !== selectedTipo.toLowerCase()) continue;
+
+                for (const [colorKey, colorName] of Object.entries(COLOR_NAMES)) {
+                    // Filter by color
+                    if (selectedColor !== "all" && colorKey !== selectedColor) continue;
+
+                    const allowedSizes = getAllowedSizesForModel(modelKey);
+                    const sizes = targetInventory[modelKey]?.[colorKey] || {};
+                    
+                    let totalRow = 0;
+                    allowedSizes.forEach(sz => {
+                        totalRow += (sizes[sz] || 0);
+                    });
+
+                    if (totalRow < 5) {
+                        lowAlerts++;
+                    }
+
+                    let estado = "Disponible";
+                    if (totalRow === 0) {
+                        estado = "Agotado";
+                    } else if (totalRow < 5) {
+                        estado = "Bajo Stock";
+                    }
+
+                    // --- FILTRADO DE VARIACIONES SIN STOCK ---
+                    if (totalRow > 0) {
+                        tableRows.push({
+                            row: [
+                                `${modelName} (${modelType})`,
+                                colorName,
+                                allowedSizes.includes("St") ? (sizes.St || 0) : "-",
+                                allowedSizes.includes("S") ? (sizes.S || 0) : "-",
+                                allowedSizes.includes("M") ? (sizes.M || 0) : "-",
+                                allowedSizes.includes("L") ? (sizes.L || 0) : "-",
+                                allowedSizes.includes("XL") ? (sizes.XL || 0) : "-",
+                                totalRow,
+                                estado
+                            ],
+                            totalRow: totalRow
+                        });
+                    }
+                }
+            }
+
+            // Ordenar de mayor a menor stock
+            tableRows.sort((a, b) => b.totalRow - a.totalRow);
+
+            const ws_data = [
+                [`REPORTE DE INVENTARIO - ESCARLÚ | ${periodLabel}`],
+                ["Período:", periodLabel],
+                ["Sede Filtrada:", selectedStoreName],
+                ["Filtro Tipo:", selectedTipo === "all" ? "Todos los tipos" : selectedTipo],
+                ["Filtro Modelo:", selectedModelo === "all" ? "Todos los modelos" : (MODEL_NAMES[selectedModelo] || selectedModelo)],
+                ["Filtro Color:", selectedColor === "all" ? "Todos los colores" : (COLOR_NAMES[selectedColor] || selectedColor)],
+                [],
+                ["RESUMEN DE INDICADORES"],
+                ["TOTAL PRENDAS EN STOCK", storeTotal],
+                ["ALMACÉN CENTRAL", filterCentral],
+                ["STOCK EN TIENDAS", filterTiendas],
+                ["VARIANTES EN ALERTA", lowAlerts],
+                [],
+                ["EXISTENCIAS POR MODELO Y TALLA (Variantes con Stock)"],
+                ["MODELO / TIPO", "COLOR", "ST", "S", "M", "L", "XL", "TOTAL STOCK", "ESTADO"]
+            ];
+
+            tableRows.forEach(item => {
+                ws_data.push(item.row);
+            });
+
+            // Create Workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+            // --- APLICACIÓN DE ESTILOS PRESTIGIO (Escarlú) ---
+            const range = XLSX.utils.decode_range(ws['!ref']);
+
+            for (let R = range.s.r; R <= range.e.r; ++R) {
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const cell_ref = XLSX.utils.encode_cell({c:C, r:R});
+                    if (!ws[cell_ref]) continue;
+
+                    // Inicializar objeto de estilo
+                    ws[cell_ref].s = {
+                        font: { name: "Calibri", sz: 11 },
+                        alignment: { vertical: "center" },
+                        border: {
+                            top: { style: "thin", color: { rgb: "F8C8D4" } },
+                            bottom: { style: "thin", color: { rgb: "F8C8D4" } },
+                            left: { style: "thin", color: { rgb: "F8C8D4" } },
+                            right: { style: "thin", color: { rgb: "F8C8D4" } }
+                        }
+                    };
+
+                    // Fila de cabecera principal (Fila 1)
+                    if (R === 0) {
+                        ws[cell_ref].s = {
+                            font: { name: "Cambria", sz: 16, bold: true, color: { rgb: "745475" } },
+                            alignment: { horizontal: "left", vertical: "center" }
+                        };
+                    }
+
+                    // Metadatos superiores (Filas 1 a 6)
+                    if (R >= 1 && R <= 5) {
+                        if (C === 0) {
+                            ws[cell_ref].s.font.bold = true;
+                            ws[cell_ref].s.font.color = { rgb: "4C444B" };
+                        } else {
+                            ws[cell_ref].s.alignment.horizontal = "left";
+                        }
+                        ws[cell_ref].s.border = {};
+                    }
+
+                    if (R === 6) ws[cell_ref].s.border = {};
+
+                    // Título de Sección "RESUMEN DE INDICADORES"
+                    if (R === 7) {
+                        ws[cell_ref].s = {
+                            font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
+                            fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } }, // Rosa claro
+                            alignment: { horizontal: "left", vertical: "center" },
+                            border: {
+                                top: { style: "thin", color: { rgb: "F8C8D4" } },
+                                bottom: { style: "thin", color: { rgb: "F8C8D4" } }
+                            }
+                        };
+                    }
+
+                    // Filas de Indicadores principales (Filas 8 a 11)
+                    if (R >= 8 && R <= 11) {
+                        if (C === 0) {
+                            ws[cell_ref].s.font.color = { rgb: "1C1B1B" };
+                        }
+                        if (C === 1) {
+                            ws[cell_ref].t = 'n';
+                            ws[cell_ref].z = '#,##0';
+                            ws[cell_ref].s.alignment.horizontal = "right";
+                            ws[cell_ref].s.font.bold = true;
+                        }
+                    }
+
+                    if (R === 12) ws[cell_ref].s.border = {};
+
+                    // Título de Sección "EXISTENCIAS POR MODELO Y TALLA"
+                    if (R === 13) {
+                        ws[cell_ref].s = {
+                            font: { name: "Cambria", sz: 12, bold: true, color: { rgb: "745475" } },
+                            fill: { patternType: "solid", fgColor: { rgb: "FFF0F3" } },
+                            alignment: { horizontal: "left", vertical: "center" },
+                            border: {
+                                top: { style: "thin", color: { rgb: "F8C8D4" } },
+                                bottom: { style: "thin", color: { rgb: "F8C8D4" } }
+                            }
+                        };
+                    }
+
+                    // Cabeceras de tabla de movimientos (Fila 15, index 14)
+                    if (R === 14) {
+                        ws[cell_ref].s = {
+                            font: { name: "Calibri", sz: 10, bold: true, color: { rgb: "745475" } },
+                            fill: { patternType: "solid", fgColor: { rgb: "F8C8D4" } },
+                            alignment: { horizontal: (C >= 2 && C <= 7) ? "center" : "left", vertical: "center" },
+                            border: {
+                                top: { style: "medium", color: { rgb: "745475" } },
+                                bottom: { style: "medium", color: { rgb: "745475" } },
+                                left: { style: "thin", color: { rgb: "F8C8D4" } },
+                                right: { style: "thin", color: { rgb: "F8C8D4" } }
+                            }
+                        };
+                    }
+
+                    // Filas de datos
+                    if (R >= 15) {
+                        const zebraColor = (R % 2 === 0) ? "FAF5F6" : "FFFFFF";
+                        ws[cell_ref].s.fill = { patternType: "solid", fgColor: { rgb: zebraColor } };
+
+                        // Alinear datos numéricos
+                        if (C >= 2 && C <= 7) {
+                            ws[cell_ref].s.alignment.horizontal = "center";
+                            if (C === 7) {
+                                ws[cell_ref].t = 'n';
+                                ws[cell_ref].z = '#,##0';
+                                ws[cell_ref].s.font.bold = true;
+                                ws[cell_ref].s.font.color = { rgb: "745475" };
+                            } else if (ws[cell_ref].v !== "-") {
+                                ws[cell_ref].t = 'n';
+                                ws[cell_ref].z = '#,##0';
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Combinar títulos para alineación limpia
+            if(!ws['!merges']) ws['!merges'] = [];
+            ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } });
+
+            // Set Column Widths
+            ws['!cols'] = [
+                { wch: 35 }, // MODELO / TIPO
+                { wch: 18 }, // COLOR
+                { wch: 8 },  // ST
+                { wch: 8 },  // S
+                { wch: 8 },  // M
+                { wch: 8 },  // L
+                { wch: 8 },  // XL
+                { wch: 15 }, // TOTAL STOCK
+                { wch: 15 }  // ESTADO
+            ];
+
+            XLSX.utils.book_append_sheet(wb, ws, "Stock Sede");
+
+            const filename = `Reporte_Stock_${selectedStoreName.replace(/\s+/g, '_')}_${periodFilename}.xlsx`;
+            XLSX.writeFile(wb, filename);
+        }
 
         function renderInventory() {
             if (!invData || Object.keys(invData).length === 0) return;
 
             const selectedStore = storeSelect.value;
             const storeName = STORE_NAMES[selectedStore] || selectedStore;
-            tableTitle.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Existencias de Prendas - ${storeName}`;
+            const tableTitleEl = document.getElementById("table-header-title");
+            if (tableTitleEl) {
+                tableTitleEl.innerHTML = `<span class="material-symbols-outlined">checkroom</span> Existencias de Prendas - ${storeName}`;
+            }
 
             const query = (document.getElementById("inventory-search-table")?.value || "").toLowerCase().trim();
             const selectedTipo = document.getElementById("select-filter-tipo")?.value || "all";
@@ -588,6 +860,9 @@
                 }
             }
 
+            // Ordenar de mayor a menor stock
+            allRows.sort((a, b) => b.totalRow - a.totalRow);
+
             // Lógica de Paginación Real
             const totalItems = allRows.length;
             const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
@@ -630,30 +905,11 @@
                     return `<td class="px-3 py-3 text-center font-bold text-sm ${isLow ? 'text-error font-extrabold' : ''}">${val}</td>`;
                 }
 
-                let statusBadge = "";
-                let actionButton = "";
-
-                if (totalRow > 15) {
-                    statusBadge = `
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-[#4CAF50]"></div>
-                            <span class="text-xs font-medium">Stock Óptimo</span>
-                        </div>
-                    `;
-                } else if (totalStockIsLow(sizes, allowedSizes)) {
-                    statusBadge = `
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
-                            <span class="text-xs font-medium text-error font-bold">Stock Crítico</span>
-                        </div>
-                    `;
-                } else {
-                    statusBadge = `
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-tertiary-container"></div>
-                            <span class="text-xs font-medium">Stock Moderado</span>
-                        </div>
-                    `;
+                let statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-[11px] font-bold">Disponible</span>`;
+                if (totalRow === 0) {
+                    statusBadge = `<span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-[11px] font-bold">Agotado</span>`;
+                } else if (totalRow < 5) {
+                    statusBadge = `<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[11px] font-bold">Bajo Stock</span>`;
                 }
 
                 // Check if Almacén Central (ALM-01) has stock to send
@@ -677,27 +933,23 @@
                 const tr = document.createElement("tr");
                 tr.className = "hover:bg-surface-container-low transition-colors group";
                 tr.innerHTML = `
-                    <td class="px-4 py-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 bg-primary-fixed rounded-lg flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-primary text-base">apparel</span>
-                            </div>
-                            <div>
-                                <p class="font-bold text-sm text-on-surface">${modelName}</p>
-                                <p class="text-xs text-on-surface-variant">REF: ESC-2026-${modelKey}</p>
-                            </div>
+                    <td class="px-6 py-3">
+                        <div>
+                            <p class="font-bold text-sm text-on-surface">${modelName}</p>
+                            <p class="text-xs text-on-surface-variant">REF: ESC-2026-${modelKey}</p>
                         </div>
                     </td>
-                    <td class="px-3 py-3">
-                        <span class="px-2 py-0.5 bg-surface-container-high text-on-surface rounded-full text-xs font-semibold">${colorName}</span>
+                    <td class="px-4 py-3">
+                        <span class="${getColorBadgeClass(colorKey)}">${colorName}</span>
                     </td>
                     ${renderSizeCell("St")}
                     ${renderSizeCell("S")}
                     ${renderSizeCell("M")}
                     ${renderSizeCell("L")}
                     ${renderSizeCell("XL")}
-                    <td class="px-3 py-3">${statusBadge}</td>
-                    <td class="px-4 py-3 text-right">${actionButton}</td>
+                    <td class="px-4 py-3 text-center font-bold text-sm text-on-surface">${totalRow}</td>
+                    <td class="px-4 py-3">${statusBadge}</td>
+                    <td class="px-6 py-3 text-right">${actionButton}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -740,10 +992,11 @@
                 modalDesc.innerHTML = `Enviar stock de <strong>${modelName} - ${colorName}</strong> desde el Almacén Central hacia la tienda elegida.`;
                 destContainer.classList.remove("hidden");
                 
-                // Populate destination stores dropdown (exclude ALM-01 and CTR-01)
+                // Populate destination stores dropdown (exclude ALM-01, CTR-01, and inactive stores)
                 destSelect.innerHTML = "";
                 for (const [storeId, storeName] of Object.entries(STORE_NAMES)) {
                     if (storeId !== 'ALM-01' && storeId !== 'CTR-01') {
+                        if (window.isStoreActive && !window.isStoreActive(storeId)) continue;
                         const opt = document.createElement("option");
                         opt.value = storeId;
                         opt.textContent = storeName;
@@ -867,6 +1120,12 @@
                 currentPage++;
                 renderInventory();
             });
+
+            // Bind export button
+            const exportBtn = document.getElementById("btnExportarExcelAlmacen");
+            if (exportBtn) {
+                exportBtn.addEventListener("click", exportToExcelAlmacen);
+            }
 
             updateFilterModels(); // init models dropdown
 
